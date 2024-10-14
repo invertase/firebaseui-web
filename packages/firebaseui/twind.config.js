@@ -9,6 +9,7 @@ export default defineConfig({
       colors: {
         theme: {
           DEFAULT: "hsl(var(--theme-primary) / <alpha-value>)",
+          foreground: "hsl(var(--theme-primary-foreground) / <alpha-value>)",
         },
       },
       borderRadius: {

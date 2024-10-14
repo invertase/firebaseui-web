@@ -11,7 +11,8 @@ const withTwind = install(config);
 export class BaseElement extends withTwind(LitElement) {
   static styles = [css`
       :host {
-        --theme-primary: var(--primary, 120 100% 25%);
+        --theme-primary: var(--primary, 34 100% 50%);
+        --theme-primary-foreground: var(--primary-foreground, 0 0% 100%);
         --theme-radius: var(--radius, 1rem);
       }
     `]
