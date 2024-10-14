@@ -21,7 +21,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    "types": ["minireset-css.d.ts"],
     "baseUrl": ".",
     "paths": {
       "~/*": ["src/*"],
