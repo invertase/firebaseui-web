@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="./src/tailwind.css">
+    <style>
+      /* User would do this in their own code somewhere */
+      :root {
+        --primary: 239 100% 50%
+      }
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+    </style>
+    <script type="module">
+      import './src/index.ts';
+      import { initializeApp } from "firebase/app";
+      import { getAuth, connectAuthEmulator } from "firebase/auth";
+      import { initializeUI } from "./src/index.ts";
+
+      const app = initializeApp({
+        apiKey: "AIzaSyBKYNMJymV18pkX4CKWTtshyqqP6BMAVvk",
+        authDomain: "fir-ui-test-4f1b0.firebaseapp.com",
+        projectId: "fir-ui-test-4f1b0",
+        storageBucket: "fir-ui-test-4f1b0.appspot.com",
+        messagingSenderId: "160261608839",
+        appId: "1:160261608839:web:9edbe15de19bd30a46af22"
+      });
+
+      const auth = getAuth(app);
+      connectAuthEmulator(auth, "http://127.0.0.1:9099")
+
+      // Initialize FirebaseUI using Firebase Auth
+      initializeUI(app);
+    </script>
+  </head>
+  <body>
+    <fui-provider>
+      <fui-login-form>
+      </fui-login-form>
+    </fui-provider>
+  </body>
+</html>

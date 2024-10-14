@@ -1,0 +1,10 @@
+{
+  "name": "firebaseui-root",
+  "private": true,
+  "devDependencies": {
+    "typescript": "^5.5.3",
+    "vite": "^5.4.0",
+    "vite-plugin-dts": "^4.2.3",
+    "vite-tsconfig-paths": "^5.0.1"
+  }
+}
