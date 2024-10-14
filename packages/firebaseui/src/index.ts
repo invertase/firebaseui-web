@@ -9,7 +9,7 @@ import './components/button';
 import './components/input';
 
 export { Button } from "./components/button";
-export { FirebaseUIInput } from "./components/input";
+export { Input } from "./components/input";
 export { LoginForm } from "./auth/login-form";
 
 // Initialize the FirebaseUI provider with the Auth instance.

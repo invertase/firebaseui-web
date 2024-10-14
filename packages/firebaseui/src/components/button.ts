@@ -1,21 +1,16 @@
-import { css, html, LitElement } from "lit";
+import { html } from "lit";
 import { spreadAttributes } from "~/utils";
 import { BaseElement } from "./base";
 
 export class Button extends BaseElement {
-  static styles = [
-    ...BaseElement.styles,
-    css`
-      button {
-        border-radius: var(--theme-radius);
-        background-color: var(--theme-primary);
-      }
-    `,
-  ];
-
   render() {
     return html`
-      <button ...="${spreadAttributes(this.attributes)}">
+      <button
+        ...="${spreadAttributes(this.attributes)}"
+        class="${this.cn(
+          "bg-theme hover:bg-theme/70 transition-all rounded px-4 py-2"
+        )}"
+      >
         <slot></slot>
       </button>
     `;

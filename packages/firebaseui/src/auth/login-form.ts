@@ -8,6 +8,7 @@ import { zodValidator } from "@tanstack/zod-form-adapter";
 import { z } from "zod";
 
 import '~/components/button';
+import '~/components/input';
 
 export class LoginForm extends LoginFormController {
   render() {
@@ -27,8 +28,7 @@ export class LoginForm extends LoginFormController {
               validators: { onChange: z.string().email() },
             },
             (field) => {
-              return html`<input
-              is="fui-input"
+              return html`<fui-input
               type="email"
               placeholder="Email Address"
               .value="${field.state.value}"
@@ -45,7 +45,7 @@ export class LoginForm extends LoginFormController {
         </div>
         </div>
         <div slot="submit">
-          <fui-button type="submit" ?disabled="${this.loading}" data-foo="bar">
+          <fui-button type="submit" ?disabled="${this.loading}">
             ${this.loading ? "Loading..." : "Login"}
           </fui-button>
         </div>
