@@ -1,39 +1,29 @@
-import install from "@twind/with-web-components";
 import { ContextConsumer } from "@lit/context";
-import { css, LitElement } from "lit";
+import { css, LitElement, unsafeCSS } from "lit";
 import { FirebaseUIContext } from "../context";
 
-import config from "../../twind.config";
+import preflight from "~/preflight.css?inline";
 
-// Install twind.
-const withTwind = install(config);
-
-export class BaseElement extends withTwind(LitElement) {
-  static styles = [css`
+export class BaseElement extends LitElement {
+  static styles = [
+    unsafeCSS(preflight),
+    css`
       :host {
         --theme-primary: var(--primary, 34 100% 50%);
         --theme-primary-foreground: var(--primary-foreground, 0 0% 100%);
         --theme-radius: var(--radius, 1rem);
       }
-    `]
+    `,
+  ];
 
   context: FirebaseUIContext = {} as FirebaseUIContext;
-
-  cn(...classNames: string[]) {
-    const attributes = this.attributes.getNamedItem("class");
-
-    if (attributes) {
-      return `${attributes.value} ${classNames.join(" ")}`;
-    }
-
-    return classNames.join(" ");
-  }
 
   constructor() {
     super();
     new ContextConsumer(this, {
       context: FirebaseUIContext,
       callback: (value) => {
+        console.log('CONTEXT', value);
         this.context = value;
       },
       subscribe: true,

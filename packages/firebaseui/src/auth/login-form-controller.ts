@@ -1,23 +1,39 @@
 import { TanStackFormController } from "@tanstack/lit-form";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { BaseElement } from "~/components/base";
-import { property } from "lit/decorators.js";
 
 type LoginForm = {
+  __root__: string;
   email: string;
-  // password: string;
+  password: string;
 };
 
-export abstract class LoginFormController extends BaseElement {
-  @property({ type: Boolean }) loading = false;
+export class LoginFormController extends BaseElement {
+  constructor() {
+    super();
+  }
 
   form = new TanStackFormController<LoginForm>(this, {
     defaultValues: {
+      __root__: "",
       email: "",
-      // password: "",
+      password: "",
     },
-    onSubmit: ({ value }) => {
-      console.log(value);
-      this.loading = true;
+    onSubmit: async ({ value, formApi }) => {
+      try {
+        return await signInWithEmailAndPassword(
+          this.context.auth,
+          value.email,
+          value.password
+        );  
+      } catch (e) {
+        formApi.setErrorMap({
+          __root__: 'fooo',
+        })
+      }
+    },
+    onSubmitInvalid(props) {
+      console.log("invalid", props);
     },
   });
 

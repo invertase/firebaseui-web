@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html, nothing } from "lit";
 
 import { LoginFormController } from "./login-form-controller";
 
@@ -7,20 +7,35 @@ import "~/components/button";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { z } from "zod";
 
-import '~/components/button';
-import '~/components/input';
+import "~/components/button";
+import "~/components/input";
+import "~/components/fieldset";
+import { BaseElement } from "~/components/base";
+import { repeat } from "lit/directives/repeat.js";
 
 export class LoginForm extends LoginFormController {
+  static styles = [...BaseElement.styles];
+
   render() {
+    console.log(this.form.api.state)
     return html`
       <form
-        @submit=${(e: Event) => {
+        id="login-form"
+        @submit=${async (e: Event) => {
           e.preventDefault();
-          this.form.api.handleSubmit();
+          try {
+            await this.form.api.handleSubmit();
+          } catch (e) {
+            console.log(e);
+          }
         }}
       >
-        <div>
-          <label for="email">Email Address:</label>
+        <fieldset>
+          <label
+            for="email"
+          >
+            Email Address
+          </label>
           ${this.form.field(
             {
               name: "email",
@@ -28,27 +43,64 @@ export class LoginForm extends LoginFormController {
               validators: { onChange: z.string().email() },
             },
             (field) => {
-              return html`<fui-input
-              type="email"
-              placeholder="Email Address"
-              .value="${field.state.value}"
-              @blur="${() => field.handleBlur()}"
-              @input="${(e: Event) => {
-                const target = e.target as HTMLInputElement;
-                field.handleChange(target.value);
-              }}"
-            ></-input>
-            ${field.state.meta.errors.map((e) => html`<div>${e}</div>`)}
-            `;
+              return html`
+                <fui-input
+                  type="email"
+                  placeholder="Email Address"
+                  .value="${field.state.value}"
+                  @on-blur="${() => field.handleBlur()}"
+                  @on-input="${(e: CustomEvent) => {
+                    field.handleChange(e.detail.value);
+                  }}"
+                ></fui-input>
+                ${field.state.meta.errors.map(
+                  (error) => html`<div>${error}</div>`
+                )}
+              `;
             }
           )}
-        </div>
-        </div>
-        <div slot="submit">
-          <fui-button type="submit" ?disabled="${this.loading}">
-            ${this.loading ? "Loading..." : "Login"}
-          </fui-button>
-        </div>
+        </fieldset>
+        <fieldset>
+          <label
+            for="password"
+            class="block mb-2 text-sm leading-none font-medium text-red-500"
+          >
+            Password
+          </label>
+          ${this.form.field(
+            {
+              name: "password",
+              validatorAdapter: zodValidator(),
+              validators: {
+                onChange: z
+                  .string()
+                  .min(6, "Password must be at least 6 characters long."),
+              },
+            },
+            (field) => {
+              return html`
+                <fui-input
+                  type="password"
+                  .value="${field.state.value}"
+                  @on-blur="${() => field.handleBlur()}"
+                  @on-input="${(e: CustomEvent) => {
+                    field.handleChange(e.detail.value);
+                  }}"
+                ></fui-input>
+                ${field.state.meta.isTouched && field.state.meta.errors.length
+                  ? html`${repeat(
+                      field.state.meta.errors,
+                      (__, idx) => idx,
+                      (error) => {
+                        return html`<div class="container">${error}</div>`;
+                      }
+                    )}`
+                  : nothing}
+              `;
+            }
+          )}
+        </fieldset>
+        <button is="fui-button" type="submit">Login</-button>
       </form>
     `;
   }
