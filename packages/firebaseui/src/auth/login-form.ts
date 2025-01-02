@@ -17,7 +17,6 @@ export class LoginForm extends LoginFormController {
   static styles = [...BaseElement.styles];
 
   render() {
-    console.log(this.form.api.state)
     return html`
       <form
         id="login-form"

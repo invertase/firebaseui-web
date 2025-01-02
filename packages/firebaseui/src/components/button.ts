@@ -1,5 +1,4 @@
 import { css, html } from "lit";
-import { spreadAttributes } from "~/utils";
 import { BaseElement } from "./base";
 
 export class Button extends BaseElement {

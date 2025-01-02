@@ -29,7 +29,7 @@ export class Input extends BaseElement {
   render() {
     return html`
       <input
-        ...="${spreadAttributes(this.attributes)}" 
+        ...="${spreadAttributes(this.attributes)}"
         @input="${(e: Event) => this._sendEvent(e, "input")}"
         @blur="${(e: Event) => this._sendEvent(e, "blur")}"
         @focus="${(e: Event) => this._sendEvent(e, "focus")}"

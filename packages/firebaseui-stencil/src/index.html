@@ -1,0 +1,93 @@
+<!doctype html>
+<html dir="ltr" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+    <title>Stencil Component Starter</title>
+
+    <script type="module" src="/build/firebaseui-stencil.esm.js"></script>
+    <script nomodule src="/build/firebaseui-stencil.js"></script>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background-color: #f9fafb;
+      }
+      .logged-in-view {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        gap: 1rem;
+      }
+      .user-email {
+        font-size: 1.125rem;
+        color: #1f2937;
+      }
+      .logout-button {
+        background-color: #ffbc00;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 150ms;
+      }
+      .logout-button:hover {
+        background-color: #e6a900;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="auth-container">
+      <fui-login-form />
+    </div>
+
+    <script type="module" defer>
+      import { initializeFirebaseUI, globalConfig } from '/build/index.esm.js';
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js';
+      import { getAuth, connectAuthEmulator, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js';
+
+      const app = initializeApp({
+        apiKey: 'AIzaSyDkyfavblrRNMP0TbJMwTIPSlsCtBHlFNg',
+        authDomain: 'ff-test-74aeb.firebaseapp.com',
+        databaseURL: 'https://ff-test-74aeb-default-rtdb.asia-southeast1.firebasedatabase.app',
+        projectId: 'ff-test-74aeb',
+        storageBucket: 'ff-test-74aeb.appspot.com',
+        messagingSenderId: '950537677105',
+        appId: '1:950537677105:web:dafb21b3f1e973c2cde810',
+        measurementId: 'G-B2FBR1163R',
+      });
+
+      const auth = getAuth(app);
+      connectAuthEmulator(auth, 'http://localhost:9099');
+
+      initializeFirebaseUI({ app });
+
+      const authContainer = document.getElementById('auth-container');
+
+      onAuthStateChanged(auth, user => {
+        if (user) {
+          authContainer.innerHTML = `
+        <div class="logged-in-view">
+          <div class="user-email">Signed in as: ${user.email}</div>
+          <button class="logout-button" onclick="handleLogout()">Sign Out</button>
+        </div>
+      `;
+        } else {
+          authContainer.innerHTML = '<fui-login-form/>';
+        }
+      });
+
+      window.handleLogout = async () => {
+        try {
+          await signOut(auth);
+        } catch (error) {
+          console.error('Error signing out:', error);
+        }
+      };
+    </script>
+  </body>
+</html>

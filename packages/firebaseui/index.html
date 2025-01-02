@@ -1,23 +1,27 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="./src/tailwind.css">
+    <link rel="stylesheet" href="./src/tailwind.css" />
     <style>
       /* User would do this in their own code somewhere */
       :root {
         /* --primary: 239 100% 50%; */
         /* White */
         /* --primary-foreground: 0 0% 100%; */
-        --radius: .5rem;
+        --radius: 0.5rem;
       }
       body {
         font-family: Arial, Helvetica, sans-serif;
       }
     </style>
-    <script type="module">
-      import './src/index.ts';
+    <script defer type="module">
+      import "./src/index.ts";
       import { initializeApp } from "firebase/app";
-      import { getAuth, connectAuthEmulator } from "firebase/auth";
+      import {
+        getAuth,
+        connectAuthEmulator,
+        onAuthStateChanged,
+      } from "firebase/auth";
       import { initializeUI } from "./src/index.ts";
 
       const app = initializeApp({
@@ -26,20 +30,98 @@
         projectId: "fir-ui-test-4f1b0",
         storageBucket: "fir-ui-test-4f1b0.appspot.com",
         messagingSenderId: "160261608839",
-        appId: "1:160261608839:web:9edbe15de19bd30a46af22"
+        appId: "1:160261608839:web:9edbe15de19bd30a46af22",
       });
 
       const auth = getAuth(app);
-      connectAuthEmulator(auth, "http://127.0.0.1:9099")
+      connectAuthEmulator(auth, "http://127.0.0.1:9099");
+
+      onAuthStateChanged(auth, (user) => {
+        console.log(user);
+      });
 
       // Initialize FirebaseUI using Firebase Auth
-      initializeUI(app);
+      initializeUI(
+        app,
+        // Default value could be "default" if the user doesn't specify an id
+        // The user can specify an id to have multiple FirebaseUI instances on the same page
+        "default",
+        document.getElementById("default"),
+        {
+          // Sets auth.languageCode as well
+          // Default to auth.useDeviceLanguage()
+          locale: "en",
+          redirdectUrl: "",
+          providers: {
+            emailPassword: {
+              // Default value is true
+              // Use case: A platform that doesn't allow registration. E.g. Users are created by an admin
+              allowRegistration: false,
+              // Default value is false
+              useEmailLink: true,
+            },
+            google: {
+              // Default is undefined
+              scopes: [],
+              // Default is undefined
+              customParameters: {},
+              /** @var {'popup'|'redirect'} */
+              signInType: "popup",
+              // onSuccess: (result) => {
+              //   // Allows you to get the access token
+              //   const credential =
+              //     GoogleAuthProvider.credentialFromResult(result);
+              //   const token = credential.accessToken;
+              // },
+              onError: (error) => {
+                console.error(error.code);
+              },
+            },
+            facebook: {
+              // same as google
+            },
+            apple: {
+              // same as google
+            },
+            openIdConnect: {
+              providerId: "",
+              // same as google
+            },
+            saml: {
+              providerId: "",
+              // same as google
+            },
+            phone: {
+              recaptchaParameters: {
+                size: "",
+                // callback: (response) => {},
+              },
+              // onSuccess: (result) => {
+              //   // Allows you to get the access token
+              // },
+              onError: (error) => {
+                console.error(error.code);
+              },
+            },
+            custom: {
+              // Should we support this?
+            },
+            smsMultiFactor: {
+              tenantId: "",
+              recaptchaParameters: {},
+            },
+          },
+        }
+      );
+
+      /*
+        - The login form dynamically loads UI based on the providers
+      */
     </script>
   </head>
   <body>
-    <fui-provider>
-      <fui-login-form>
-      </fui-login-form>
+    <fui-provider id="default">
+      <fui-login-form></fui-login-form>
     </fui-provider>
   </body>
 </html>

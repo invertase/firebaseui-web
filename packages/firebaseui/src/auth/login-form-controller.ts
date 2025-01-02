@@ -25,11 +25,9 @@ export class LoginFormController extends BaseElement {
           this.context.auth,
           value.email,
           value.password
-        );  
+        );
       } catch (e) {
-        formApi.setErrorMap({
-          __root__: 'fooo',
-        })
+        formApi.setErrorMap({});
       }
     },
     onSubmitInvalid(props) {

@@ -1,0 +1,52 @@
+:root {
+  /* Primary Colors */
+  --fui-primary-50: #fff9e6;
+  --fui-primary-100: #ffedb3;
+  --fui-primary-200: #ffe180;
+  --fui-primary-300: #ffd54d;
+  --fui-primary-400: #ffc91a;
+  --fui-primary-500: #ffbc00;
+  --fui-primary-600: #e6a900;
+  --fui-primary-700: #cc9600;
+  --fui-primary-800: #b38300;
+  --fui-primary-900: #997000;
+
+  /* Text Colors */
+  --fui-text-primary: #1f2937;
+  --fui-text-secondary: #6b7280;
+  --fui-text-error: #ef4444;
+
+  /* Background Colors */
+  --fui-bg-primary: #ffffff;
+  --fui-bg-secondary: #f9fafb;
+
+  /* Border Colors */
+  --fui-border-primary: #e5e7eb;
+  --fui-border-focus: var(--fui-primary-500);
+
+  /* Component Specific */
+  --fui-input-bg: #ffffff;
+  --fui-input-border: #d1d5db;
+  --fui-input-focus-ring: var(--fui-primary-500);
+
+  --fui-button-bg: var(--fui-primary-500);
+  --fui-button-hover: var(--fui-primary-600);
+  --fui-button-text: #ffffff;
+
+  /* Spacing */
+  --fui-spacing-1: 0.25rem;
+  --fui-spacing-2: 0.5rem;
+  --fui-spacing-3: 0.75rem;
+  --fui-spacing-4: 1rem;
+  --fui-spacing-6: 1.5rem;
+  --fui-spacing-8: 2rem;
+
+  /* Border Radius */
+  --fui-radius-sm: 0.375rem;
+  --fui-radius-md: 0.5rem;
+  --fui-radius-lg: 0.75rem;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
