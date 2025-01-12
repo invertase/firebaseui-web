@@ -6,7 +6,7 @@ import '../../styles/global.css';
   styleUrl: 'fui-input.css',
 })
 export class FuiInput {
-  @Prop() public inputProps: Omit<InputHTMLAttributes<HTMLInputElement>, 'onInput' | 'onBlur' | 'onFocus' | 'value' | 'class'>;
+  @Prop() public inputProps: Omit<InputHTMLAttributes<HTMLInputElement>, 'onInput' | 'onBlur' | 'onFocus' | 'value'>;
   @Prop() public value: string;
   @Prop() public error?: boolean = false;
   @Prop() public size: 'sm' | 'md' | 'lg' = 'md';

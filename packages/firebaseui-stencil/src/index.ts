@@ -9,4 +9,6 @@
  */
 
 export * from './config';
+export * from './auth/auth-service';
+export * from './auth/login-form-controller';
 export type * from './components.d.ts';

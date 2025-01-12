@@ -3,16 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
-    <title>Stencil Component Starter</title>
+    <title>FirebaseUI Demo</title>
 
     <script type="module" src="/build/firebaseui-stencil.esm.js"></script>
     <script nomodule src="/build/firebaseui-stencil.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      body {
-        margin: 0;
-        min-height: 100vh;
-        background-color: #f9fafb;
-      }
       .logged-in-view {
         display: flex;
         flex-direction: column;
@@ -21,28 +17,50 @@
         min-height: 100vh;
         gap: 1rem;
       }
+
       .user-email {
         font-size: 1.125rem;
         color: #1f2937;
       }
+
       .logout-button {
-        background-color: #ffbc00;
-        color: white;
         padding: 0.5rem 1rem;
         border-radius: 0.375rem;
         border: none;
-        font-weight: 600;
+        font-weight: 500;
         cursor: pointer;
         transition: background-color 150ms;
+        background-color: #ffbc00;
+        color: white;
       }
+
       .logout-button:hover {
         background-color: #e6a900;
       }
     </style>
   </head>
-  <body>
+  <body class="bg-gray-50">
+    <div class="fixed right-4 top-4 z-50 flex items-center gap-2">
+      <label for="loginType" class="text-sm font-medium text-gray-700">Login Type:</label>
+      <div class="relative">
+        <select
+          id="loginType"
+          class="block w-full appearance-none rounded-md border border-gray-300 bg-white px-4 py-2 pr-8 text-base shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+          onchange="window.toggleLoginType(this.value)"
+        >
+          <option value="email">Email & Password</option>
+          <option value="phone">Phone Number</option>
+          <option value="emailLink">Magic Link</option>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
+          <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
     <div id="auth-container">
-      <fui-login-form />
+      <fui-login-form login-type="email"></fui-login-form>
     </div>
 
     <script type="module" defer>
@@ -62,22 +80,39 @@
       });
 
       const auth = getAuth(app);
-      connectAuthEmulator(auth, 'http://localhost:9099');
+      // connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+
+      // Set up test mode for phone auth in emulator
+      window.confirmationResult = null;
+      auth.settings.appVerificationDisabledForTesting = true;
 
       initializeFirebaseUI({ app });
 
       const authContainer = document.getElementById('auth-container');
+      const loginTypeSelect = document.getElementById('loginType');
+      let currentLoginType = 'email';
+
+      window.toggleLoginType = newType => {
+        currentLoginType = newType;
+        const loginForm = document.querySelector('fui-login-form');
+        if (loginForm) {
+          loginForm.loginType = currentLoginType;
+        }
+      };
 
       onAuthStateChanged(auth, user => {
         if (user) {
+          const displayIdentifier = user.email || user.phoneNumber || 'Anonymous User';
           authContainer.innerHTML = `
-        <div class="logged-in-view">
-          <div class="user-email">Signed in as: ${user.email}</div>
-          <button class="logout-button" onclick="handleLogout()">Sign Out</button>
-        </div>
-      `;
+            <div class="logged-in-view">
+              <div class="user-email">Signed in as: ${displayIdentifier}</div>
+              <button class="logout-button" onclick="handleLogout()">Sign Out</button>
+            </div>
+          `;
+          loginTypeSelect.style.display = 'none';
         } else {
-          authContainer.innerHTML = '<fui-login-form/>';
+          authContainer.innerHTML = `<fui-login-form login-type="${currentLoginType}"></fui-login-form>`;
+          loginTypeSelect.style.display = 'block';
         }
       });
 

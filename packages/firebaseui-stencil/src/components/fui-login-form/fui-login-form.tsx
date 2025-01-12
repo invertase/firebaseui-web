@@ -1,7 +1,7 @@
-import { Component, Host, Method, Prop, State, h } from '@stencil/core';
-import { LoginFormController, type AuthMode } from '../../auth/login-form-controller';
-import { FuiInputCustomEvent } from '../../components';
+import { Component, Host, Method, Prop, State, h, Element, Watch } from '@stencil/core';
+import { LoginFormController, type AuthMode, type LoginType, type EmailFormState, type PhoneFormState, type EmailLinkFormState } from '../../auth/login-form-controller';
 import { z } from 'zod';
+import { RecaptchaVerifier } from 'firebase/auth';
 import '../../styles/global.css';
 
 @Component({
@@ -9,133 +9,354 @@ import '../../styles/global.css';
   styleUrl: 'fui-login-form.css',
 })
 export class FuiLoginForm {
+  @Element() el: HTMLElement;
   @Prop() props: { [key: string]: any };
+  @Prop() loginType: LoginType = 'email';
+
   @State() error: string | null = null;
-  @State() validationErrors: { email?: string; password?: string } = {};
+  @State() validationErrors: { email?: string; password?: string; phoneNumber?: string; verificationCode?: string } = {};
   @State() authMode: AuthMode = 'signIn';
+  @State() verificationSent: boolean = false;
+  @State() canSubmitPhone: boolean = false;
+  @State() successMessage: string | null = null;
+  @State() showForgotPassword: boolean = false;
+  @State() forgotPasswordEmail: string = '';
+  @State() emailLinkSent: boolean = false;
 
   private controller: LoginFormController | null = null;
 
+  // Lifecycle methods
   connectedCallback() {
+    console.log('Connecting login form', this.controller);
     this.controller = new LoginFormController();
+    this.controller.setLoginType(this.loginType);
+    this.controller.reset();
+    console.log('Login form controller set', this.controller);
+    this.checkEmailLink();
+  }
+
+  private async checkEmailLink() {
+    if (this.controller?.isEmailLinkSignIn(window.location.href)) {
+      let email = window.localStorage.getItem('emailForSignIn');
+      if (!email) {
+        email = window.prompt('Please provide your email for confirmation:');
+      }
+      if (email) {
+        try {
+          const result = await this.controller.completeEmailLinkSignIn(email, window.location.href);
+          if (result.success) {
+            window.localStorage.removeItem('emailForSignIn');
+            window.history.replaceState(null, '', window.location.pathname);
+          } else {
+            this.error = result.error?.message || 'Error completing sign in';
+          }
+        } catch (error) {
+          console.error('Error completing sign in with email link:', error);
+          this.error = 'Error completing sign in';
+        }
+      }
+    }
   }
 
   disconnectedCallback() {
+    console.log('Disconnecting login form');
     this.controller?.dispose();
     this.controller = null;
+    this.resetState();
   }
 
+  // Watchers
+  @Watch('loginType')
+  handleLoginTypeChange(newValue: LoginType) {
+    if (this.controller) {
+      this.controller.setLoginType(newValue);
+      if (newValue === 'phone') {
+        this.canSubmitPhone = false;
+      }
+    }
+  }
+
+  // Public methods
   @Method()
   public async submit() {
-    this.onSubmit();
+    return this.handleSubmit();
   }
 
-  private toggleAuthMode() {
+  public getController(): LoginFormController | null {
+    return this.controller;
+  }
+
+  // Event handlers
+  private handleAuthModeToggle = () => {
     this.authMode = this.authMode === 'signIn' ? 'signUp' : 'signIn';
     this.controller?.setAuthMode(this.authMode);
-    this.error = null;
-    this.validationErrors = {};
-  }
+    this.resetErrors();
+  };
 
-  private emailChanged(e: FuiInputCustomEvent<InputEvent>) {
-    this.error = null;
-    this.validationErrors = {};
-    this.controller?.updateEmail((e.detail.target as HTMLInputElement).value);
-  }
+  private handleRecaptchaVerifierChange = (e: CustomEvent<RecaptchaVerifier>) => {
+    if (this.controller) {
+      console.log('Setting recaptcha verifier', e.detail);
+      this.controller.setRecaptchaVerifier(e.detail);
+      // Only reset state when initializing (not after verification)
+      if (e.detail && !this.canSubmitPhone) {
+        this.resetState();
+      }
+    }
+  };
 
-  private passwordChanged(e: FuiInputCustomEvent<InputEvent>) {
+  private handlePhoneSubmitStateChange = (e: CustomEvent<boolean>) => {
+    this.canSubmitPhone = e.detail;
     this.error = null;
-    this.validationErrors = {};
-    this.controller?.updatePassword((e.detail.target as HTMLInputElement).value);
-  }
+  };
 
-  private async onSubmit(e?: Event) {
+  private async handleSubmit(e?: Event) {
     e?.preventDefault();
-    this.error = null;
-    this.validationErrors = {};
+    this.resetErrors();
 
-    const result = await this.controller?.submit('email');
+    console.log('Submit handler - State:', {
+      loginType: this.loginType,
+      verificationSent: this.verificationSent,
+      canSubmitPhone: this.canSubmitPhone,
+      state: this.controller?.state,
+    });
+
+    // For phone auth, only allow submission when reCAPTCHA is verified (for sending code)
+    // or when in verification mode (for confirming code)
+    if (this.loginType === 'phone' && !this.verificationSent && !this.canSubmitPhone) {
+      console.log('Submit blocked - reCAPTCHA not verified');
+      this.error = 'Please complete the reCAPTCHA verification first';
+      return;
+    }
+
+    const result = await this.controller?.submit(this.loginType);
+    console.log('Submit result:', result);
     if (!result) return;
 
     if (!result.success) {
-      if (result.error instanceof z.ZodError) {
-        const errors = {};
-        result.error.errors.forEach(error => {
-          errors[error.path[0]] = error.message;
-        });
-        this.validationErrors = errors;
-      }
+      console.log('Submit error:', result.error);
+      this.handleSubmissionError(result.error);
       return;
     }
 
     if (!result.data.success) {
+      console.log('Auth error:', result.data.error);
       this.error = result.data.error.message;
+      return;
+    }
+
+    if (this.loginType === 'phone' && !this.verificationSent) {
+      console.log('Phone verification code sent');
+      this.verificationSent = true;
+    } else if (this.loginType === 'emailLink') {
+      console.log('Email link sent');
+      this.emailLinkSent = true;
     }
   }
 
-  render() {
-    const isSignIn = this.authMode === 'signIn';
+  // Helper methods
+  private resetErrors() {
+    this.error = null;
+    this.validationErrors = {};
+  }
 
+  private resetState() {
+    this.controller?.reset();
+    this.canSubmitPhone = false;
+    this.verificationSent = false;
+    this.error = null;
+    this.validationErrors = {};
+  }
+
+  private handleSubmissionError(error: any) {
+    if (error instanceof z.ZodError) {
+      const errors = {};
+      error.errors.forEach(err => {
+        errors[err.path[0]] = err.message;
+      });
+      this.validationErrors = errors;
+    }
+  }
+
+  private async handlePasswordReset() {
+    this.resetErrors();
+    const result = await this.controller?.handlePasswordReset();
+    if (!result) return;
+
+    if (!result.success) {
+      this.error = result.error?.message;
+      return;
+    }
+
+    this.error = null;
+    this.successMessage = result.message || 'Password reset email sent successfully';
+  }
+
+  private handleForgotPasswordClick = () => {
+    this.showForgotPassword = true;
+    this.resetErrors();
+    this.forgotPasswordEmail = (this.controller?.state as EmailFormState)?.email || '';
+  };
+
+  private handleBackToLogin = () => {
+    this.showForgotPassword = false;
+    this.resetErrors();
+    this.resetState();
+    this.successMessage = null;
+  };
+
+  private handleForgotPasswordEmailChange = (e: CustomEvent<string>) => {
+    this.forgotPasswordEmail = e.detail;
+    this.controller?.updateEmail(e.detail);
+  };
+
+  private handleForgotPasswordSubmit = async () => {
+    await this.handlePasswordReset();
+  };
+
+  // Render methods
+  private renderEmailForm() {
+    if (this.loginType !== 'email') return null;
+
+    return (
+      <fui-email-form
+        state={this.controller?.state as EmailFormState}
+        validationErrors={this.validationErrors}
+        isSignIn={this.authMode === 'signIn'}
+        onEmailChange={e => this.controller?.updateEmail(e.detail)}
+        onPasswordChange={e => this.controller?.updatePassword(e.detail)}
+        onToggleAuthMode={this.handleAuthModeToggle}
+        onForgotPassword={this.handleForgotPasswordClick}
+      />
+    );
+  }
+
+  private renderPhoneForm() {
+    if (this.loginType !== 'phone') return null;
+
+    return (
+      <fui-phone-form
+        state={this.controller?.state as PhoneFormState}
+        validationErrors={this.validationErrors}
+        verificationSent={this.verificationSent}
+        onPhoneNumberChange={e => this.controller?.updatePhoneNumber(e.detail)}
+        onVerificationCodeChange={e => this.controller?.updateVerificationCode(e.detail)}
+        onRecaptchaVerifierChange={this.handleRecaptchaVerifierChange}
+        onCanSubmit={this.handlePhoneSubmitStateChange}
+        onVerificationSentChange={e => (this.verificationSent = e.detail)}
+        onFormStateChange={e => {
+          this.controller?.updatePhoneNumber(e.detail.phoneNumber);
+          this.controller?.updateVerificationCode(e.detail.verificationCode);
+        }}
+      />
+    );
+  }
+
+  private renderEmailLinkForm() {
+    if (this.loginType !== 'emailLink') return null;
+
+    return (
+      <fui-email-link-form
+        state={this.controller?.state as EmailLinkFormState}
+        validationErrors={this.validationErrors}
+        linkSent={this.emailLinkSent}
+        onEmailChange={e => this.controller?.updateEmail(e.detail)}
+      />
+    );
+  }
+
+  private renderError() {
+    if (!this.error) return null;
+
+    return (
+      <div class="rounded-md bg-red-50 p-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">{this.error}</h3>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  private renderSuccess() {
+    if (!this.successMessage) return null;
+
+    return (
+      <div class="rounded-md bg-green-50 p-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium text-green-800">{this.successMessage}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  private renderForgotPasswordForm() {
+    return (
+      <fui-forgot-password-form
+        email={this.forgotPasswordEmail}
+        error={this.error}
+        successMessage={this.successMessage}
+        onEmailChange={this.handleForgotPasswordEmailChange}
+        onSubmitReset={this.handleForgotPasswordSubmit}
+        onBackToLogin={this.handleBackToLogin}
+      />
+    );
+  }
+
+  private getSubmitButtonText(): string {
+    if (this.loginType === 'phone') {
+      return this.verificationSent ? 'Verify Code' : 'Send Code';
+    }
+    if (this.loginType === 'emailLink') {
+      return this.emailLinkSent ? 'Check your email' : 'Send magic link';
+    }
+    return this.authMode === 'signIn' ? 'Sign In' : 'Sign Up';
+  }
+
+  render() {
     return (
       <Host class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div class="sm:mx-auto sm:w-full sm:max-w-md">
           <div class="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
-            <h2 class="mb-8 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">{isSignIn ? 'Sign in to your account' : 'Create a new account'}</h2>
-            <form {...this.props} onSubmit={e => this.onSubmit(e)} class="space-y-6">
-              <fui-fieldset class="mb-4" inputId="email" label="Email" required={true} error={!!this.validationErrors.email} helpText={this.validationErrors.email}>
-                <fui-input
-                  value={this.controller?.state.email}
-                  onFuiInput={e => this.emailChanged(e)}
-                  error={!!this.validationErrors.email}
-                  inputProps={{
-                    type: 'email',
-                    placeholder: 'Email Address',
-                    required: true,
-                  }}
-                />
-              </fui-fieldset>
-
-              <fui-fieldset inputId="password" label="Password" required={true} error={!!this.validationErrors.password} helpText={this.validationErrors.password}>
-                <fui-input
-                  value={this.controller?.state.password}
-                  onFuiInput={e => this.passwordChanged(e)}
-                  error={!!this.validationErrors.password}
-                  inputProps={{
-                    type: 'password',
-                    placeholder: 'Password',
-                    required: true,
-                  }}
-                />
-              </fui-fieldset>
-
-              {this.error && (
-                <div class="rounded-md bg-red-50 p-4">
-                  <div class="flex">
-                    <div class="flex-shrink-0">
-                      <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path
-                          fill-rule="evenodd"
-                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
-                    </div>
-                    <div class="ml-3">
-                      <h3 class="text-sm font-medium text-red-800">{this.error}</h3>
-                    </div>
-                  </div>
+            {!this.showForgotPassword ? (
+              <form {...this.props} onSubmit={e => this.handleSubmit(e)} class="space-y-6">
+                <h2 class="mb-8 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+                  {this.authMode === 'signIn' ? 'Sign in to your account' : 'Create a new account'}
+                </h2>
+                {this.renderEmailForm()}
+                {this.renderPhoneForm()}
+                {this.renderEmailLinkForm()}
+                {this.renderError()}
+                {this.renderSuccess()}
+                <div class="flex flex-col gap-3">
+                  <fui-button type="submit" fullWidth={true}>
+                    {this.getSubmitButtonText()}
+                  </fui-button>
                 </div>
-              )}
-
-              <div class="flex flex-col gap-3">
-                <fui-button type="submit" fullWidth={true}>
-                  {isSignIn ? 'Sign In' : 'Sign Up'}
-                </fui-button>
-                <button type="button" class="text-sm text-gray-500 hover:text-gray-900 font-medium text-center" onClick={() => this.toggleAuthMode()}>
-                  {isSignIn ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
-                </button>
-              </div>
-            </form>
+              </form>
+            ) : (
+              this.renderForgotPasswordForm()
+            )}
           </div>
         </div>
       </Host>
