@@ -1,5 +1,6 @@
 import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
 import { FuiInputCustomEvent } from '../../components';
+import { FUIConfigStore } from '../../config';
 
 @Component({
   tag: 'fui-forgot-password-form',
@@ -7,6 +8,7 @@ import { FuiInputCustomEvent } from '../../components';
   shadow: false,
 })
 export class FuiForgotPasswordForm {
+  @Prop() config: FUIConfigStore;
   @Prop() email: string = '';
   @Prop() error?: string;
   @Prop() successMessage?: string;

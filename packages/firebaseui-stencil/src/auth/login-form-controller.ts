@@ -1,4 +1,3 @@
-import { createStore, ObservableMap } from '@stencil/store';
 import {
   fuiSignInWithEmailAndPassword,
   fuiCreateUserWithEmailAndPassword,
@@ -8,10 +7,13 @@ import {
   fuiSendSignInLinkToEmail,
   fuiIsSignInWithEmailLink,
   fuiSignInWithEmailLink,
+  fuiSignInAnonymously,
+  fuiUpgradeAnonymousUser,
   type AuthResult,
 } from './auth-service';
 import { z } from 'zod';
 import { RecaptchaVerifier, ConfirmationResult } from 'firebase/auth';
+import { FUIConfigStore } from '../config';
 
 export const LoginTypes = ['email', 'phone', 'anonymous', 'emailLink'] as const;
 export type LoginType = (typeof LoginTypes)[number];
@@ -53,14 +55,16 @@ type LoginResult = {
 };
 
 export class LoginFormController {
-  protected store: ObservableMap<LoginFormState>;
+  protected formState: LoginFormState;
   private authMode: AuthMode = 'signIn';
   private loginType: LoginType = 'email';
   private recaptchaVerifier: RecaptchaVerifier | null = null;
   private confirmationResult: ConfirmationResult | null = null;
+  private config: FUIConfigStore;
 
-  constructor() {
-    this.store = createStore<LoginFormState>(defaultStates.email);
+  constructor(config: FUIConfigStore) {
+    this.formState = defaultStates.email;
+    this.config = config;
   }
 
   public setAuthMode(mode: AuthMode): void {
@@ -85,35 +89,35 @@ export class LoginFormController {
   }
 
   public get state(): LoginFormState {
-    return this.store.state;
+    return this.formState;
   }
 
   private updateState<T extends LoginFormState, K extends keyof T>(key: K, value: T[K]): void {
-    if (key in this.store.state) {
-      (this.store.state as T)[key] = value;
+    if (key in this.formState) {
+      (this.formState as T)[key] = value;
     }
   }
 
   public updateEmail(email: string): void {
-    if (isEmailState(this.store.state)) {
+    if (isEmailState(this.formState)) {
       this.updateState<EmailFormState, 'email'>('email', email);
     }
   }
 
   public updatePassword(password: string): void {
-    if (isEmailState(this.store.state)) {
+    if (isEmailState(this.formState)) {
       this.updateState<EmailFormState, 'password'>('password', password);
     }
   }
 
   public updatePhoneNumber(phoneNumber: string): void {
-    if (isPhoneState(this.store.state)) {
+    if (isPhoneState(this.formState)) {
       this.updateState<PhoneFormState, 'phoneNumber'>('phoneNumber', phoneNumber);
     }
   }
 
   public updateVerificationCode(code: string): void {
-    if (isPhoneState(this.store.state)) {
+    if (isPhoneState(this.formState)) {
       this.updateState<PhoneFormState, 'verificationCode'>('verificationCode', code);
     }
   }
@@ -121,14 +125,14 @@ export class LoginFormController {
   public async submit(loginType: LoginType): Promise<LoginResult> {
     const handlers: Record<LoginType, () => Promise<LoginResult>> = {
       email: async () => {
-        const validation = emailFormSchema.safeParse(this.store.state);
+        const validation = emailFormSchema.safeParse(this.formState);
         if (!validation.success) {
           return { success: false, error: validation.error };
         }
         return { success: true, data: await this.handleEmailLogin() };
       },
       phone: async () => {
-        const validation = phoneFormSchema.safeParse(this.store.state);
+        const validation = phoneFormSchema.safeParse(this.formState);
         if (!validation.success) {
           return { success: false, error: validation.error };
         }
@@ -136,11 +140,11 @@ export class LoginFormController {
       },
       anonymous: async () => ({ success: true, data: await this.handleAnonymousLogin() }),
       emailLink: async () => {
-        const validation = emailLinkFormSchema.safeParse(this.store.state);
+        const validation = emailLinkFormSchema.safeParse(this.formState);
         if (!validation.success) {
           return { success: false, error: validation.error };
         }
-        const state = this.store.state as EmailLinkFormState;
+        const state = this.formState as EmailLinkFormState;
         return { success: true, data: await this.handleEmailLinkSignIn(state.email) };
       },
     };
@@ -154,12 +158,14 @@ export class LoginFormController {
   }
 
   private async handleEmailLogin(): Promise<AuthResult> {
-    const { email, password } = this.store.state as EmailFormState;
-    return this.authMode === 'signIn' ? await fuiSignInWithEmailAndPassword(email, password) : await fuiCreateUserWithEmailAndPassword(email, password);
+    const { email, password } = this.formState as EmailFormState;
+    return this.authMode === 'signIn'
+      ? await fuiSignInWithEmailAndPassword(this.config.state, email, password)
+      : await fuiCreateUserWithEmailAndPassword(this.config.state, email, password);
   }
 
   private async handlePhoneLogin(): Promise<AuthResult> {
-    const { phoneNumber, verificationCode } = this.store.state as PhoneFormState;
+    const { phoneNumber, verificationCode } = this.formState as PhoneFormState;
 
     if (!verificationCode) {
       if (!this.recaptchaVerifier) {
@@ -172,7 +178,7 @@ export class LoginFormController {
         };
       }
 
-      const result = await fuiSignInWithPhoneNumber(phoneNumber, this.recaptchaVerifier);
+      const result = await fuiSignInWithPhoneNumber(this.config.state, phoneNumber, this.recaptchaVerifier);
       if (result.success && result.data) {
         this.confirmationResult = result.data as ConfirmationResult;
       }
@@ -197,27 +203,25 @@ export class LoginFormController {
   }
 
   private async handleAnonymousLogin(): Promise<AuthResult> {
-    return {
-      success: false,
-      error: {
-        code: 'auth/not-implemented',
-        message: 'Anonymous login is not implemented yet',
-      },
-    };
+    return await fuiSignInAnonymously(this.config.state);
+  }
+
+  public async upgradeAnonymousUser(email: string, password: string): Promise<AuthResult> {
+    return await fuiUpgradeAnonymousUser(this.config.state, email, password);
   }
 
   public reset(): void {
-    this.store.state = defaultStates[this.loginType];
+    this.formState = defaultStates[this.loginType];
     this.recaptchaVerifier = null;
     this.confirmationResult = null;
   }
 
   public dispose(): void {
-    this.store.dispose();
+    // No longer needed since we're not using store
   }
 
   public async handlePasswordReset(): Promise<AuthResult> {
-    if (!isEmailState(this.store.state)) {
+    if (!isEmailState(this.formState)) {
       return {
         success: false,
         error: {
@@ -226,18 +230,18 @@ export class LoginFormController {
         },
       };
     }
-    return await fuiSendPasswordResetEmail(this.store.state.email);
+    return await fuiSendPasswordResetEmail(this.config.state, this.formState.email);
   }
 
   public async handleEmailLinkSignIn(email: string): Promise<AuthResult> {
-    return await fuiSendSignInLinkToEmail(email);
+    return await fuiSendSignInLinkToEmail(this.config.state, email);
   }
 
   public async completeEmailLinkSignIn(email: string, link: string): Promise<AuthResult> {
-    return await fuiSignInWithEmailLink(email, link);
+    return await fuiSignInWithEmailLink(this.config.state, email, link);
   }
 
   public isEmailLinkSignIn(link: string): boolean {
-    return fuiIsSignInWithEmailLink(link);
+    return fuiIsSignInWithEmailLink(this.config.state, link);
   }
 }

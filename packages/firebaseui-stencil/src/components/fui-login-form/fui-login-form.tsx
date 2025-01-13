@@ -1,8 +1,9 @@
 import { Component, Host, Method, Prop, State, h, Element, Watch } from '@stencil/core';
-import { LoginFormController, type AuthMode, type LoginType, type EmailFormState, type PhoneFormState, type EmailLinkFormState } from '../../auth/login-form-controller';
+import { LoginFormController, type AuthMode, type LoginType, type EmailFormState, type PhoneFormState } from '../../auth/login-form-controller';
 import { z } from 'zod';
 import { RecaptchaVerifier } from 'firebase/auth';
 import '../../styles/global.css';
+import { FUIConfigStore } from '../../config';
 
 @Component({
   tag: 'fui-login-form',
@@ -10,7 +11,8 @@ import '../../styles/global.css';
 })
 export class FuiLoginForm {
   @Element() el: HTMLElement;
-  @Prop() props: { [key: string]: any };
+  @Prop() formFroms: { [key: string]: any };
+  @Prop() config: FUIConfigStore;
   @Prop() loginType: LoginType = 'email';
 
   @State() error: string | null = null;
@@ -21,41 +23,16 @@ export class FuiLoginForm {
   @State() successMessage: string | null = null;
   @State() showForgotPassword: boolean = false;
   @State() forgotPasswordEmail: string = '';
-  @State() emailLinkSent: boolean = false;
 
   private controller: LoginFormController | null = null;
 
   // Lifecycle methods
   connectedCallback() {
     console.log('Connecting login form', this.controller);
-    this.controller = new LoginFormController();
+    this.controller = new LoginFormController(this.config);
     this.controller.setLoginType(this.loginType);
     this.controller.reset();
     console.log('Login form controller set', this.controller);
-    this.checkEmailLink();
-  }
-
-  private async checkEmailLink() {
-    if (this.controller?.isEmailLinkSignIn(window.location.href)) {
-      let email = window.localStorage.getItem('emailForSignIn');
-      if (!email) {
-        email = window.prompt('Please provide your email for confirmation:');
-      }
-      if (email) {
-        try {
-          const result = await this.controller.completeEmailLinkSignIn(email, window.location.href);
-          if (result.success) {
-            window.localStorage.removeItem('emailForSignIn');
-            window.history.replaceState(null, '', window.location.pathname);
-          } else {
-            this.error = result.error?.message || 'Error completing sign in';
-          }
-        } catch (error) {
-          console.error('Error completing sign in with email link:', error);
-          this.error = 'Error completing sign in';
-        }
-      }
-    }
   }
 
   disconnectedCallback() {
@@ -147,9 +124,6 @@ export class FuiLoginForm {
     if (this.loginType === 'phone' && !this.verificationSent) {
       console.log('Phone verification code sent');
       this.verificationSent = true;
-    } else if (this.loginType === 'emailLink') {
-      console.log('Email link sent');
-      this.emailLinkSent = true;
     }
   }
 
@@ -219,6 +193,7 @@ export class FuiLoginForm {
 
     return (
       <fui-email-form
+        config={this.config}
         state={this.controller?.state as EmailFormState}
         validationErrors={this.validationErrors}
         isSignIn={this.authMode === 'signIn'}
@@ -235,6 +210,7 @@ export class FuiLoginForm {
 
     return (
       <fui-phone-form
+        config={this.config}
         state={this.controller?.state as PhoneFormState}
         validationErrors={this.validationErrors}
         verificationSent={this.verificationSent}
@@ -247,19 +223,6 @@ export class FuiLoginForm {
           this.controller?.updatePhoneNumber(e.detail.phoneNumber);
           this.controller?.updateVerificationCode(e.detail.verificationCode);
         }}
-      />
-    );
-  }
-
-  private renderEmailLinkForm() {
-    if (this.loginType !== 'emailLink') return null;
-
-    return (
-      <fui-email-link-form
-        state={this.controller?.state as EmailLinkFormState}
-        validationErrors={this.validationErrors}
-        linkSent={this.emailLinkSent}
-        onEmailChange={e => this.controller?.updateEmail(e.detail)}
       />
     );
   }
@@ -313,6 +276,7 @@ export class FuiLoginForm {
   private renderForgotPasswordForm() {
     return (
       <fui-forgot-password-form
+        config={this.config}
         email={this.forgotPasswordEmail}
         error={this.error}
         successMessage={this.successMessage}
@@ -327,9 +291,6 @@ export class FuiLoginForm {
     if (this.loginType === 'phone') {
       return this.verificationSent ? 'Verify Code' : 'Send Code';
     }
-    if (this.loginType === 'emailLink') {
-      return this.emailLinkSent ? 'Check your email' : 'Send magic link';
-    }
     return this.authMode === 'signIn' ? 'Sign In' : 'Sign Up';
   }
 
@@ -339,13 +300,12 @@ export class FuiLoginForm {
         <div class="sm:mx-auto sm:w-full sm:max-w-md">
           <div class="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
             {!this.showForgotPassword ? (
-              <form {...this.props} onSubmit={e => this.handleSubmit(e)} class="space-y-6">
+              <form {...this.formFroms} onSubmit={e => this.handleSubmit(e)} class="space-y-6">
                 <h2 class="mb-8 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
                   {this.authMode === 'signIn' ? 'Sign in to your account' : 'Create a new account'}
                 </h2>
                 {this.renderEmailForm()}
                 {this.renderPhoneForm()}
-                {this.renderEmailLinkForm()}
                 {this.renderError()}
                 {this.renderSuccess()}
                 <div class="flex flex-col gap-3">

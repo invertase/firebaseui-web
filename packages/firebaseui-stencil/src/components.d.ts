@@ -5,8 +5,10 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { FUIConfigStore } from "./config";
 import { EmailFormState, EmailLinkFormState, LoginType, PhoneFormState } from "./auth/login-form-controller";
 import { RecaptchaVerifier } from "firebase/auth";
+export { FUIConfigStore } from "./config";
 export { EmailFormState, EmailLinkFormState, LoginType, PhoneFormState } from "./auth/login-form-controller";
 export { RecaptchaVerifier } from "firebase/auth";
 export namespace Components {
@@ -15,6 +17,7 @@ export namespace Components {
         "type": string;
     }
     interface FuiEmailForm {
+        "config": FUIConfigStore;
         "isSignIn": boolean;
         "state": EmailFormState;
         "validationErrors": { email?: string; password?: string };
@@ -34,6 +37,7 @@ export namespace Components {
         "required"?: boolean;
     }
     interface FuiForgotPasswordForm {
+        "config": FUIConfigStore;
         "email": string;
         "error"?: string;
         "successMessage"?: string;
@@ -45,11 +49,13 @@ export namespace Components {
         "value": string;
     }
     interface FuiLoginForm {
+        "config": FUIConfigStore;
+        "formFroms": { [key: string]: any };
         "loginType": LoginType;
-        "props": { [key: string]: any };
         "submit": () => Promise<void>;
     }
     interface FuiPhoneForm {
+        "config": FUIConfigStore;
         "state": PhoneFormState;
         "validationErrors": { phoneNumber?: string; verificationCode?: string };
         "verificationSent": boolean;
@@ -225,6 +231,7 @@ declare namespace LocalJSX {
         "type"?: string;
     }
     interface FuiEmailForm {
+        "config"?: FUIConfigStore;
         "isSignIn"?: boolean;
         "onEmailChange"?: (event: FuiEmailFormCustomEvent<string>) => void;
         "onForgotPassword"?: (event: FuiEmailFormCustomEvent<void>) => void;
@@ -249,6 +256,7 @@ declare namespace LocalJSX {
         "required"?: boolean;
     }
     interface FuiForgotPasswordForm {
+        "config"?: FUIConfigStore;
         "email"?: string;
         "error"?: string;
         "onBackToLogin"?: (event: FuiForgotPasswordFormCustomEvent<void>) => void;
@@ -266,10 +274,12 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     interface FuiLoginForm {
+        "config"?: FUIConfigStore;
+        "formFroms"?: { [key: string]: any };
         "loginType"?: LoginType;
-        "props"?: { [key: string]: any };
     }
     interface FuiPhoneForm {
+        "config"?: FUIConfigStore;
         "onCanSubmit"?: (event: FuiPhoneFormCustomEvent<boolean>) => void;
         "onFormStateChange"?: (event: FuiPhoneFormCustomEvent<PhoneFormState>) => void;
         "onPhoneNumberChange"?: (event: FuiPhoneFormCustomEvent<string>) => void;

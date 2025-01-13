@@ -3,7 +3,7 @@ import { FuiInputCustomEvent } from '../../components';
 import { PhoneFormState } from '../../auth/login-form-controller';
 import { RecaptchaVerifier } from 'firebase/auth';
 import { getAuth } from 'firebase/auth';
-import { globalConfig } from '../../config';
+import { FUIConfigStore } from '../../config';
 
 @Component({
   tag: 'fui-phone-form',
@@ -11,6 +11,7 @@ import { globalConfig } from '../../config';
 })
 export class FuiPhoneForm {
   @Element() el: HTMLElement;
+  @Prop() config: FUIConfigStore;
   @Prop() state: PhoneFormState;
   @Prop() validationErrors: { phoneNumber?: string; verificationCode?: string } = {};
   @Prop() verificationSent: boolean = false;
@@ -80,7 +81,7 @@ export class FuiPhoneForm {
       this.clearRecaptcha();
       if (!this.recaptchaContainer) return;
 
-      const auth = getAuth(globalConfig.state.app);
+      const auth = getAuth(this.config.state.app);
       this.recaptchaVerifier = new RecaptchaVerifier(auth, this.recaptchaContainer, {
         'size': 'normal',
         'callback': this.handleRecaptchaSuccess,

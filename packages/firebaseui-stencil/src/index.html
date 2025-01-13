@@ -86,7 +86,10 @@
       window.confirmationResult = null;
       auth.settings.appVerificationDisabledForTesting = true;
 
-      initializeFirebaseUI({ app });
+      const config = initializeFirebaseUI({ app, enableAutoAnonymousLogin: true });
+
+      const fuiForm = document.querySelector('fui-login-form');
+      fuiForm.config = config;
 
       const authContainer = document.getElementById('auth-container');
       const loginTypeSelect = document.getElementById('loginType');

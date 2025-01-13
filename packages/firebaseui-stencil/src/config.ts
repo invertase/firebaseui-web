@@ -1,18 +1,26 @@
-import { createStore } from '@stencil/store';
+import { createStore, ObservableMap } from '@stencil/store';
 import { FirebaseApp } from 'firebase/app';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { fuiSignInAnonymously } from './auth/auth-service';
 
-export interface GlobalConfig {
-  app: FirebaseApp | null;
+export interface FUIConfig {
+  app: FirebaseApp;
+  enableAutoAnonymousLogin: boolean;
 }
 
-export function isInitialized() {
-  return globalConfig.state.app !== null;
-}
+export type FUIConfigStore = ObservableMap<FUIConfig>;
 
-export function initializeFirebaseUI(config: GlobalConfig) {
-  globalConfig.state = config;
-}
+export function initializeFirebaseUI(config: FUIConfig): ObservableMap<FUIConfig> {
+  const store = createStore<FUIConfig>(config);
 
-export const globalConfig = createStore<GlobalConfig>({
-  app: null,
-});
+  if (config.enableAutoAnonymousLogin) {
+    const auth = getAuth(config.app);
+    onAuthStateChanged(auth, async user => {
+      if (!user) {
+        await fuiSignInAnonymously(config);
+      }
+    });
+  }
+
+  return store;
+}
