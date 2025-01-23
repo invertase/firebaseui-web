@@ -1,5 +1,5 @@
 {
-  "name": "firebaseui-core",
+  "name": "@firebase-ui/core",
   "version": "0.1.0",
   "description": "Core authentication service for Firebase UI",
   "type": "module",
@@ -29,20 +29,19 @@
     "authentication",
     "firebaseui"
   ],
-  "author": "Invertase",
+  "author": "TODO",
   "license": "MIT",
   "peerDependencies": {
-    "firebase": "^10.0.0"
+    "firebase": "^11"
   },
   "dependencies": {
-    "nanostores": "^0.9.5",
-    "zod": "^3.22.4"
+    "nanostores": "^0.11.3",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "typescript": "^5.7.3",
     "tsup": "^8.0.1",
     "prettier": "^3.1.1",
-    "@types/node": "^20.10.5",
     "rimraf": "^6.0.1"
   }
 }

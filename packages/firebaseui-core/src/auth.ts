@@ -15,9 +15,12 @@ import {
   GoogleAuthProvider,
   signInWithRedirect,
   Auth,
+  UserCredential,
+  AuthError,
 } from 'firebase/auth';
 import type { AuthResult } from './types';
 import { ERROR_CODE_MAP, getTranslation, type TranslationsConfig } from './translations';
+import { FirebaseError } from 'firebase/app';
 
 function handleFirebaseError(error: any, translations?: TranslationsConfig): AuthResult {
   if (error?.name === 'FirebaseError') {
@@ -40,24 +43,48 @@ function handleFirebaseError(error: any, translations?: TranslationsConfig): Aut
   };
 }
 
+export class FirebaseUIError extends Error {
+  code: string;
+
+  constructor(code: string, message: string) {
+    super(message);
+    this.name = 'FirebaseUIError';
+    this.code = code;
+    this.message = message;
+  }
+
+  toJSON() {
+    return {
+      code: this.code,
+      message: this.message
+    };
+  }
+}
+
+
 export async function fuiSignInWithEmailAndPassword(
   auth: Auth,
   email: string,
   password: string,
   translations?: TranslationsConfig
-): Promise<AuthResult> {
+): Promise<UserCredential> {
   try {
     const currentUser = auth.currentUser;
     const credential = EmailAuthProvider.credential(email, password);
 
     if (currentUser?.isAnonymous) {
-      return { success: true, data: await linkWithCredential(currentUser, credential) };
+      return await linkWithCredential(currentUser, credential);
     }
 
-    return { success: true, data: await signInWithCredential(auth, credential) };
+    return await signInWithCredential(auth, credential);
   } catch (error) {
-    return handleFirebaseError(error, translations);
+    if (error instanceof FirebaseError) {
+      throw new FirebaseUIError(error.code, 'find the translation based on the code');
+    }
+
+    throw error;
   }
+    
 }
 
 export async function fuiCreateUserWithEmailAndPassword(

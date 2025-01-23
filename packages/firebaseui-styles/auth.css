@@ -1,0 +1,10 @@
+.fui-sign-in-container {
+  @apply bg-gray-100 text-foo;
+}
+
+.fui {
+  &-sign-in-container {
+    @apply bg-gray-100 text-foo;
+  }
+}
+

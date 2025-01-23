@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import type { UserCredential, ConfirmationResult } from 'firebase/auth';
-import type { EmailFormStore } from './email-form-store';
+// import type { EmailFormStore } from './email-form-store';
 import type { PhoneFormStore } from './phone-form-store';
 import type { EmailLinkFormStore } from './email-link-form-store';
 
@@ -11,7 +11,7 @@ export type AuthMode = 'signIn' | 'signUp';
 export const emailFormSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  authMode: z.enum(['signIn', 'signUp']),
+  // authMode: z.enum(['signIn', 'signUp']),
 });
 
 export const emailLinkFormSchema = z.object({
@@ -23,7 +23,7 @@ export const phoneFormSchema = z.object({
   verificationCode: z.string().optional(),
 });
 
-export type EmailFormState = z.infer<typeof emailFormSchema>;
+export type EmailFormSchema = z.input<typeof emailFormSchema>;
 export type PhoneFormState = z.infer<typeof phoneFormSchema>;
 export type EmailLinkFormState = z.infer<typeof emailLinkFormSchema>;
 
@@ -39,4 +39,4 @@ export interface BaseFormState {
   error: string | null;
 }
 
-export type FormStoreType = EmailFormStore | PhoneFormStore | EmailLinkFormStore;
+export type FormStoreType = EmailFormSchema | PhoneFormStore | EmailLinkFormStore;

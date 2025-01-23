@@ -1,13 +1,7 @@
 {
-  "name": "firebaseui-root",
+  "name": "@firebaseui/root",
   "private": true,
   "scripts": {
-    "clean:stencil": "rimraf packages/firebaseui-stencil/dist packages/firebaseui-stencil/hydrate packages/firebaseui-stencil/loader packages/firebaseui-stencil/www",
-    "clean:react": "rimraf packages/firebaseui-react/lib/components/stencil-generated packages/firebaseui-react/dist",
-    "clean": "pnpm clean:stencil && pnpm clean:react",
-    "build:stencil": "pnpm --filter firebaseui-stencil build",
-    "build:react": "pnpm --filter firebaseui-react build",
-    "build": "pnpm clean && pnpm build:stencil && pnpm build:react"
   },
   "devDependencies": {
     "rimraf": "^6.0.1",

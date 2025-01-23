@@ -1,0 +1,6 @@
+@theme {
+  --color-foo: oklch(0.72 0.11 178);
+}
+
+@import "./auth.css";
+
