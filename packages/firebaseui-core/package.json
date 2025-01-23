@@ -17,11 +17,11 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
-    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "lint": "tsc",
     "format": "prettier --write \"src/**/*.ts\"",
-    "clean": "rm -rf dist"
+    "clean": "rimraf dist"
   },
   "keywords": [
     "firebase",
@@ -38,6 +38,7 @@
     "typescript": "^5.3.3",
     "tsup": "^8.0.1",
     "prettier": "^3.1.1",
-    "@types/node": "^20.10.5"
+    "@types/node": "^20.10.5",
+    "rimraf": "^6.0.1"
   }
 }
