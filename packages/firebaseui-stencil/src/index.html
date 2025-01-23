@@ -37,6 +37,14 @@
       .logout-button:hover {
         background-color: #e6a900;
       }
+
+      .anonymous-view {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
     </style>
   </head>
   <body class="bg-gray-50">
@@ -51,6 +59,7 @@
           <option value="email">Email & Password</option>
           <option value="phone">Phone Number</option>
           <option value="emailLink">Magic Link</option>
+          <option value="google">Google</option>
         </select>
         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
           <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -64,23 +73,25 @@
     </div>
 
     <script type="module" defer>
-      import { initializeFirebaseUI, globalConfig } from '/build/index.esm.js';
+      import { initializeFirebaseUI } from '/build/index.esm.js';
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js';
       import { getAuth, connectAuthEmulator, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js';
 
-      const app = initializeApp({
-        apiKey: 'AIzaSyDkyfavblrRNMP0TbJMwTIPSlsCtBHlFNg',
+      const firebaseConfig = {
+        apiKey: 'AIzaSyAotbJXqnZxg9aAsULFn8MLwp_twtMUl2k',
         authDomain: 'ff-test-74aeb.firebaseapp.com',
         databaseURL: 'https://ff-test-74aeb-default-rtdb.asia-southeast1.firebasedatabase.app',
         projectId: 'ff-test-74aeb',
         storageBucket: 'ff-test-74aeb.appspot.com',
         messagingSenderId: '950537677105',
-        appId: '1:950537677105:web:dafb21b3f1e973c2cde810',
-        measurementId: 'G-B2FBR1163R',
-      });
+        appId: '1:950537677105:web:da72ccc1718279f3cde810',
+        measurementId: 'G-B5Y2YD83TJ',
+      };
+
+      const app = initializeApp(firebaseConfig);
 
       const auth = getAuth(app);
-      // connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+      // connectAuthEmulator(auth, 'http://localhost:9099');
 
       // Set up test mode for phone auth in emulator
       window.confirmationResult = null;
@@ -106,16 +117,68 @@
       onAuthStateChanged(auth, user => {
         if (user) {
           const displayIdentifier = user.email || user.phoneNumber || 'Anonymous User';
-          authContainer.innerHTML = `
-            <div class="logged-in-view">
-              <div class="user-email">Signed in as: ${displayIdentifier}</div>
-              <button class="logout-button" onclick="handleLogout()">Sign Out</button>
-            </div>
-          `;
-          loginTypeSelect.style.display = 'none';
+
+          // Clear existing content
+          while (authContainer.firstChild) {
+            authContainer.removeChild(authContainer.firstChild);
+          }
+
+          if (user.isAnonymous) {
+            // Create and configure login form
+            const loginForm = document.createElement('fui-login-form');
+            loginForm.loginType = currentLoginType;
+            loginForm.config = config;
+            authContainer.appendChild(loginForm);
+
+            // Create anonymous view container
+            const anonymousView = document.createElement('div');
+            anonymousView.className = 'anonymous-view';
+
+            // Create user email display
+            const userEmail = document.createElement('div');
+            userEmail.className = 'user-email';
+            userEmail.textContent = 'Signed in as: Anonymous User';
+            anonymousView.appendChild(userEmail);
+
+            // Create logout button
+            const logoutButton = document.createElement('button');
+            logoutButton.className = 'logout-button';
+            logoutButton.textContent = 'Sign Out';
+            logoutButton.onclick = handleLogout;
+            anonymousView.appendChild(logoutButton);
+
+            authContainer.appendChild(anonymousView);
+          } else {
+            // Create logged in view container
+            const loggedInView = document.createElement('div');
+            loggedInView.className = 'logged-in-view';
+
+            // Create user email display
+            const userEmail = document.createElement('div');
+            userEmail.className = 'user-email';
+            userEmail.textContent = `Signed in as: ${displayIdentifier}`;
+            loggedInView.appendChild(userEmail);
+
+            // Create logout button
+            const logoutButton = document.createElement('button');
+            logoutButton.className = 'logout-button';
+            logoutButton.textContent = 'Sign Out';
+            logoutButton.onclick = handleLogout;
+            loggedInView.appendChild(logoutButton);
+
+            authContainer.appendChild(loggedInView);
+          }
         } else {
-          authContainer.innerHTML = `<fui-login-form login-type="${currentLoginType}"></fui-login-form>`;
-          loginTypeSelect.style.display = 'block';
+          // Clear existing content
+          while (authContainer.firstChild) {
+            authContainer.removeChild(authContainer.firstChild);
+          }
+
+          // Create and configure login form
+          const loginForm = document.createElement('fui-login-form');
+          loginForm.loginType = currentLoginType;
+          loginForm.config = config;
+          authContainer.appendChild(loginForm);
         }
       });
 
@@ -126,6 +189,9 @@
           console.error('Error signing out:', error);
         }
       };
+
+      window.toggleLoginType('google');
+      document.querySelector('select').value = 'google';
     </script>
   </body>
 </html>

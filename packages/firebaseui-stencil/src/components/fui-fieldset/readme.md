@@ -23,6 +23,7 @@
 ### Used by
 
  - [fui-email-form](../fui-email-form)
+ - [fui-email-link-form](../fui-email-link-form)
  - [fui-forgot-password-form](../fui-forgot-password-form)
  - [fui-phone-form](../fui-phone-form)
 
@@ -30,6 +31,7 @@
 ```mermaid
 graph TD;
   fui-email-form --> fui-fieldset
+  fui-email-link-form --> fui-fieldset
   fui-forgot-password-form --> fui-fieldset
   fui-phone-form --> fui-fieldset
   style fui-fieldset fill:#f9f,stroke:#333,stroke-width:4px

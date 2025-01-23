@@ -10,12 +10,14 @@ import {
   fuiSignInAnonymously,
   fuiUpgradeAnonymousUser,
   type AuthResult,
+  fuiSignInWithGoogle,
+  fuiGetRedirectResult,
 } from './auth-service';
 import { z } from 'zod';
 import { RecaptchaVerifier, ConfirmationResult } from 'firebase/auth';
 import { FUIConfigStore } from '../config';
 
-export const LoginTypes = ['email', 'phone', 'anonymous', 'emailLink'] as const;
+export const LoginTypes = ['email', 'phone', 'anonymous', 'emailLink', 'google'] as const;
 export type LoginType = (typeof LoginTypes)[number];
 export type AuthMode = 'signIn' | 'signUp';
 
@@ -36,13 +38,14 @@ const phoneFormSchema = z.object({
 export type EmailFormState = z.infer<typeof emailFormSchema>;
 export type PhoneFormState = z.infer<typeof phoneFormSchema>;
 export type EmailLinkFormState = z.infer<typeof emailLinkFormSchema>;
-export type LoginFormState = EmailFormState | PhoneFormState | EmailLinkFormState;
+export type LoginFormState = EmailFormState | PhoneFormState | EmailLinkFormState | null;
 
 const defaultStates: Record<LoginType, LoginFormState> = {
   email: { email: '', password: '' },
   phone: { phoneNumber: '', verificationCode: '' },
   anonymous: { email: '', password: '' },
   emailLink: { email: '' },
+  google: null,
 };
 
 const isEmailState = (state: LoginFormState): state is EmailFormState => 'email' in state;
@@ -147,6 +150,9 @@ export class LoginFormController {
         const state = this.formState as EmailLinkFormState;
         return { success: true, data: await this.handleEmailLinkSignIn(state.email) };
       },
+      google: async () => {
+        return { success: true, data: await this.handleGoogleSignIn() };
+      },
     };
 
     const handler = handlers[loginType];
@@ -210,10 +216,18 @@ export class LoginFormController {
     return await fuiUpgradeAnonymousUser(this.config.state, email, password);
   }
 
+  private async handleGoogleSignIn(): Promise<AuthResult> {
+    return await fuiSignInWithGoogle(this.config.state);
+  }
+
   public reset(): void {
     this.formState = defaultStates[this.loginType];
     this.recaptchaVerifier = null;
     this.confirmationResult = null;
+  }
+
+  public async handleRedirectResult(): Promise<LoginResult> {
+    return { success: true, data: await fuiGetRedirectResult(this.config.state) };
   }
 
   public dispose(): void {
@@ -242,6 +256,9 @@ export class LoginFormController {
   }
 
   public isEmailLinkSignIn(link: string): boolean {
+    if (!this.config) {
+      return false;
+    }
     return fuiIsSignInWithEmailLink(this.config.state, link);
   }
 }

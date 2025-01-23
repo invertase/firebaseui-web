@@ -1,5 +1,5 @@
 import { Component, Host, Method, Prop, State, h, Element, Watch } from '@stencil/core';
-import { LoginFormController, type AuthMode, type LoginType, type EmailFormState, type PhoneFormState } from '../../auth/login-form-controller';
+import { LoginFormController, type AuthMode, type LoginType, type EmailFormState, type PhoneFormState, type EmailLinkFormState } from '../../auth/login-form-controller';
 import { z } from 'zod';
 import { RecaptchaVerifier } from 'firebase/auth';
 import '../../styles/global.css';
@@ -23,6 +23,7 @@ export class FuiLoginForm {
   @State() successMessage: string | null = null;
   @State() showForgotPassword: boolean = false;
   @State() forgotPasswordEmail: string = '';
+  @State() emailLinkSent: boolean = false;
 
   private controller: LoginFormController | null = null;
 
@@ -33,6 +34,8 @@ export class FuiLoginForm {
     this.controller.setLoginType(this.loginType);
     this.controller.reset();
     console.log('Login form controller set', this.controller);
+    this.checkEmailLink();
+    this.checkRedirectResult();
   }
 
   disconnectedCallback() {
@@ -124,6 +127,10 @@ export class FuiLoginForm {
     if (this.loginType === 'phone' && !this.verificationSent) {
       console.log('Phone verification code sent');
       this.verificationSent = true;
+    } else if (this.loginType === 'emailLink' && !this.emailLinkSent) {
+      console.log('Email link sent');
+      this.emailLinkSent = true;
+      this.successMessage = result.data.message || 'Sign-in link sent successfully. Please check your email.';
     }
   }
 
@@ -187,7 +194,6 @@ export class FuiLoginForm {
     await this.handlePasswordReset();
   };
 
-  // Render methods
   private renderEmailForm() {
     if (this.loginType !== 'email') return null;
 
@@ -222,6 +228,36 @@ export class FuiLoginForm {
         onFormStateChange={e => {
           this.controller?.updatePhoneNumber(e.detail.phoneNumber);
           this.controller?.updateVerificationCode(e.detail.verificationCode);
+        }}
+      />
+    );
+  }
+
+  private renderEmailLinkForm() {
+    if (this.loginType !== 'emailLink') return null;
+
+    return (
+      <fui-email-link-form
+        config={this.config}
+        state={this.controller?.state as EmailLinkFormState}
+        validationErrors={this.validationErrors}
+        linkSent={this.emailLinkSent}
+        onEmailChange={e => this.controller?.updateEmail(e.detail)}
+      />
+    );
+  }
+
+  private renderGoogleSignIn() {
+    if (this.loginType !== 'google') return null;
+
+    return (
+      <fui-google-sign-in
+        onSignedIn={async () => {
+          this.resetErrors();
+          const result = await this.controller?.submit('google');
+          if (!result?.success || !result.data?.success) {
+            this.error = result?.data?.error?.message || 'Failed to sign in with Google. Please try again.';
+          }
         }}
       />
     );
@@ -291,7 +327,48 @@ export class FuiLoginForm {
     if (this.loginType === 'phone') {
       return this.verificationSent ? 'Verify Code' : 'Send Code';
     }
+    if (this.loginType === 'emailLink') {
+      return this.emailLinkSent ? 'Check your email' : 'Send sign-in link';
+    }
     return this.authMode === 'signIn' ? 'Sign In' : 'Sign Up';
+  }
+
+  private async checkEmailLink() {
+    if (!this.controller) return;
+
+    const currentUrl = window.location.href;
+    if (this.controller.isEmailLinkSignIn(currentUrl)) {
+      console.log('Email link sign-in detected');
+      const email = window.localStorage.getItem('emailForSignIn');
+      if (!email) {
+        this.error = 'No email found for sign-in. Please try again.';
+        return;
+      }
+
+      this.controller.updateEmail(email);
+      const result = await this.controller.submit('emailLink');
+      if (!result?.success || !result.data.success) {
+        this.error = result?.data?.error?.message || 'Failed to sign in with email link. Please try again.';
+        return;
+      }
+
+      window.localStorage.removeItem('emailForSignIn');
+      this.successMessage = 'Successfully signed in with email link!';
+    }
+  }
+
+  private async checkRedirectResult() {
+    if (!this.controller) return;
+
+    const result = await this.controller.handleRedirectResult();
+    if (!result?.success) {
+      this.error = result?.data?.error?.message || 'Failed to complete sign in. Please try again.';
+      return;
+    }
+
+    if (result.data?.data) {
+      this.successMessage = 'Successfully signed in!';
+    }
   }
 
   render() {
@@ -306,13 +383,17 @@ export class FuiLoginForm {
                 </h2>
                 {this.renderEmailForm()}
                 {this.renderPhoneForm()}
+                {this.renderEmailLinkForm()}
+                {this.renderGoogleSignIn()}
                 {this.renderError()}
                 {this.renderSuccess()}
-                <div class="flex flex-col gap-3">
-                  <fui-button type="submit" fullWidth={true}>
-                    {this.getSubmitButtonText()}
-                  </fui-button>
-                </div>
+                {this.loginType !== 'google' && (
+                  <div class="flex flex-col gap-3">
+                    <fui-button type="submit" fullWidth={true}>
+                      {this.getSubmitButtonText()}
+                    </fui-button>
+                  </div>
+                )}
               </form>
             ) : (
               this.renderForgotPasswordForm()

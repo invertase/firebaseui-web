@@ -9,6 +9,7 @@
 
 | Property           | Attribute           | Description | Type                                                   | Default     |
 | ------------------ | ------------------- | ----------- | ------------------------------------------------------ | ----------- |
+| `config`           | --                  |             | `ObservableMap<FUIConfig>`                             | `undefined` |
 | `state`            | --                  |             | `{ phoneNumber?: string; verificationCode?: string; }` | `undefined` |
 | `validationErrors` | --                  |             | `{ phoneNumber?: string; verificationCode?: string; }` | `{}`        |
 | `verificationSent` | `verification-sent` |             | `boolean`                                              | `false`     |
@@ -16,13 +17,15 @@
 
 ## Events
 
-| Event                     | Description | Type                             |
-| ------------------------- | ----------- | -------------------------------- |
-| `canSubmit`               |             | `CustomEvent<boolean>`           |
-| `phoneNumberChange`       |             | `CustomEvent<string>`            |
-| `recaptchaVerified`       |             | `CustomEvent<void>`              |
-| `recaptchaVerifierChange` |             | `CustomEvent<RecaptchaVerifier>` |
-| `verificationCodeChange`  |             | `CustomEvent<string>`            |
+| Event                     | Description | Type                                                                |
+| ------------------------- | ----------- | ------------------------------------------------------------------- |
+| `canSubmit`               |             | `CustomEvent<boolean>`                                              |
+| `formStateChange`         |             | `CustomEvent<{ phoneNumber?: string; verificationCode?: string; }>` |
+| `phoneNumberChange`       |             | `CustomEvent<string>`                                               |
+| `recaptchaVerified`       |             | `CustomEvent<void>`                                                 |
+| `recaptchaVerifierChange` |             | `CustomEvent<RecaptchaVerifier>`                                    |
+| `verificationCodeChange`  |             | `CustomEvent<string>`                                               |
+| `verificationSentChange`  |             | `CustomEvent<boolean>`                                              |
 
 
 ## Dependencies

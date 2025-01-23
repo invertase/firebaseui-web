@@ -1,12 +1,14 @@
 import { Component, h, Prop, Event, EventEmitter } from '@stencil/core';
 import { FuiInputCustomEvent } from '../../components';
 import { EmailLinkFormState } from '../../auth/login-form-controller';
+import { FUIConfigStore } from '../../config';
 
 @Component({
   tag: 'fui-email-link-form',
   styleUrl: 'fui-email-link-form.css',
 })
 export class FuiEmailLinkForm {
+  @Prop() config: FUIConfigStore;
   @Prop() state: EmailLinkFormState;
   @Prop() validationErrors: { email?: string } = {};
   @Prop() linkSent: boolean = false;

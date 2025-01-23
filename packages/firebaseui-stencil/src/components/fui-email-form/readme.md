@@ -9,6 +9,7 @@
 
 | Property           | Attribute    | Description | Type                                     | Default     |
 | ------------------ | ------------ | ----------- | ---------------------------------------- | ----------- |
+| `config`           | --           |             | `ObservableMap<FUIConfig>`               | `undefined` |
 | `isSignIn`         | `is-sign-in` |             | `boolean`                                | `true`      |
 | `state`            | --           |             | `{ email?: string; password?: string; }` | `undefined` |
 | `validationErrors` | --           |             | `{ email?: string; password?: string; }` | `{}`        |

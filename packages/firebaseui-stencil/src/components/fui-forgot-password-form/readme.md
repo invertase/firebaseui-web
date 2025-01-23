@@ -7,11 +7,12 @@
 
 ## Properties
 
-| Property         | Attribute         | Description | Type     | Default     |
-| ---------------- | ----------------- | ----------- | -------- | ----------- |
-| `email`          | `email`           |             | `string` | `''`        |
-| `error`          | `error`           |             | `string` | `undefined` |
-| `successMessage` | `success-message` |             | `string` | `undefined` |
+| Property         | Attribute         | Description | Type                       | Default     |
+| ---------------- | ----------------- | ----------- | -------------------------- | ----------- |
+| `config`         | --                |             | `ObservableMap<FUIConfig>` | `undefined` |
+| `email`          | `email`           |             | `string`                   | `''`        |
+| `error`          | `error`           |             | `string`                   | `undefined` |
+| `successMessage` | `success-message` |             | `string`                   | `undefined` |
 
 
 ## Events

@@ -23,6 +23,7 @@ export namespace Components {
         "validationErrors": { email?: string; password?: string };
     }
     interface FuiEmailLinkForm {
+        "config": FUIConfigStore;
         "linkSent": boolean;
         "state": EmailLinkFormState;
         "validationErrors": { email?: string };
@@ -41,6 +42,8 @@ export namespace Components {
         "email": string;
         "error"?: string;
         "successMessage"?: string;
+    }
+    interface FuiGoogleSignIn {
     }
     interface FuiInput {
         "error"?: boolean;
@@ -76,6 +79,10 @@ export interface FuiEmailLinkFormCustomEvent<T> extends CustomEvent<T> {
 export interface FuiForgotPasswordFormCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLFuiForgotPasswordFormElement;
+}
+export interface FuiGoogleSignInCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLFuiGoogleSignInElement;
 }
 export interface FuiInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -165,6 +172,23 @@ declare global {
         prototype: HTMLFuiForgotPasswordFormElement;
         new (): HTMLFuiForgotPasswordFormElement;
     };
+    interface HTMLFuiGoogleSignInElementEventMap {
+        "signedIn": void;
+    }
+    interface HTMLFuiGoogleSignInElement extends Components.FuiGoogleSignIn, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLFuiGoogleSignInElementEventMap>(type: K, listener: (this: HTMLFuiGoogleSignInElement, ev: FuiGoogleSignInCustomEvent<HTMLFuiGoogleSignInElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLFuiGoogleSignInElementEventMap>(type: K, listener: (this: HTMLFuiGoogleSignInElement, ev: FuiGoogleSignInCustomEvent<HTMLFuiGoogleSignInElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLFuiGoogleSignInElement: {
+        prototype: HTMLFuiGoogleSignInElement;
+        new (): HTMLFuiGoogleSignInElement;
+    };
     interface HTMLFuiInputElementEventMap {
         "fuiInput": InputEvent;
         "fuiBlur": FocusEvent;
@@ -219,6 +243,7 @@ declare global {
         "fui-email-link-form": HTMLFuiEmailLinkFormElement;
         "fui-fieldset": HTMLFuiFieldsetElement;
         "fui-forgot-password-form": HTMLFuiForgotPasswordFormElement;
+        "fui-google-sign-in": HTMLFuiGoogleSignInElement;
         "fui-input": HTMLFuiInputElement;
         "fui-login-form": HTMLFuiLoginFormElement;
         "fui-phone-form": HTMLFuiPhoneFormElement;
@@ -241,6 +266,7 @@ declare namespace LocalJSX {
         "validationErrors"?: { email?: string; password?: string };
     }
     interface FuiEmailLinkForm {
+        "config"?: FUIConfigStore;
         "linkSent"?: boolean;
         "onEmailChange"?: (event: FuiEmailLinkFormCustomEvent<string>) => void;
         "state"?: EmailLinkFormState;
@@ -263,6 +289,9 @@ declare namespace LocalJSX {
         "onEmailChange"?: (event: FuiForgotPasswordFormCustomEvent<string>) => void;
         "onSubmitReset"?: (event: FuiForgotPasswordFormCustomEvent<void>) => void;
         "successMessage"?: string;
+    }
+    interface FuiGoogleSignIn {
+        "onSignedIn"?: (event: FuiGoogleSignInCustomEvent<void>) => void;
     }
     interface FuiInput {
         "error"?: boolean;
@@ -297,6 +326,7 @@ declare namespace LocalJSX {
         "fui-email-link-form": FuiEmailLinkForm;
         "fui-fieldset": FuiFieldset;
         "fui-forgot-password-form": FuiForgotPasswordForm;
+        "fui-google-sign-in": FuiGoogleSignIn;
         "fui-input": FuiInput;
         "fui-login-form": FuiLoginForm;
         "fui-phone-form": FuiPhoneForm;
@@ -311,6 +341,7 @@ declare module "@stencil/core" {
             "fui-email-link-form": LocalJSX.FuiEmailLinkForm & JSXBase.HTMLAttributes<HTMLFuiEmailLinkFormElement>;
             "fui-fieldset": LocalJSX.FuiFieldset & JSXBase.HTMLAttributes<HTMLFuiFieldsetElement>;
             "fui-forgot-password-form": LocalJSX.FuiForgotPasswordForm & JSXBase.HTMLAttributes<HTMLFuiForgotPasswordFormElement>;
+            "fui-google-sign-in": LocalJSX.FuiGoogleSignIn & JSXBase.HTMLAttributes<HTMLFuiGoogleSignInElement>;
             "fui-input": LocalJSX.FuiInput & JSXBase.HTMLAttributes<HTMLFuiInputElement>;
             "fui-login-form": LocalJSX.FuiLoginForm & JSXBase.HTMLAttributes<HTMLFuiLoginFormElement>;
             "fui-phone-form": LocalJSX.FuiPhoneForm & JSXBase.HTMLAttributes<HTMLFuiPhoneFormElement>;

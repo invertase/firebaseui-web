@@ -3,24 +3,30 @@
   "version": "0.0.1",
   "description": "Stencil Component Starter",
   "main": "dist/index.cjs.js",
-  "module": "dist/index.js",
+  "module": "dist/firebaseui-stencil/index.esm.js",
   "types": "dist/types/index.d.ts",
   "collection": "dist/collection/collection-manifest.json",
   "collection:main": "dist/collection/index.js",
   "unpkg": "dist/firebaseui-stencil/firebaseui-stencil.esm.js",
   "exports": {
     ".": {
-      "import": "./dist/firebaseui-stencil/firebaseui-stencil.esm.js",
-      "require": "./dist/firebaseui-stencil/firebaseui-stencil.cjs.js"
+      "import": "./dist/firebaseui-stencil/index.esm.js",
+      "require": "./dist/index.cjs.js",
+      "types": "./dist/types/index.d.ts"
     },
-    "./my-component": {
-      "import": "./dist/components/my-component.js",
-      "types": "./dist/components/my-component.d.ts"
+    "./components/*": {
+      "import": "./dist/components/*",
+      "types": "./dist/types/components/*.d.ts"
     },
-    "./loader": {
-      "import": "./loader/index.js",
-      "require": "./loader/index.cjs",
-      "types": "./loader/index.d.ts"
+    "./components": {
+      "import": "./dist/components/index.js",
+      "types": "./dist/types/components.d.ts"
+    },
+    "./hydrate": {
+      "types": "./hydrate/index.d.ts",
+      "import": "./hydrate/index.js",
+      "require": "./hydrate/index.cjs.js",
+      "default": "./hydrate/index.js"
     }
   },
   "repository": {
@@ -42,6 +48,7 @@
   "devDependencies": {
     "@stencil-community/postcss": "^2.2.0",
     "@stencil/core": "^4.7.0",
+    "@stencil/react-output-target": "^0.8.2",
     "@stencil/store": "^2.0.16",
     "@types/jest": "^29.5.6",
     "@types/node": "^16.18.11",

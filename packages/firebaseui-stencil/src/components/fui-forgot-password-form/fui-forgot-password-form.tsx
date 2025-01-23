@@ -5,7 +5,6 @@ import { FUIConfigStore } from '../../config';
 @Component({
   tag: 'fui-forgot-password-form',
   styleUrl: 'fui-forgot-password-form.css',
-  shadow: false,
 })
 export class FuiForgotPasswordForm {
   @Prop() config: FUIConfigStore;

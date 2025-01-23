@@ -8,7 +8,8 @@
  * to consume components of this package as outlined in the `README.md`.
  */
 
-export * from './config';
+export { initializeFirebaseUI, type FUIConfig, type FUIConfigStore } from './config';
 export * from './auth/auth-service';
 export * from './auth/login-form-controller';
+export * from './components';
 export type * from './components.d.ts';

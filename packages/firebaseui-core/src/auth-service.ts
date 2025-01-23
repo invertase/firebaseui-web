@@ -2,9 +2,7 @@ import {
   getAuth,
   signInWithCredential,
   createUserWithEmailAndPassword,
-  UserCredential,
   signInWithPhoneNumber,
-  ConfirmationResult,
   ApplicationVerifier,
   sendPasswordResetEmail,
   sendSignInLinkToEmail,
@@ -16,9 +14,8 @@ import {
   OAuthProvider,
   GoogleAuthProvider,
   signInWithRedirect,
-  getRedirectResult,
 } from 'firebase/auth';
-import { FUIConfig } from '../config';
+import { FUIConfig, AuthResult } from './types';
 
 const AUTH_ERROR_MESSAGES: Record<string, string> = {
   'auth/user-not-found': 'No account found with this email address',
@@ -44,16 +41,6 @@ const AUTH_ERROR_MESSAGES: Record<string, string> = {
   'auth/invalid-verification-code': 'Invalid verification code. Please try again',
 };
 
-export type AuthResult = {
-  success: boolean;
-  data?: UserCredential | ConfirmationResult;
-  error?: {
-    code: string;
-    message: string;
-  };
-  message?: string;
-};
-
 function handleFirebaseError(error: any): AuthResult {
   if (error?.name === 'FirebaseError') {
     const errorCode = (error.customData?.message?.match(/\(([^)]+)\)/) || [])[1] || error.code;
@@ -74,7 +61,11 @@ function handleFirebaseError(error: any): AuthResult {
   };
 }
 
-export async function fuiSignInWithEmailAndPassword(config: FUIConfig, email: string, password: string): Promise<AuthResult> {
+export async function fuiSignInWithEmailAndPassword(
+  config: FUIConfig,
+  email: string,
+  password: string
+): Promise<AuthResult> {
   const auth = getAuth(config.app);
   try {
     const currentUser = auth.currentUser;
@@ -90,7 +81,11 @@ export async function fuiSignInWithEmailAndPassword(config: FUIConfig, email: st
   }
 }
 
-export async function fuiCreateUserWithEmailAndPassword(config: FUIConfig, email: string, password: string): Promise<AuthResult> {
+export async function fuiCreateUserWithEmailAndPassword(
+  config: FUIConfig,
+  email: string,
+  password: string
+): Promise<AuthResult> {
   const auth = getAuth(config.app);
   try {
     const currentUser = auth.currentUser;
@@ -107,7 +102,11 @@ export async function fuiCreateUserWithEmailAndPassword(config: FUIConfig, email
   }
 }
 
-export async function fuiSignInWithPhoneNumber(config: FUIConfig, phoneNumber: string, recaptchaVerifier: ApplicationVerifier): Promise<AuthResult> {
+export async function fuiSignInWithPhoneNumber(
+  config: FUIConfig,
+  phoneNumber: string,
+  recaptchaVerifier: ApplicationVerifier
+): Promise<AuthResult> {
   const auth = getAuth(config.app);
   try {
     const currentUser = auth.currentUser;
@@ -125,7 +124,7 @@ export async function fuiSignInWithPhoneNumber(config: FUIConfig, phoneNumber: s
   }
 }
 
-export async function fuiConfirmPhoneNumber(confirmationResult: ConfirmationResult, verificationCode: string): Promise<AuthResult> {
+export async function fuiConfirmPhoneNumber(confirmationResult: any, verificationCode: string): Promise<AuthResult> {
   try {
     const auth = getAuth();
     const currentUser = auth.currentUser;
@@ -160,7 +159,7 @@ export async function fuiSendPasswordResetEmail(config: FUIConfig, email: string
   }
 }
 
-export const fuiSendSignInLinkToEmail = async (config: FUIConfig, email: string): Promise<AuthResult> => {
+export async function fuiSendSignInLinkToEmail(config: FUIConfig, email: string): Promise<AuthResult> {
   try {
     const auth = getAuth(config.app);
     const currentUser = auth.currentUser;
@@ -182,14 +181,14 @@ export const fuiSendSignInLinkToEmail = async (config: FUIConfig, email: string)
   } catch (error) {
     return handleFirebaseError(error);
   }
-};
+}
 
-export const fuiIsSignInWithEmailLink = (config: FUIConfig, link: string): boolean => {
+export function fuiIsSignInWithEmailLink(config: FUIConfig, link: string): boolean {
   const auth = getAuth(config.app);
   return isSignInWithEmailLink(auth, link);
-};
+}
 
-export const fuiSignInWithEmailLink = async (config: FUIConfig, email: string, link: string): Promise<AuthResult> => {
+export async function fuiSignInWithEmailLink(config: FUIConfig, email: string, link: string): Promise<AuthResult> {
   try {
     const auth = getAuth(config.app);
     const currentUser = auth.currentUser;
@@ -208,7 +207,7 @@ export const fuiSignInWithEmailLink = async (config: FUIConfig, email: string, l
   } catch (error) {
     return handleFirebaseError(error);
   }
-};
+}
 
 export async function fuiSignInAnonymously(config: FUIConfig): Promise<AuthResult> {
   const auth = getAuth(config.app);
@@ -241,43 +240,15 @@ export async function fuiUpgradeAnonymousUser(config: FUIConfig, email: string, 
   }
 }
 
-export async function fuiSignInWithOAuth(config: FUIConfig, provider?: OAuthProvider | GoogleAuthProvider): Promise<AuthResult> {
+export async function fuiSignInWithOAuth(
+  config: FUIConfig,
+  provider?: OAuthProvider | GoogleAuthProvider
+): Promise<AuthResult> {
   const auth = getAuth(config.app);
   const oAuthProvider = provider || new GoogleAuthProvider();
   try {
     await signInWithRedirect(auth, oAuthProvider);
-  } catch (error) {
-    return handleFirebaseError(error);
-  }
-}
-
-export async function fuiSignInWithGoogle(config: FUIConfig): Promise<AuthResult> {
-  const googleProvider = new GoogleAuthProvider();
-
-  // For emulator, we need to customize the provider
-  if (window.location.hostname === 'localhost') {
-    // These are the minimum required fields for the emulator
-    googleProvider.setCustomParameters({
-      // Use your Firebase project's actual API key
-      apiKey: config.app.options.apiKey,
-      // Required for emulator
-      providerId: 'google.com',
-      // Simulated response for testing
-      login_hint: 'test@example.com',
-    });
-  }
-
-  return fuiSignInWithOAuth(config, googleProvider);
-}
-
-export async function fuiGetRedirectResult(config: FUIConfig): Promise<AuthResult> {
-  const auth = getAuth(config.app);
-  try {
-    const result = await getRedirectResult(auth);
-    if (!result) {
-      return { success: true }; // No redirect result, not an error
-    }
-    return { success: true, data: result };
+    return { success: true };
   } catch (error) {
     return handleFirebaseError(error);
   }
