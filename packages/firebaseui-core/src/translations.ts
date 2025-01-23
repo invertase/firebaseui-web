@@ -28,28 +28,16 @@ export const ERROR_CODE_MAP: Record<string, ErrorKey> = {
   'auth/invalid-verification-code': 'invalidVerificationCode',
 };
 
-export function getTranslation(
-  category: 'errors',
-  key: ErrorKey,
-  translations?: TranslationsConfig,
-  language?: string
-): string;
-export function getTranslation(
-  category: 'messages',
-  key: MessageKey,
-  translations?: TranslationsConfig,
-  language?: string
-): string;
-export function getTranslation(
-  category: keyof TranslationStrings,
-  key: ErrorKey | MessageKey,
+export function getTranslation<T extends keyof TranslationStrings>(
+  category: T,
+  key: keyof TranslationStrings[T],
   translations?: TranslationsConfig,
   language = 'en'
 ): string {
   const translationSet =
     translations?.[language]?.[category] ?? translations?.['en']?.[category] ?? defaultTranslations.en[category];
 
-  return (translationSet as Record<ErrorKey | MessageKey, string>)[key];
+  return (translationSet as Record<keyof TranslationStrings[T], string>)[key];
 }
 
 export const defaultTranslations: Record<'en', TranslationStrings> = {

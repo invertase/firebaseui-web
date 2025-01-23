@@ -42,7 +42,6 @@ export class FormStoreFactory {
         return new PhoneFormStore(this.config);
       case 'emailLink':
         return new EmailLinkFormStore(this.config);
-      // Add other form stores as they are implemented
       default:
         throw new Error(`Store type ${type} not implemented`);
     }
