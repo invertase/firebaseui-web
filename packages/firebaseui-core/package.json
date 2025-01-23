@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "lint": "tsc",
+    "lint": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.ts\"",
     "clean": "rimraf dist"
   },
@@ -33,6 +33,10 @@
   "license": "MIT",
   "peerDependencies": {
     "firebase": "^10.0.0"
+  },
+  "dependencies": {
+    "nanostores": "^0.9.5",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "typescript": "^5.3.3",

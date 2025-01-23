@@ -60,6 +60,12 @@ importers:
       firebase:
         specifier: ^10.0.0
         version: 10.14.1
+      nanostores:
+        specifier: ^0.9.5
+        version: 0.9.5
+      zod:
+        specifier: ^3.22.4
+        version: 3.23.8
     devDependencies:
       '@types/node':
         specifier: ^20.10.5
@@ -67,6 +73,9 @@ importers:
       prettier:
         specifier: ^3.1.1
         version: 3.4.2
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
       tsup:
         specifier: ^8.0.1
         version: 8.3.5(@microsoft/api-extractor@7.47.7(@types/node@20.17.12))(jiti@1.21.7)(postcss@8.4.49)(typescript@5.7.3)(yaml@2.6.1)
@@ -2954,6 +2963,10 @@ packages:
     resolution: {integrity: sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
+
+  nanostores@0.9.5:
+    resolution: {integrity: sha512-Z+p+g8E7yzaWwOe5gEUB2Ox0rCEeXWYIZWmYvw/ajNYX8DlXdMvMDj8DWfM/subqPAcsf8l8Td4iAwO1DeIIRQ==}
+    engines: {node: ^16.0.0 || ^18.0.0 || >=20.0.0}
 
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
@@ -7319,6 +7332,8 @@ snapshots:
       thenify-all: 1.6.0
 
   nanoid@3.3.7: {}
+
+  nanostores@0.9.5: {}
 
   natural-compare@1.4.0: {}
 

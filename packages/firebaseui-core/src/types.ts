@@ -1,6 +1,38 @@
 import { FirebaseApp } from 'firebase/app';
 import { UserCredential, ConfirmationResult } from 'firebase/auth';
 
+export type TranslationStrings = {
+  errors: {
+    userNotFound: string;
+    wrongPassword: string;
+    invalidEmail: string;
+    userDisabled: string;
+    networkRequestFailed: string;
+    tooManyRequests: string;
+    emailAlreadyInUse: string;
+    weakPassword: string;
+    operationNotAllowed: string;
+    invalidPhoneNumber: string;
+    missingPhoneNumber: string;
+    quotaExceeded: string;
+    codeExpired: string;
+    captchaCheckFailed: string;
+    missingVerificationId: string;
+    missingEmail: string;
+    invalidActionCode: string;
+    credentialAlreadyInUse: string;
+    requiresRecentLogin: string;
+    providerAlreadyLinked: string;
+    invalidVerificationCode: string;
+    unknownError: string;
+  };
+  messages: {
+    passwordResetEmailSent: string;
+    signInLinkSent: string;
+    verificationCodeFirst: string;
+  };
+};
+
 export interface FUIConfig {
   app?: FirebaseApp;
   enableAutoAnonymousLogin?: boolean;
@@ -9,6 +41,7 @@ export interface FUIConfig {
       allowRegistration?: boolean;
     };
   };
+  translations?: Partial<Record<string, Partial<TranslationStrings>>>;
 }
 
 export type AuthResult = {
