@@ -1,61 +1,60 @@
-// import { BaseFormStore } from './base-form-store';
-// import type { EmailFormState, LoginResult, AuthMode } from './types';
-// import { emailFormSchema } from './types';
-// import { fuiSignInWithEmailAndPassword, fuiCreateUserWithEmailAndPassword } from '../auth';
-// import { getAuth } from 'firebase/auth';
+import { map } from 'nanostores';
+import type { EmailFormSchema } from './types';
+import { emailFormSchema } from './types';
+import { fuiSignInWithEmailAndPassword, fuiCreateUserWithEmailAndPassword } from '../auth';
+import { getAuth } from 'firebase/auth';
+import type { FUIConfig } from '../types';
 
-// export class EmailFormStore extends BaseFormStore<EmailFormState> {
-  // protected getInitialState(): EmailFormState {
-  //   return {
-  //     email: '',
-  //     password: '',
-  //     authMode: 'signIn',
-  //   };
-  // }
+export function createEmailFormStore(config: FUIConfig) {
+  const state = map<EmailFormSchema & { isLoading: boolean }>({
+    email: '',
+    password: '',
+    authMode: 'signIn',
+    isLoading: false,
+  });
 
-  // public setEmail(email: string) {
-  //   this.state.setKey('email', email);
-  // }
+  const setEmail = (email: string) => {
+    state.setKey('email', email);
+  };
 
-  // public setPassword(password: string) {
-  //   this.state.setKey('password', password);
-  // }
+  const setPassword = (password: string) => {
+    state.setKey('password', password);
+  };
 
+  const reset = () => {
+    state.set({
+      email: '',
+      password: '',
+      authMode: 'signIn',
+      isLoading: false,
+    });
+  };
 
-  // public async submit(): Promise<LoginResult> {
-  //   const validation = emailFormSchema.safeParse(this.value);
-  //   if (!validation.success) {
-  //     return { success: false, error: validation.error };
-  //   }
+  const submit = async () => {
+    const validation = emailFormSchema.safeParse(state.get());
+    if (!validation.success) {
+      throw validation.error;
+    }
 
-  //   this.state.setKey('isLoading', true);
-  //   this.state.setKey('error', null);
+    state.setKey('isLoading', true);
 
-  //   try {
-  //     const { email, password, authMode } = this.value;
-  //     const auth = getAuth(this.config.app);
-  //     const authResult =
-  //       authMode === 'signIn'
-  //         ? await fuiSignInWithEmailAndPassword(auth, email, password)
-  //         : await fuiCreateUserWithEmailAndPassword(auth, email, password);
+    try {
+      const { email, password, authMode } = state.get();
+      const auth = getAuth(config.app);
 
-  //     if (!authResult.success || !authResult.data) {
-  //       return {
-  //         success: false,
-  //         error: authResult.error || { code: 'auth/unknown', message: 'Unknown error occurred' },
-  //       };
-  //     }
+      return authMode === 'signIn'
+        ? await fuiSignInWithEmailAndPassword(auth, email, password)
+        : await fuiCreateUserWithEmailAndPassword(auth, email, password);
+    } finally {
+      state.setKey('isLoading', false);
+    }
+  };
 
-  //     return { success: true, data: authResult.data };
-  //   } catch (error) {
-  //     const message = error instanceof Error ? error.message : 'An unknown error occurred';
-  //     this.state.setKey('error', message);
-  //     return {
-  //       success: false,
-  //       error: { code: 'auth/unknown', message },
-  //     };
-  //   } finally {
-  //     this.state.setKey('isLoading', false);
-  //   }
-  // }
-// }
+  return {
+    state,
+    setEmail,
+    setPassword,
+    submit,
+    reset,
+  };
+}

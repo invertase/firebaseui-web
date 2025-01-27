@@ -1,7 +1,7 @@
 import type { TranslationStrings } from './types';
 
-export type ErrorKey = keyof TranslationStrings['errors'];
-export type MessageKey = keyof TranslationStrings['messages'];
+export type ErrorKey = keyof Required<TranslationStrings>['errors'];
+export type MessageKey = keyof Required<TranslationStrings>['messages'];
 export type TranslationsConfig = Partial<Record<string, Partial<TranslationStrings>>>;
 
 export const ERROR_CODE_MAP: Record<string, ErrorKey> = {
@@ -28,16 +28,32 @@ export const ERROR_CODE_MAP: Record<string, ErrorKey> = {
   'auth/invalid-verification-code': 'invalidVerificationCode',
 };
 
-export function getTranslation<T extends keyof TranslationStrings>(
+type TranslationCategory = keyof Required<TranslationStrings>;
+type TranslationKey<T extends TranslationCategory> = keyof Required<TranslationStrings>[T];
+type TranslationSet<T extends TranslationCategory> = Record<TranslationKey<T>, string>;
+
+export function getTranslation<T extends TranslationCategory>(
   category: T,
-  key: keyof TranslationStrings[T],
+  key: TranslationKey<T>,
   translations?: TranslationsConfig,
   language = 'en'
 ): string {
-  const translationSet =
-    translations?.[language]?.[category] ?? translations?.['en']?.[category] ?? defaultTranslations.en[category];
+  let translationSet;
 
-  return (translationSet as Record<keyof TranslationStrings[T], string>)[key];
+  // Try user's preferred language first
+  if (translations?.[language]?.[category]) {
+    translationSet = translations[language][category];
+  }
+  // Fall back to English translations if provided
+  else if (translations?.['en']?.[category]) {
+    translationSet = translations['en'][category];
+  }
+  // Default to built-in English translations
+  else {
+    translationSet = defaultTranslations.en[category];
+  }
+
+  return (translationSet as TranslationSet<T>)[key];
 }
 
 export const defaultTranslations: Record<'en', TranslationStrings> = {

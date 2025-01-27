@@ -1,94 +1,82 @@
-import { BaseFormStore } from './base-form-store';
-import type { PhoneFormState, LoginResult } from './types';
+import { map } from 'nanostores';
+import type { PhoneFormSchema } from './types';
 import { phoneFormSchema } from './types';
 import { fuiSignInWithPhoneNumber, fuiConfirmPhoneNumber } from '../auth';
 import type { ConfirmationResult, RecaptchaVerifier } from 'firebase/auth';
 import { getAuth } from 'firebase/auth';
+import type { FUIConfig } from '../types';
 
-export class PhoneFormStore extends BaseFormStore<PhoneFormState> {
-  private recaptchaVerifier: RecaptchaVerifier | null = null;
-  private confirmationResult: ConfirmationResult | null = null;
+export function createPhoneFormStore(config: FUIConfig) {
+  let recaptchaVerifier: RecaptchaVerifier | null = null;
+  let confirmationResult: ConfirmationResult | null = null;
 
-  protected getInitialState(): PhoneFormState {
-    return {
+  const state = map<PhoneFormSchema & { isLoading: boolean }>({
+    phoneNumber: '',
+    verificationCode: '',
+    isLoading: false,
+  });
+
+  const setPhoneNumber = (phoneNumber: string) => {
+    state.setKey('phoneNumber', phoneNumber);
+  };
+
+  const setVerificationCode = (verificationCode: string) => {
+    state.setKey('verificationCode', verificationCode);
+  };
+
+  const setRecaptchaVerifier = (verifier: RecaptchaVerifier) => {
+    recaptchaVerifier = verifier;
+  };
+
+  const reset = () => {
+    state.set({
       phoneNumber: '',
       verificationCode: '',
-    };
-  }
+      isLoading: false,
+    });
+    recaptchaVerifier = null;
+    confirmationResult = null;
+  };
 
-  public setPhoneNumber(phoneNumber: string) {
-    this.state.setKey('phoneNumber', phoneNumber);
-  }
-
-  public setVerificationCode(verificationCode: string) {
-    this.state.setKey('verificationCode', verificationCode);
-  }
-
-  public setRecaptchaVerifier(verifier: RecaptchaVerifier) {
-    this.recaptchaVerifier = verifier;
-  }
-
-  public async submit(): Promise<LoginResult> {
-    const validation = phoneFormSchema.safeParse(this.value);
+  const submit = async () => {
+    const validation = phoneFormSchema.safeParse(state.get());
     if (!validation.success) {
-      return { success: false, error: validation.error };
+      throw validation.error;
     }
 
-    this.state.setKey('isLoading', true);
-    this.state.setKey('error', null);
+    state.setKey('isLoading', true);
 
     try {
-      const { phoneNumber, verificationCode } = this.value;
-      const auth = getAuth(this.config.app);
+      const { phoneNumber, verificationCode } = state.get();
+      const auth = getAuth(config.app);
 
       if (!verificationCode) {
-        if (!this.recaptchaVerifier) {
+        if (!recaptchaVerifier) {
           throw new Error('reCAPTCHA verifier is not set');
         }
 
-        const result = await fuiSignInWithPhoneNumber(auth, phoneNumber, this.recaptchaVerifier);
-
-        if (!result.success || !result.data) {
-          return {
-            success: false,
-            error: result.error || { code: 'auth/unknown', message: 'Unknown error occurred' },
-          };
-        }
-
-        this.confirmationResult = result.data as ConfirmationResult;
-        return { success: true, data: result.data };
+        confirmationResult = await fuiSignInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+        return confirmationResult;
       }
 
-      if (!this.confirmationResult) {
+      if (!confirmationResult) {
         throw new Error('Please request a verification code first');
       }
 
-      const result = await fuiConfirmPhoneNumber(this.confirmationResult, verificationCode);
-
-      if (!result.success || !result.data) {
-        return {
-          success: false,
-          error: result.error || { code: 'auth/unknown', message: 'Unknown error occurred' },
-        };
-      }
-
-      this.confirmationResult = null;
-      return { success: true, data: result.data };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'An unknown error occurred';
-      this.state.setKey('error', message);
-      return {
-        success: false,
-        error: { code: 'auth/unknown', message },
-      };
+      const result = await fuiConfirmPhoneNumber(confirmationResult, verificationCode);
+      confirmationResult = null;
+      return result;
     } finally {
-      this.state.setKey('isLoading', false);
+      state.setKey('isLoading', false);
     }
-  }
+  };
 
-  public override reset() {
-    super.reset();
-    this.recaptchaVerifier = null;
-    this.confirmationResult = null;
-  }
+  return {
+    state,
+    setPhoneNumber,
+    setVerificationCode,
+    setRecaptchaVerifier,
+    submit,
+    reset,
+  };
 }

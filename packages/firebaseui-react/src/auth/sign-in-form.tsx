@@ -1,53 +1,59 @@
-"use client"
+"use client";
 
-import { FieldApi, useForm } from '@tanstack/react-form'
-import { emailFormSchema, FirebaseUIError, fuiSignInWithEmailAndPassword, type EmailFormSchema } from '@firebase-ui/core';
-import { Button } from '~/components/button';
+import { FieldApi, useForm } from "@tanstack/react-form";
+import { type EmailFormSchema } from "@firebase-ui/core";
+import { useContext } from "react";
+import { ConfigContext } from "../context";
 
 export function SignInForm() {
-  
   const form = useForm<EmailFormSchema>({
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
+      authMode: "signIn",
     },
-    onSubmit: async ({ value }) => {
-      // auth would be from context/store
-      try {
-        await fuiSignInWithEmailAndPassword({} as any, value.email, value.password, {
-          translations: {},
-          // blahsbs: false,
-        });
-      } catch (error) {
-        if (error instanceof FirebaseUIError) {
-          console.log(error.message); // translated message
-        }
+    // onSubmit: async ({ value }) => {
+    // auth would be from context/store
+    // try {
+    //   await fuiSignInWithEmailAndPassword(
+    //     {} as any,
+    //     value.email,
+    //     value.password,
+    //     {
+    //       translations: {},
+    //       // blahsbs: false,
+    //     }
+    //   );
+    // } catch (error) {
+    //   if (error instanceof FirebaseUIError) {
+    //     console.log(error.message); // translated message
+    //   }
+    //   // setError something went wrong
+    //   throw error;
+    // },
 
-        // setError something went wrong
-        throw error;
-      }
-      
-      // Do something with form data
-      console.log(value)
-    },
-    // Add a validator to support Zod usage in Form and Field (no longer needed with zod@3.24.0 or higher)
-    validators: {
-      onChange: emailFormSchema,
-    },
-  })
+    // Do something with form data
+    // console.log(value);
+    // },
+  });
+
+  const config = useContext(ConfigContext);
+
   return (
     <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          e.stopPropagation()
-          form.handleSubmit()
-        }}
-      >
-        <div>
-          {/* A type-safe field component*/}
-          <form.Field
-            name="email"
-            validators={{
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <div>
+        {config.translations?.en?.errors?.invalidEmail}
+        {/* A type-safe field component*/}
+        <form.Field
+          name="email"
+          validators={
+            {
               // onChange: z
               //   .string()
               //   .min(3, '[Field] First name must be at least 3 characters'),
@@ -61,31 +67,13 @@ export function SignInForm() {
               //     message: "[Field] No 'error' allowed in first name",
               //   },
               // ),
-            }}
-            children={(field) => {
-              // Avoid hasty abstractions. Render props are great!
-              return (
-                <>
-                  <label htmlFor={field.name}>First Name:</label>
-                  <input
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                  />
-                  <FieldInfo field={field} />
-                </>
-              )
-            }}
-          />
-        </div>
-        <div>
-          <form.Field
-            name="password"
-            children={(field) => (
+            }
+          }
+          children={(field) => {
+            // Avoid hasty abstractions. Render props are great!
+            return (
               <>
-                <label htmlFor={field.name}>Last Name:</label>
+                <label htmlFor={field.name}>First Name:</label>
                 <input
                   id={field.name}
                   name={field.name}
@@ -95,20 +83,43 @@ export function SignInForm() {
                 />
                 <FieldInfo field={field} />
               </>
-            )}
-          />
-        </div>
+            );
+          }}
+        />
+      </div>
+      <div>
+        <form.Field
+          name="password"
+          children={(field) => (
+            <>
+              <label htmlFor={field.name}>Last Name:</label>
+              <input
+                id={field.name}
+                name={field.name}
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+              <FieldInfo field={field} />
+            </>
+          )}
+        />
+      </div>
     </form>
   );
-} 
+}
 
-function FieldInfo({ field }: { field: FieldApi<any, any, any, any> }) {
+function FieldInfo<T extends keyof EmailFormSchema>({
+  field,
+}: {
+  field: FieldApi<EmailFormSchema, T, undefined, undefined>;
+}) {
   return (
     <>
       {field.state.meta.isTouched && field.state.meta.errors.length ? (
-        <em>{field.state.meta.errors.join(',')}</em>
+        <em>{field.state.meta.errors.join(",")}</em>
       ) : null}
-      {field.state.meta.isValidating ? 'Validating...' : null}
+      {field.state.meta.isValidating ? "Validating..." : null}
     </>
-  )
+  );
 }

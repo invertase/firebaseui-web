@@ -2,34 +2,34 @@ import { FirebaseApp } from 'firebase/app';
 import { UserCredential, ConfirmationResult } from 'firebase/auth';
 
 export type TranslationStrings = {
-  errors: {
-    userNotFound: string;
-    wrongPassword: string;
-    invalidEmail: string;
-    userDisabled: string;
-    networkRequestFailed: string;
-    tooManyRequests: string;
-    emailAlreadyInUse: string;
-    weakPassword: string;
-    operationNotAllowed: string;
-    invalidPhoneNumber: string;
-    missingPhoneNumber: string;
-    quotaExceeded: string;
-    codeExpired: string;
-    captchaCheckFailed: string;
-    missingVerificationId: string;
-    missingEmail: string;
-    invalidActionCode: string;
-    credentialAlreadyInUse: string;
-    requiresRecentLogin: string;
-    providerAlreadyLinked: string;
-    invalidVerificationCode: string;
-    unknownError: string;
+  errors?: {
+    userNotFound?: string;
+    wrongPassword?: string;
+    invalidEmail?: string;
+    userDisabled?: string;
+    networkRequestFailed?: string;
+    tooManyRequests?: string;
+    emailAlreadyInUse?: string;
+    weakPassword?: string;
+    operationNotAllowed?: string;
+    invalidPhoneNumber?: string;
+    missingPhoneNumber?: string;
+    quotaExceeded?: string;
+    codeExpired?: string;
+    captchaCheckFailed?: string;
+    missingVerificationId?: string;
+    missingEmail?: string;
+    invalidActionCode?: string;
+    credentialAlreadyInUse?: string;
+    requiresRecentLogin?: string;
+    providerAlreadyLinked?: string;
+    invalidVerificationCode?: string;
+    unknownError?: string;
   };
-  messages: {
-    passwordResetEmailSent: string;
-    signInLinkSent: string;
-    verificationCodeFirst: string;
+  messages?: {
+    passwordResetEmailSent?: string;
+    signInLinkSent?: string;
+    verificationCodeFirst?: string;
   };
 };
 

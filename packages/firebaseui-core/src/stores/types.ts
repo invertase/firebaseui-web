@@ -1,8 +1,7 @@
 import { z } from 'zod';
-import type { UserCredential, ConfirmationResult } from 'firebase/auth';
-// import type { EmailFormStore } from './email-form-store';
-import type { PhoneFormStore } from './phone-form-store';
-import type { EmailLinkFormStore } from './email-link-form-store';
+import type { createEmailFormStore } from './email-form-store';
+import type { createPhoneFormStore } from './phone-form-store';
+import type { createEmailLinkFormStore } from './email-link-form-store';
 
 export const LoginTypes = ['email', 'phone', 'anonymous', 'emailLink', 'google'] as const;
 export type LoginType = (typeof LoginTypes)[number];
@@ -11,7 +10,7 @@ export type AuthMode = 'signIn' | 'signUp';
 export const emailFormSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  // authMode: z.enum(['signIn', 'signUp']),
+  authMode: z.enum(['signIn', 'signUp']),
 });
 
 export const emailLinkFormSchema = z.object({
@@ -24,19 +23,10 @@ export const phoneFormSchema = z.object({
 });
 
 export type EmailFormSchema = z.input<typeof emailFormSchema>;
-export type PhoneFormState = z.infer<typeof phoneFormSchema>;
-export type EmailLinkFormState = z.infer<typeof emailLinkFormSchema>;
+export type PhoneFormSchema = z.infer<typeof phoneFormSchema>;
+export type EmailLinkFormSchema = z.infer<typeof emailLinkFormSchema>;
 
-export type LoginResult = {
-  success: boolean;
-  data?: UserCredential | ConfirmationResult;
-  error?: z.ZodError | { code: string; message: string };
-  message?: string;
-};
-
-export interface BaseFormState {
-  isLoading: boolean;
-  error: string | null;
-}
-
-export type FormStoreType = EmailFormSchema | PhoneFormStore | EmailLinkFormStore;
+export type FormStoreType =
+  | ReturnType<typeof createEmailFormStore>
+  | ReturnType<typeof createPhoneFormStore>
+  | ReturnType<typeof createEmailLinkFormStore>;
