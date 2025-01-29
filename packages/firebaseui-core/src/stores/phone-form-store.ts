@@ -1,6 +1,6 @@
 import { map } from 'nanostores';
 import type { PhoneFormSchema } from './types';
-import { phoneFormSchema } from './types';
+import { createPhoneFormSchema } from './types';
 import { fuiSignInWithPhoneNumber, fuiConfirmPhoneNumber } from '../auth';
 import type { ConfirmationResult, RecaptchaVerifier } from 'firebase/auth';
 import { getAuth } from 'firebase/auth';
@@ -39,7 +39,7 @@ export function createPhoneFormStore(config: FUIConfig) {
   };
 
   const submit = async () => {
-    const validation = phoneFormSchema.safeParse(state.get());
+    const validation = createPhoneFormSchema(config.translations).safeParse(state.get());
     if (!validation.success) {
       throw validation.error;
     }
@@ -55,7 +55,16 @@ export function createPhoneFormStore(config: FUIConfig) {
           throw new Error('reCAPTCHA verifier is not set');
         }
 
-        confirmationResult = await fuiSignInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+        confirmationResult = await fuiSignInWithPhoneNumber(
+          auth,
+          phoneNumber,
+          recaptchaVerifier,
+          config.translations
+            ? {
+                translations: config.translations,
+              }
+            : undefined
+        );
         return confirmationResult;
       }
 
@@ -63,7 +72,15 @@ export function createPhoneFormStore(config: FUIConfig) {
         throw new Error('Please request a verification code first');
       }
 
-      const result = await fuiConfirmPhoneNumber(confirmationResult, verificationCode);
+      const result = await fuiConfirmPhoneNumber(
+        confirmationResult,
+        verificationCode,
+        config.translations
+          ? {
+              translations: config.translations,
+            }
+          : undefined
+      );
       confirmationResult = null;
       return result;
     } finally {

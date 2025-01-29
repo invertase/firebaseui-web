@@ -1,13 +1,11 @@
-import { SignInForm } from "./sign-in-form";
+import { RegisterForm } from "./register-form";
 import { useTranslations } from "~/hooks";
 import { getTranslation } from "@firebase-ui/core";
 
-export function SignInScreen({
-  onForgotPasswordClick,
-  onRegisterClick,
+export function RegisterScreen({
+  onBackToSignInClick,
 }: {
-  onForgotPasswordClick?: () => void;
-  onRegisterClick?: () => void;
+  onBackToSignInClick: () => void;
 }) {
   const translations = useTranslations();
 
@@ -17,16 +15,13 @@ export function SignInScreen({
         <div className="fui-card__container">
           <div className="fui-card__header">
             <h2 className="fui-card__title">
-              {getTranslation("labels", "signIn", translations)}
+              {getTranslation("labels", "createAccount", translations)}
             </h2>
             <p className="fui-card__subtitle">
-              {getTranslation("prompts", "signInToAccount", translations)}
+              {getTranslation("prompts", "enterDetailsToCreate", translations)}
             </p>
           </div>
-          <SignInForm
-            onForgotPasswordClick={onForgotPasswordClick}
-            onRegisterClick={onRegisterClick}
-          />
+          <RegisterForm onBackToSignInClick={onBackToSignInClick} />
         </div>
       </div>
     </div>

@@ -30,6 +30,24 @@ export type TranslationStrings = {
     passwordResetEmailSent?: string;
     signInLinkSent?: string;
     verificationCodeFirst?: string;
+    checkEmailForReset?: string;
+  };
+  labels?: {
+    emailAddress?: string;
+    password?: string;
+    forgotPassword?: string;
+    register?: string;
+    signIn?: string;
+    resetPassword?: string;
+    createAccount?: string;
+    backToSignIn?: string;
+  };
+  prompts?: {
+    noAccount?: string;
+    haveAccount?: string;
+    enterEmailToReset?: string;
+    signInToAccount?: string;
+    enterDetailsToCreate?: string;
   };
 };
 

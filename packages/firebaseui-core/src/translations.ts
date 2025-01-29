@@ -38,22 +38,22 @@ export function getTranslation<T extends TranslationCategory>(
   translations?: TranslationsConfig,
   language = 'en'
 ): string {
-  let translationSet;
+  const userPreferredTranslationSet = translations?.[language]?.[category] as TranslationSet<T>;
 
   // Try user's preferred language first
-  if (translations?.[language]?.[category]) {
-    translationSet = translations[language][category];
-  }
-  // Fall back to English translations if provided
-  else if (translations?.['en']?.[category]) {
-    translationSet = translations['en'][category];
-  }
-  // Default to built-in English translations
-  else {
-    translationSet = defaultTranslations.en[category];
+  if (userPreferredTranslationSet && key in userPreferredTranslationSet) {
+    return userPreferredTranslationSet[key];
   }
 
-  return (translationSet as TranslationSet<T>)[key];
+  // Fall back to English translations if provided
+  const fallbackTranslationSet = translations?.['en']?.[category] as TranslationSet<T>;
+  if (fallbackTranslationSet && key in fallbackTranslationSet) {
+    return fallbackTranslationSet[key];
+  }
+
+  // Default to built-in English translations
+  const defaultTranslationSet = defaultTranslations.en[category] as TranslationSet<T>;
+  return defaultTranslationSet[key];
 }
 
 export const defaultTranslations: Record<'en', TranslationStrings> = {
@@ -86,6 +86,24 @@ export const defaultTranslations: Record<'en', TranslationStrings> = {
       passwordResetEmailSent: 'Password reset email sent successfully',
       signInLinkSent: 'Sign-in link sent successfully',
       verificationCodeFirst: 'Please request a verification code first',
+      checkEmailForReset: 'Check your email for password reset instructions',
+    },
+    labels: {
+      emailAddress: 'Email Address',
+      password: 'Password',
+      forgotPassword: 'Forgot Password?',
+      register: 'Register',
+      signIn: 'Sign In',
+      resetPassword: 'Reset Password',
+      createAccount: 'Create Account',
+      backToSignIn: 'Sign In',
+    },
+    prompts: {
+      noAccount: "Don't have an account?",
+      haveAccount: 'Already have an account?',
+      enterEmailToReset: 'Enter your email address to reset your password',
+      signInToAccount: 'Sign in to access your account',
+      enterDetailsToCreate: 'Enter your details to create a new account',
     },
   },
 };

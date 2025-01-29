@@ -1,9 +1,7 @@
 import { FUIConfig } from "@firebase-ui/core";
-import { createContext } from "react";
-import { MapStore } from "nanostores";
+import { type MapStore } from "nanostores";
 import { useStore } from "@nanostores/react";
-
-export const ConfigContext = createContext<FUIConfig>({} as FUIConfig);
+import { ConfigContext } from "./config-context";
 
 export function ConfigProvider({
   children,

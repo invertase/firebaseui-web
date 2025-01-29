@@ -44,7 +44,7 @@ importers:
         version: 6.0.1
       tsup:
         specifier: ^8.0.1
-        version: 8.3.5(@microsoft/api-extractor@7.47.7(@types/node@22.1.0))(jiti@2.4.2)(postcss@8.4.49)(typescript@5.7.3)(yaml@2.6.1)
+        version: 8.3.5(@microsoft/api-extractor@7.47.7(@types/node@22.1.0))(jiti@2.4.2)(postcss@8.5.1)(typescript@5.7.3)(yaml@2.6.1)
       typescript:
         specifier: ^5.7.3
         version: 5.7.3
@@ -66,6 +66,9 @@ importers:
       '@tanstack/react-form':
         specifier: ^0.41.3
         version: 0.41.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.6.3)
+      firebase:
+        specifier: ^11.2.0
+        version: 11.2.0
       nanostores:
         specifier: ^0.11.3
         version: 0.11.3
@@ -78,6 +81,9 @@ importers:
       tailwindcss:
         specifier: ^4.0.0
         version: 4.0.0
+      zod:
+        specifier: ^3.24.1
+        version: 3.24.1
     devDependencies:
       '@eslint/js':
         specifier: ^9.17.0
@@ -1908,6 +1914,11 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
+  nanoid@3.3.8:
+    resolution: {integrity: sha512-WNLf5Sd8oZxOm+TzppcYk8gVOgP+l58xNy58D0nbUnOxOWRWvlcCV4kUF7ltmI6PsrLl/BgKEyS4mqsGChFN0w==}
+    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+
   nanostores@0.11.3:
     resolution: {integrity: sha512-TUes3xKIX33re4QzdxwZ6tdbodjmn3tWXCEc1uokiEmo14sI1EaGYNs2k3bU2pyyGNmBqFGAVl6jAGWd06AVIg==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -2008,6 +2019,10 @@ packages:
 
   postcss@8.4.49:
     resolution: {integrity: sha512-OCVPnIObs4N29kxTjzLfUryOkvZEq+pf8jTF0lg8E7uETuWHA+v7j3c/xJmiqpX450191LlmZfUKkXxkTry7nA==}
+    engines: {node: ^10 || ^12 || >=14}
+
+  postcss@8.5.1:
+    resolution: {integrity: sha512-6oz2beyjc5VMn/KV1pPw8fliQkhBXrVn1Z3TVyqZxU8kZpzEKhBdmCFqI6ZbmGtamQvQGuU1sgPTk8ZrXDD7jQ==}
     engines: {node: ^10 || ^12 || >=14}
 
   prelude-ls@1.2.1:
@@ -4340,6 +4355,9 @@ snapshots:
 
   nanoid@3.3.7: {}
 
+  nanoid@3.3.8:
+    optional: true
+
   nanostores@0.11.3: {}
 
   natural-compare@1.4.0: {}
@@ -4407,12 +4425,12 @@ snapshots:
 
   possible-typed-array-names@1.0.0: {}
 
-  postcss-load-config@6.0.1(jiti@2.4.2)(postcss@8.4.49)(yaml@2.6.1):
+  postcss-load-config@6.0.1(jiti@2.4.2)(postcss@8.5.1)(yaml@2.6.1):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       jiti: 2.4.2
-      postcss: 8.4.49
+      postcss: 8.5.1
       yaml: 2.6.1
 
   postcss@8.4.49:
@@ -4420,6 +4438,13 @@ snapshots:
       nanoid: 3.3.7
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  postcss@8.5.1:
+    dependencies:
+      nanoid: 3.3.8
+      picocolors: 1.1.1
+      source-map-js: 1.2.1
+    optional: true
 
   prelude-ls@1.2.1: {}
 
@@ -4653,7 +4678,7 @@ snapshots:
 
   tslib@2.6.3: {}
 
-  tsup@8.3.5(@microsoft/api-extractor@7.47.7(@types/node@22.1.0))(jiti@2.4.2)(postcss@8.4.49)(typescript@5.7.3)(yaml@2.6.1):
+  tsup@8.3.5(@microsoft/api-extractor@7.47.7(@types/node@22.1.0))(jiti@2.4.2)(postcss@8.5.1)(typescript@5.7.3)(yaml@2.6.1):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.24.2)
       cac: 6.7.14
@@ -4663,7 +4688,7 @@ snapshots:
       esbuild: 0.24.2
       joycon: 3.1.1
       picocolors: 1.1.1
-      postcss-load-config: 6.0.1(jiti@2.4.2)(postcss@8.4.49)(yaml@2.6.1)
+      postcss-load-config: 6.0.1(jiti@2.4.2)(postcss@8.5.1)(yaml@2.6.1)
       resolve-from: 5.0.0
       rollup: 4.31.0
       source-map: 0.8.0-beta.0
@@ -4673,7 +4698,7 @@ snapshots:
       tree-kill: 1.2.2
     optionalDependencies:
       '@microsoft/api-extractor': 7.47.7(@types/node@22.1.0)
-      postcss: 8.4.49
+      postcss: 8.5.1
       typescript: 5.7.3
     transitivePeerDependencies:
       - jiti

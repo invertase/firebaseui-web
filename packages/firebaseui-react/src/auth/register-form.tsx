@@ -3,7 +3,7 @@
 import { useForm } from "@tanstack/react-form";
 import {
   FirebaseUIError,
-  fuiSignInWithEmailAndPassword,
+  fuiCreateUserWithEmailAndPassword,
   type EmailFormSchema,
   getTranslation,
   createEmailFormSchema,
@@ -13,12 +13,10 @@ import { useMemo, useState } from "react";
 import { Button } from "../components/button";
 import { FieldInfo } from "../components/field-info";
 
-export function SignInForm({
-  onForgotPasswordClick,
-  onRegisterClick,
+export function RegisterForm({
+  onBackToSignInClick,
 }: {
-  onForgotPasswordClick?: () => void;
-  onRegisterClick?: () => void;
+  onBackToSignInClick: () => void;
 }) {
   const auth = useAuth();
   const translations = useTranslations();
@@ -40,9 +38,12 @@ export function SignInForm({
     onSubmit: async ({ value }) => {
       setFormError(null);
       try {
-        await fuiSignInWithEmailAndPassword(auth, value.email, value.password, {
-          translations,
-        });
+        await fuiCreateUserWithEmailAndPassword(
+          auth,
+          value.email,
+          value.password,
+          { translations }
+        );
       } catch (error) {
         if (error instanceof FirebaseUIError) {
           setFormError(error.message);
@@ -90,27 +91,9 @@ export function SignInForm({
           name="password"
           children={(field) => (
             <>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <label className="fui-form__label" htmlFor={field.name}>
-                  {getTranslation("labels", "password", translations)}
-                </label>
-                {onForgotPasswordClick && (
-                  <button
-                    type="button"
-                    onClick={onForgotPasswordClick}
-                    className="fui-link"
-                    style={{ fontSize: "14px" }}
-                  >
-                    {getTranslation("labels", "forgotPassword", translations)}
-                  </button>
-                )}
-              </div>
+              <label className="fui-form__label" htmlFor={field.name}>
+                {getTranslation("labels", "password", translations)}
+              </label>
               <input
                 className={`fui-form__input ${
                   field.state.meta.errors.length ? "fui-form__input--error" : ""
@@ -129,7 +112,7 @@ export function SignInForm({
       </div>
 
       <Button type="submit" variant="primary">
-        {getTranslation("labels", "signIn", translations)}
+        {getTranslation("labels", "createAccount", translations)}
       </Button>
 
       {formError && (
@@ -141,26 +124,24 @@ export function SignInForm({
         </div>
       )}
 
-      {onRegisterClick && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "var(--fui-spacing-sm)",
-            fontSize: "14px",
-          }}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginTop: "var(--fui-spacing-sm)",
+          fontSize: "14px",
+        }}
+      >
+        {getTranslation("prompts", "haveAccount", translations)}{" "}
+        <button
+          type="button"
+          onClick={onBackToSignInClick}
+          className="fui-link"
+          style={{ marginLeft: "4px" }}
         >
-          {getTranslation("prompts", "noAccount", translations)}{" "}
-          <button
-            type="button"
-            onClick={onRegisterClick}
-            className="fui-link"
-            style={{ marginLeft: "4px" }}
-          >
-            {getTranslation("labels", "register", translations)}
-          </button>
-        </div>
-      )}
+          {getTranslation("labels", "signIn", translations)}
+        </button>
+      </div>
     </form>
   );
 }

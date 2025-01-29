@@ -22,6 +22,7 @@ import { FirebaseUIError } from './errors';
 import { type TranslationsConfig } from './translations';
 
 function handleFirebaseError(error: any, translations?: TranslationsConfig): never {
+  // TODO: Debug this weird name thing
   if (error?.name === 'FirebaseError') {
     throw new FirebaseUIError(error, translations);
   }
@@ -32,7 +33,9 @@ export async function fuiSignInWithEmailAndPassword(
   auth: Auth,
   email: string,
   password: string,
-  translations?: TranslationsConfig
+  opts?: {
+    translations?: TranslationsConfig;
+  }
 ): Promise<UserCredential> {
   try {
     const currentUser = auth.currentUser;
@@ -44,7 +47,7 @@ export async function fuiSignInWithEmailAndPassword(
 
     return await signInWithCredential(auth, credential);
   } catch (error) {
-    handleFirebaseError(error, translations);
+    handleFirebaseError(error, opts?.translations);
   }
 }
 
@@ -52,7 +55,9 @@ export async function fuiCreateUserWithEmailAndPassword(
   auth: Auth,
   email: string,
   password: string,
-  translations?: TranslationsConfig
+  opts?: {
+    translations?: TranslationsConfig;
+  }
 ): Promise<UserCredential> {
   try {
     const currentUser = auth.currentUser;
@@ -64,7 +69,7 @@ export async function fuiCreateUserWithEmailAndPassword(
 
     return await createUserWithEmailAndPassword(auth, email, password);
   } catch (error) {
-    handleFirebaseError(error, translations);
+    handleFirebaseError(error, opts?.translations);
   }
 }
 
@@ -72,7 +77,9 @@ export async function fuiSignInWithPhoneNumber(
   auth: Auth,
   phoneNumber: string,
   recaptchaVerifier: ApplicationVerifier,
-  translations?: TranslationsConfig
+  opts?: {
+    translations?: TranslationsConfig;
+  }
 ): Promise<ConfirmationResult> {
   try {
     const currentUser = auth.currentUser;
@@ -86,14 +93,16 @@ export async function fuiSignInWithPhoneNumber(
 
     return confirmationResult;
   } catch (error) {
-    handleFirebaseError(error, translations);
+    handleFirebaseError(error, opts?.translations);
   }
 }
 
 export async function fuiConfirmPhoneNumber(
   confirmationResult: ConfirmationResult,
   verificationCode: string,
-  translations?: TranslationsConfig
+  opts?: {
+    translations?: TranslationsConfig;
+  }
 ): Promise<UserCredential> {
   try {
     const auth = getAuth();
@@ -111,26 +120,30 @@ export async function fuiConfirmPhoneNumber(
     window.localStorage.removeItem('anonymousUpgrade');
     return result;
   } catch (error) {
-    handleFirebaseError(error, translations);
+    handleFirebaseError(error, opts?.translations);
   }
 }
 
 export async function fuiSendPasswordResetEmail(
   auth: Auth,
   email: string,
-  translations?: TranslationsConfig
+  opts?: {
+    translations?: TranslationsConfig;
+  }
 ): Promise<void> {
   try {
     await sendPasswordResetEmail(auth, email);
   } catch (error) {
-    handleFirebaseError(error, translations);
+    handleFirebaseError(error, opts?.translations);
   }
 }
 
 export async function fuiSendSignInLinkToEmail(
   auth: Auth,
   email: string,
-  translations?: TranslationsConfig
+  opts?: {
+    translations?: TranslationsConfig;
+  }
 ): Promise<void> {
   try {
     const currentUser = auth.currentUser;
@@ -146,7 +159,7 @@ export async function fuiSendSignInLinkToEmail(
     await sendSignInLinkToEmail(auth, email, actionCodeSettings);
     window.localStorage.setItem('emailForSignIn', email);
   } catch (error) {
-    handleFirebaseError(error, translations);
+    handleFirebaseError(error, opts?.translations);
   }
 }
 
@@ -158,7 +171,9 @@ export async function fuiSignInWithEmailLink(
   auth: Auth,
   email: string,
   link: string,
-  translations?: TranslationsConfig
+  opts?: {
+    translations?: TranslationsConfig;
+  }
 ): Promise<UserCredential> {
   try {
     const currentUser = auth.currentUser;
@@ -175,15 +190,20 @@ export async function fuiSignInWithEmailLink(
     window.localStorage.removeItem('emailLinkAnonymousUpgrade');
     return result;
   } catch (error) {
-    handleFirebaseError(error, translations);
+    handleFirebaseError(error, opts?.translations);
   }
 }
 
-export async function fuiSignInAnonymously(auth: Auth, translations?: TranslationsConfig): Promise<UserCredential> {
+export async function fuiSignInAnonymously(
+  auth: Auth,
+  opts?: {
+    translations?: TranslationsConfig;
+  }
+): Promise<UserCredential> {
   try {
     return await signInAnonymously(auth);
   } catch (error) {
-    handleFirebaseError(error, translations);
+    handleFirebaseError(error, opts?.translations);
   }
 }
 
@@ -191,29 +211,33 @@ export async function fuiUpgradeAnonymousUser(
   auth: Auth,
   email: string,
   password: string,
-  translations?: TranslationsConfig
+  opts?: {
+    translations?: TranslationsConfig;
+  }
 ): Promise<UserCredential> {
   const currentUser = auth.currentUser;
   if (!currentUser?.isAnonymous) {
-    throw new FirebaseUIError({ code: 'auth/not-anonymous' }, translations);
+    throw new FirebaseUIError({ code: 'auth/not-anonymous' }, opts?.translations);
   }
   try {
     const credential = EmailAuthProvider.credential(email, password);
     return await linkWithCredential(currentUser, credential);
   } catch (error) {
-    handleFirebaseError(error, translations);
+    handleFirebaseError(error, opts?.translations);
   }
 }
 
 export async function fuiSignInWithOAuth(
   auth: Auth,
-  translations?: TranslationsConfig,
-  provider?: OAuthProvider | GoogleAuthProvider
+  opts?: {
+    translations?: TranslationsConfig;
+    provider?: OAuthProvider | GoogleAuthProvider;
+  }
 ): Promise<void> {
-  const oAuthProvider = provider || new GoogleAuthProvider();
+  const oAuthProvider = opts?.provider || new GoogleAuthProvider();
   try {
     await signInWithRedirect(auth, oAuthProvider);
   } catch (error) {
-    handleFirebaseError(error, translations);
+    handleFirebaseError(error, opts?.translations);
   }
 }
