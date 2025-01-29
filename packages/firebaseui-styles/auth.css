@@ -1,163 +1,87 @@
 /* Full page layout */
 .fui-screen {
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--fui-background);
-  padding: var(--fui-spacing-md);
+  @apply min-h-screen w-full flex items-center justify-center bg-[var(--fui-background)] p-[var(--fui-spacing-md)];
 }
 
 /* Card layout */
 .fui-card {
-  width: 100%;
-  max-width: 28rem;
+  @apply w-full max-w-[28rem];
 }
 
 .fui-card__container {
-  background-color: var(--fui-surface);
-  border-radius: var(--fui-radius-lg);
-  box-shadow: var(--fui-shadow-lg);
-  padding: var(--fui-spacing-lg);
+  @apply bg-[var(--fui-surface)] rounded-[var(--fui-radius-lg)] shadow-[var(--fui-shadow-lg)] p-[var(--fui-spacing-lg)];
 }
 
 .fui-card__header {
-  margin-bottom: var(--fui-spacing-lg);
-  text-align: center;
+  @apply mb-[var(--fui-spacing-lg)] text-center;
 }
 
 .fui-card__title {
-  font-size: 1.5rem;
-  line-height: 2rem;
-  font-weight: 600;
-  color: var(--fui-text);
-  margin-bottom: var(--fui-spacing-xs);
+  @apply text-2xl leading-8 font-semibold text-[var(--fui-text)] mb-[var(--fui-spacing-xs)];
 }
 
 .fui-card__subtitle {
-  color: var(--fui-text-secondary);
-  font-size: 0.875rem;
+  @apply text-[var(--fui-text-secondary)] text-sm;
 }
 
 /* Add link styles */
 .fui-link {
-  color: var(--fui-primary);
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
+  @apply text-[var(--fui-primary)] bg-transparent border-none p-0 cursor-pointer no-underline hover:underline;
 }
 
 /* Sign In Form - Form elements */
 .fui-form__group {
-  margin-bottom: var(--fui-spacing-md);
+  @apply mb-[var(--fui-spacing-md)];
 }
 
 .fui-form__label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--fui-text);
-  margin-bottom: var(--fui-spacing-xs);
+  @apply block text-sm font-medium text-[var(--fui-text)] mb-[var(--fui-spacing-xs)];
 }
 
 .fui-form__input {
-  width: 100%;
-  padding: var(--fui-spacing-xs) var(--fui-spacing-sm);
-  border: 1px solid var(--fui-border);
-  border-radius: var(--fui-radius-sm);
-  color: var(--fui-text);
-  background-color: var(--fui-surface);
-
-  &:focus {
-    outline: none;
-    border-color: var(--fui-primary);
-    box-shadow: 0 0 0 1px var(--fui-primary);
-  }
+  @apply w-full px-[var(--fui-spacing-sm)] py-[var(--fui-spacing-xs)] border border-[var(--fui-border)] rounded-[var(--fui-radius-sm)] text-[var(--fui-text)] bg-[var(--fui-surface)] focus:outline-none focus:border-[var(--fui-primary)] focus:ring-1 focus:ring-[var(--fui-primary)];
 }
 
 /* Need to be separate selectors */
 .fui-form__input--error {
-  border-color: var(--fui-error);
+  @apply border-[var(--fui-error)];
 }
 
 .fui-form__input--error:focus {
-  border-color: var(--fui-error);
-  box-shadow: 0 0 0 1px var(--fui-error);
+  @apply border-[var(--fui-error)] ring-1 ring-[var(--fui-error)];
 }
 
 .fui-form__error {
-  margin-top: 0.25rem;
-  font-size: 0.875rem;
-  color: var(--fui-error);
+  @apply mt-1 text-sm text-[var(--fui-error)];
 }
 
 .fui-form__button {
-  width: 100%;
-  padding: var(--fui-spacing-sm) var(--fui-spacing-md);
-  background-color: var(--fui-primary);
-  color: white;
-  font-weight: 500;
-  border-radius: var(--fui-radius-sm);
-  transition: background-color 200ms;
-  cursor: pointer;
-
-  &:hover {
-    background-color: var(--fui-primary-hover);
-  }
+  @apply w-full px-[var(--fui-spacing-md)] py-[var(--fui-spacing-sm)] bg-[var(--fui-primary)] text-white font-medium rounded-[var(--fui-radius-sm)] transition-colors duration-200 cursor-pointer hover:bg-[var(--fui-primary-hover)];
 }
 
 .fui-form__button--secondary {
-  background-color: var(--fui-secondary);
-  color: var(--fui-text);
+  @apply bg-[var(--fui-secondary)] text-[var(--fui-text)];
 }
 
 .fui-form__divider {
-  display: flex;
-  align-items: center;
-  margin: var(--fui-spacing-lg) 0;
+  @apply flex items-center my-[var(--fui-spacing-lg)];
+}
 
-  &::before,
-  &::after {
-    content: '';
-    flex: 1;
-    border-top: 1px solid var(--fui-border);
-  }
+.fui-form__divider::before,
+.fui-form__divider::after {
+  @apply flex-1 border-t border-[var(--fui-border)];
+  content: '';
 }
 
 .fui-form__divider-text {
-  padding: 0 var(--fui-spacing-sm);
-  font-size: 0.875rem;
-  color: var(--fui-text-secondary);
+  @apply px-[var(--fui-spacing-sm)] text-sm text-[var(--fui-text-secondary)];
 }
 
 /* Provider Buttons */
 .fui-provider__button {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--fui-spacing-sm);
-  padding: var(--fui-spacing-sm) var(--fui-spacing-md);
-  border: 1px solid var(--fui-border);
-  border-radius: var(--fui-radius-sm);
-  color: var(--fui-text);
-  background-color: var(--fui-surface);
-  transition: background-color 200ms;
-
-  &:hover {
-    background-color: var(--fui-background);
-  }
+  @apply w-full flex items-center justify-center gap-[var(--fui-spacing-sm)] px-[var(--fui-spacing-md)] py-[var(--fui-spacing-sm)] border border-[var(--fui-border)] rounded-[var(--fui-radius-sm)] text-[var(--fui-text)] bg-[var(--fui-surface)] transition-colors duration-200 hover:bg-[var(--fui-background)];
 }
 
 .fui-provider__icon {
-  width: 1.25rem;
-  height: 1.25rem;
+  @apply w-5 h-5;
 }

@@ -1,7 +1,6 @@
 import { useContext, useMemo } from "react";
 import { getAuth } from "firebase/auth";
 import { ConfigContext } from "./context/config-context";
-import { getTranslations } from "@firebase-ui/core";
 
 export function useConfig() {
   return useContext(ConfigContext);
