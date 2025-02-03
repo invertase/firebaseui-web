@@ -1,8 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { initializeUI, getTranslation } from "@firebase-ui/core";
+import { initializeUI } from "@firebase-ui/core";
 import { SignInScreen } from "./auth/sign-in-screen";
-import { useAuth, useTranslations } from "~/hooks";
+import { useAuth } from "~/hooks";
 import { signOut } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { ForgotPasswordScreen } from "./auth/forgot-password-screen";

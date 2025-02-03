@@ -2,7 +2,7 @@
 
 import { useForm } from "@tanstack/react-form";
 import { useEffect, useRef, useState } from "react";
-import { RecaptchaVerifier, PhoneAuthProvider } from "firebase/auth";
+import { RecaptchaVerifier } from "firebase/auth";
 import { useAuth, useTranslations } from "~/hooks";
 import {
   FirebaseUIError,
