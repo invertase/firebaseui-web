@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { getTranslation } from './translations';
 import type { TranslationsConfig } from './translations';
+import { RecaptchaVerifier } from 'firebase/auth';
 
 export const LoginTypes = ['email', 'phone', 'anonymous', 'emailLink', 'google'] as const;
 export type LoginType = (typeof LoginTypes)[number];
@@ -37,6 +38,7 @@ export function createPhoneFormSchema(translations?: TranslationsConfig) {
       .refine((val) => !val || val.length >= 6, {
         message: getTranslation('errors', 'invalidVerificationCode', translations),
       }),
+    recaptchaVerifier: z.instanceof(RecaptchaVerifier),
   });
 }
 
