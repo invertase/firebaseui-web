@@ -25,6 +25,7 @@ export type TranslationStrings = {
     providerAlreadyLinked?: string;
     invalidVerificationCode?: string;
     unknownError?: string;
+    popupClosed?: string;
   };
   messages?: {
     passwordResetEmailSent?: string;
@@ -41,6 +42,14 @@ export type TranslationStrings = {
     resetPassword?: string;
     createAccount?: string;
     backToSignIn?: string;
+    signInWithPhone?: string;
+    phoneNumber?: string;
+    verificationCode?: string;
+    sendCode?: string;
+    verifyCode?: string;
+    signInWithGoogle?: string;
+    signInWithEmailLink?: string;
+    sendSignInLink?: string;
   };
   prompts?: {
     noAccount?: string;
@@ -48,6 +57,9 @@ export type TranslationStrings = {
     enterEmailToReset?: string;
     signInToAccount?: string;
     enterDetailsToCreate?: string;
+    enterPhoneNumber?: string;
+    enterVerificationCode?: string;
+    enterEmailForLink?: string;
   };
 };
 

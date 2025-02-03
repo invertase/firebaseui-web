@@ -32,12 +32,9 @@ export function createPhoneFormSchema(translations?: TranslationsConfig) {
       .string()
       .min(1, { message: getTranslation('errors', 'missingPhoneNumber', translations) })
       .min(10, { message: getTranslation('errors', 'invalidPhoneNumber', translations) }),
-    verificationCode: z
-      .string()
-      .optional()
-      .refine((val) => !val || val.length >= 6, {
-        message: getTranslation('errors', 'invalidVerificationCode', translations),
-      }),
+    verificationCode: z.string().refine((val) => !val || val.length >= 6, {
+      message: getTranslation('errors', 'invalidVerificationCode', translations),
+    }),
     recaptchaVerifier: z.instanceof(RecaptchaVerifier),
   });
 }

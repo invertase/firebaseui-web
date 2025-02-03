@@ -1,12 +1,15 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { initializeUI } from "@firebase-ui/core";
+import { initializeUI, getTranslation } from "@firebase-ui/core";
 import { SignInScreen } from "./auth/sign-in-screen";
-import { useAuth } from "~/hooks";
+import { useAuth, useTranslations } from "~/hooks";
 import { signOut } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { ForgotPasswordScreen } from "./auth/forgot-password-screen";
 import { RegisterScreen } from "./auth/register-screen";
+import { PhoneScreen } from "./auth/phone-screen";
+import { GoogleScreen } from "./auth/google-screen";
+import { EmailLinkScreen } from "./auth/email-link-screen";
 import { Button } from "./components/button";
 
 import "./styles.css";
@@ -75,7 +78,10 @@ function App() {
         user &&
         (path === "/signin" ||
           path === "/forgot-password" ||
-          path === "/register")
+          path === "/register" ||
+          path === "/phone" ||
+          path === "/google" ||
+          path === "/email-link")
       ) {
         navigate("/");
       } else if (!user && path === "/") {
@@ -99,6 +105,18 @@ function App() {
 
   if (path === "/register") {
     return <RegisterScreen onBackToSignInClick={() => navigate("/signin")} />;
+  }
+
+  if (path === "/phone") {
+    return <PhoneScreen />;
+  }
+
+  if (path === "/google") {
+    return <GoogleScreen />;
+  }
+
+  if (path === "/email-link") {
+    return <EmailLinkScreen />;
   }
 
   if (isSignedIn) {
