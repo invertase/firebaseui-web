@@ -1,7 +1,6 @@
 import { z } from 'zod';
-import type { createPhoneFormStore } from './phone-form-store';
-import { getTranslation } from '../translations';
-import type { TranslationsConfig } from '../translations';
+import { getTranslation } from './translations';
+import type { TranslationsConfig } from './translations';
 
 export const LoginTypes = ['email', 'phone', 'anonymous', 'emailLink', 'google'] as const;
 export type LoginType = (typeof LoginTypes)[number];
@@ -45,5 +44,3 @@ export type EmailFormSchema = z.infer<ReturnType<typeof createEmailFormSchema>>;
 export type ForgotPasswordFormSchema = z.infer<ReturnType<typeof createForgotPasswordFormSchema>>;
 export type EmailLinkFormSchema = z.infer<ReturnType<typeof createEmailLinkFormSchema>>;
 export type PhoneFormSchema = z.infer<ReturnType<typeof createPhoneFormSchema>>;
-
-export type FormStoreType = ReturnType<typeof createPhoneFormStore>;
