@@ -3,7 +3,7 @@
 import { useForm } from "@tanstack/react-form";
 import { useEffect, useRef, useState } from "react";
 import { RecaptchaVerifier } from "firebase/auth";
-import { useAuth, useTranslations } from "~/hooks";
+import { useAuth, useConfig, useTranslations } from "~/hooks";
 import {
   FirebaseUIError,
   getTranslation,
@@ -18,6 +18,7 @@ import { z } from "zod";
 export function PhoneForm() {
   const auth = useAuth();
   const translations = useTranslations();
+  const { language } = useConfig();
   const [confirmationResult, setConfirmationResult] = useState<any>();
   const [formError, setFormError] = useState<string | null>(null);
   const recaptchaContainerRef = useRef<HTMLDivElement>(null);
@@ -45,7 +46,7 @@ export function PhoneForm() {
           auth,
           value.phoneNumber,
           value.recaptchaVerifier,
-          { translations }
+          { translations, language }
         );
         setConfirmationResult(result);
       } catch (error) {
@@ -74,7 +75,7 @@ export function PhoneForm() {
         await fuiConfirmPhoneNumber(
           confirmationResult,
           value.verificationCode,
-          { translations }
+          { translations, language }
         );
       } catch (error) {
         if (error instanceof FirebaseUIError) {
@@ -119,7 +120,12 @@ export function PhoneForm() {
             children={(field) => (
               <>
                 <label className="fui-form__label" htmlFor={field.name}>
-                  {getTranslation("labels", "phoneNumber", translations)}
+                  {getTranslation(
+                    "labels",
+                    "phoneNumber",
+                    translations,
+                    language
+                  )}
                 </label>
                 <input
                   className={`fui-form__input ${
@@ -144,7 +150,7 @@ export function PhoneForm() {
 
         <div className="flex flex-col gap-2">
           <Button type="submit" variant="primary" disabled={!recaptchaVerifier}>
-            {getTranslation("labels", "sendCode", translations)}
+            {getTranslation("labels", "sendCode", translations, language)}
           </Button>
         </div>
 
@@ -175,7 +181,12 @@ export function PhoneForm() {
           children={(field) => (
             <>
               <label className="fui-form__label" htmlFor={field.name}>
-                {getTranslation("labels", "verificationCode", translations)}
+                {getTranslation(
+                  "labels",
+                  "verificationCode",
+                  translations,
+                  language
+                )}
               </label>
               <input
                 className={`fui-form__input ${
@@ -196,7 +207,7 @@ export function PhoneForm() {
 
       <div className="flex flex-col gap-2">
         <Button type="submit" variant="primary">
-          {getTranslation("labels", "verifyCode", translations)}
+          {getTranslation("labels", "verifyCode", translations, language)}
         </Button>
       </div>
 

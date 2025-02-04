@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth, useTranslations } from "~/hooks";
+import { useAuth, useConfig, useTranslations } from "~/hooks";
 import {
   FirebaseUIError,
   fuiSignInWithOAuth,
@@ -13,6 +13,7 @@ import { GoogleAuthProvider } from "firebase/auth";
 export function GoogleForm() {
   const auth = useAuth();
   const translations = useTranslations();
+  const { language } = useConfig();
   const [formError, setFormError] = useState<string | null>(null);
 
   const handleGoogleSignIn = async () => {
@@ -20,6 +21,7 @@ export function GoogleForm() {
     try {
       await fuiSignInWithOAuth(auth, {
         translations,
+        language,
         provider: new GoogleAuthProvider(),
       });
     } catch (error) {
@@ -60,7 +62,7 @@ export function GoogleForm() {
               d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"
             />
           </svg>
-          {getTranslation("labels", "signInWithGoogle", translations)}
+          {getTranslation("labels", "signInWithGoogle", translations, language)}
         </Button>
       </div>
 

@@ -1,8 +1,9 @@
-import { useTranslations } from "~/hooks";
+import { useConfig, useTranslations } from "~/hooks";
 import { getTranslation } from "@firebase-ui/core";
 import { EmailLinkForm } from "./email-link-form";
 
 export function EmailLinkScreen() {
+  const { language } = useConfig();
   const translations = useTranslations();
 
   return (
@@ -11,10 +12,20 @@ export function EmailLinkScreen() {
         <div className="fui-card__container">
           <div className="fui-card__header">
             <h2 className="fui-card__title">
-              {getTranslation("labels", "signInWithEmailLink", translations)}
+              {getTranslation(
+                "labels",
+                "signInWithEmailLink",
+                translations,
+                language
+              )}
             </h2>
             <p className="fui-card__subtitle">
-              {getTranslation("prompts", "enterEmailForLink", translations)}
+              {getTranslation(
+                "prompts",
+                "enterEmailForLink",
+                translations,
+                language
+              )}
             </p>
           </div>
           <EmailLinkForm />

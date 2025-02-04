@@ -8,7 +8,7 @@ import {
   getTranslation,
   createForgotPasswordFormSchema,
 } from "@firebase-ui/core";
-import { useAuth, useTranslations } from "~/hooks";
+import { useAuth, useConfig, useTranslations } from "~/hooks";
 import { useMemo, useState } from "react";
 import { Button } from "../components/button";
 import { FieldInfo } from "../components/field-info";
@@ -16,6 +16,7 @@ import { FieldInfo } from "../components/field-info";
 export function ForgotPasswordForm() {
   const auth = useAuth();
   const translations = useTranslations();
+  const { language } = useConfig();
   const [formError, setFormError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
   const forgotPasswordFormSchema = useMemo(
@@ -34,7 +35,10 @@ export function ForgotPasswordForm() {
     onSubmit: async ({ value }) => {
       setFormError(null);
       try {
-        await fuiSendPasswordResetEmail(auth, value.email, { translations });
+        await fuiSendPasswordResetEmail(auth, value.email, {
+          translations,
+          language,
+        });
         setEmailSent(true);
       } catch (error) {
         if (error instanceof FirebaseUIError) {
@@ -47,7 +51,12 @@ export function ForgotPasswordForm() {
   if (emailSent) {
     return (
       <div className="fui-form__success">
-        {getTranslation("messages", "checkEmailForReset", translations)}
+        {getTranslation(
+          "messages",
+          "checkEmailForReset",
+          translations,
+          language
+        )}
       </div>
     );
   }
@@ -67,7 +76,12 @@ export function ForgotPasswordForm() {
           children={(field) => (
             <>
               <label className="fui-form__label" htmlFor={field.name}>
-                {getTranslation("labels", "emailAddress", translations)}
+                {getTranslation(
+                  "labels",
+                  "emailAddress",
+                  translations,
+                  language
+                )}
               </label>
               <input
                 className={`fui-form__input ${
@@ -87,7 +101,7 @@ export function ForgotPasswordForm() {
       </div>
 
       <Button type="submit" variant="primary">
-        {getTranslation("labels", "resetPassword", translations)}
+        {getTranslation("labels", "resetPassword", translations, language)}
       </Button>
 
       {formError && (

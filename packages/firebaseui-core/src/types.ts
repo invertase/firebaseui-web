@@ -65,21 +65,7 @@ export type TranslationStrings = {
 
 export interface FUIConfig {
   app?: FirebaseApp;
+  language?: string;
   enableAutoAnonymousLogin?: boolean;
-  providers?: {
-    emailPassword?: {
-      allowRegistration?: boolean;
-    };
-  };
   translations?: Partial<Record<string, Partial<TranslationStrings>>>;
 }
-
-export type AuthResult = {
-  success: boolean;
-  data?: UserCredential | ConfirmationResult | undefined;
-  error?: {
-    code: string;
-    message: string;
-  };
-  message?: string;
-};

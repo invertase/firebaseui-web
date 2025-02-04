@@ -8,7 +8,7 @@ import {
   getTranslation,
   createEmailFormSchema,
 } from "@firebase-ui/core";
-import { useAuth, useTranslations } from "~/hooks";
+import { useAuth, useConfig, useTranslations } from "~/hooks";
 import { useMemo, useState } from "react";
 import { Button } from "../components/button";
 import { FieldInfo } from "../components/field-info";
@@ -19,6 +19,7 @@ export function RegisterForm({
   onBackToSignInClick: () => void;
 }) {
   const auth = useAuth();
+  const { language } = useConfig();
   const translations = useTranslations();
   const [formError, setFormError] = useState<string | null>(null);
   const emailFormSchema = useMemo(
@@ -42,7 +43,7 @@ export function RegisterForm({
           auth,
           value.email,
           value.password,
-          { translations }
+          { translations, language }
         );
       } catch (error) {
         if (error instanceof FirebaseUIError) {
@@ -67,7 +68,12 @@ export function RegisterForm({
           children={(field) => (
             <>
               <label className="fui-form__label" htmlFor={field.name}>
-                {getTranslation("labels", "emailAddress", translations)}
+                {getTranslation(
+                  "labels",
+                  "emailAddress",
+                  translations,
+                  language
+                )}
               </label>
               <input
                 className={`fui-form__input ${
@@ -92,7 +98,7 @@ export function RegisterForm({
           children={(field) => (
             <>
               <label className="fui-form__label" htmlFor={field.name}>
-                {getTranslation("labels", "password", translations)}
+                {getTranslation("labels", "password", translations, language)}
               </label>
               <input
                 className={`fui-form__input ${
@@ -112,7 +118,7 @@ export function RegisterForm({
       </div>
 
       <Button type="submit" variant="primary">
-        {getTranslation("labels", "createAccount", translations)}
+        {getTranslation("labels", "createAccount", translations, language)}
       </Button>
 
       {formError && (
@@ -132,14 +138,14 @@ export function RegisterForm({
           fontSize: "14px",
         }}
       >
-        {getTranslation("prompts", "haveAccount", translations)}{" "}
+        {getTranslation("prompts", "haveAccount", translations, language)}{" "}
         <button
           type="button"
           onClick={onBackToSignInClick}
           className="fui-link"
           style={{ marginLeft: "4px" }}
         >
-          {getTranslation("labels", "signIn", translations)}
+          {getTranslation("labels", "signIn", translations, language)}
         </button>
       </div>
     </form>

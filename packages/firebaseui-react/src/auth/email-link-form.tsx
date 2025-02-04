@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-import { useAuth, useTranslations } from "~/hooks";
+import { useAuth, useConfig, useTranslations } from "~/hooks";
 import {
   FirebaseUIError,
   getTranslation,
@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 
 export function EmailLinkForm() {
   const auth = useAuth();
+  const { language } = useConfig();
   const translations = useTranslations();
   const [formError, setFormError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
@@ -33,7 +34,10 @@ export function EmailLinkForm() {
     onSubmit: async ({ value }) => {
       setFormError(null);
       try {
-        await fuiSendSignInLinkToEmail(auth, value.email, { translations });
+        await fuiSendSignInLinkToEmail(auth, value.email, {
+          translations,
+          language,
+        });
         setEmailSent(true);
       } catch (error) {
         if (error instanceof FirebaseUIError) {
@@ -53,6 +57,7 @@ export function EmailLinkForm() {
         if (fuiIsSignInWithEmailLink(auth, window.location.href)) {
           await fuiSignInWithEmailLink(auth, email, window.location.href, {
             translations,
+            language,
           });
           window.localStorage.removeItem("emailForSignIn");
         }
@@ -70,7 +75,7 @@ export function EmailLinkForm() {
     return (
       <div className="fui-form">
         <div className="text-center mb-4">
-          {getTranslation("messages", "signInLinkSent", translations)}
+          {getTranslation("messages", "signInLinkSent", translations, language)}
         </div>
       </div>
     );
@@ -91,7 +96,12 @@ export function EmailLinkForm() {
           children={(field) => (
             <>
               <label className="fui-form__label" htmlFor={field.name}>
-                {getTranslation("labels", "emailAddress", translations)}
+                {getTranslation(
+                  "labels",
+                  "emailAddress",
+                  translations,
+                  language
+                )}
               </label>
               <input
                 className={`fui-form__input ${
@@ -112,7 +122,7 @@ export function EmailLinkForm() {
 
       <div className="flex flex-col gap-2">
         <Button type="submit" variant="primary">
-          {getTranslation("labels", "sendSignInLink", translations)}
+          {getTranslation("labels", "sendSignInLink", translations, language)}
         </Button>
       </div>
 
