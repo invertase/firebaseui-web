@@ -19,10 +19,9 @@ export function GoogleForm() {
   const handleGoogleSignIn = async () => {
     setFormError(null);
     try {
-      await fuiSignInWithOAuth(auth, {
+      await fuiSignInWithOAuth(auth, new GoogleAuthProvider(), {
         translations,
         language,
-        provider: new GoogleAuthProvider(),
       });
     } catch (error) {
       if (error instanceof FirebaseUIError) {

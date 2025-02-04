@@ -217,15 +217,14 @@ export async function fuiSignInAnonymously(
 
 export async function fuiSignInWithOAuth(
   auth: Auth,
+  provider: OAuthProvider | GoogleAuthProvider,
   opts?: {
     language?: string;
     translations?: TranslationsConfig;
-    provider?: OAuthProvider | GoogleAuthProvider;
   }
 ): Promise<void> {
-  const oAuthProvider = opts?.provider || new GoogleAuthProvider();
   try {
-    await signInWithRedirect(auth, oAuthProvider);
+    await signInWithRedirect(auth, provider);
   } catch (error) {
     handleFirebaseError(error, opts?.translations, opts?.language);
   }
