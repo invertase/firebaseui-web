@@ -1,5 +1,4 @@
 import { FirebaseApp } from 'firebase/app';
-import { UserCredential, ConfirmationResult } from 'firebase/auth';
 
 export type TranslationStrings = {
   errors?: {
@@ -67,5 +66,6 @@ export interface FUIConfig {
   app?: FirebaseApp;
   language?: string;
   enableAutoAnonymousLogin?: boolean;
+  enableAutoUpgradeAnonymous?: boolean;
   translations?: Partial<Record<string, Partial<TranslationStrings>>>;
 }

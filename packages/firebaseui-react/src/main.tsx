@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { initializeUI } from "@firebase-ui/core";
 import { SignInScreen } from "./auth/sign-in-screen";
 import { useAuth } from "~/hooks";
-import { signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { ForgotPasswordScreen } from "./auth/forgot-password-screen";
 import { RegisterScreen } from "./auth/register-screen";
@@ -32,6 +32,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const config = initializeUI({
   app,
+  enableAutoAnonymousLogin: true,
+  enableAutoUpgradeAnonymous: true,
   translations: {
     en: {
       labels: {
@@ -72,10 +74,11 @@ function App() {
   const { path, navigate } = useRouter();
 
   useEffect(() => {
-    auth.onAuthStateChanged((user) => {
+    onAuthStateChanged(auth, (user) => {
       setIsSignedIn(!!user);
       if (
         user &&
+        !user.isAnonymous &&
         (path === "/signin" ||
           path === "/forgot-password" ||
           path === "/register" ||
@@ -120,6 +123,20 @@ function App() {
   }
 
   if (isSignedIn) {
+    const user = auth.currentUser;
+    if (user?.isAnonymous) {
+      return (
+        <div className="flex flex-col items-center justify-center gap-4 p-4">
+          <div className="text-lg font-medium">
+            You are signed in anonymously
+          </div>
+          <SignInScreen
+            onForgotPasswordClick={() => navigate("/forgot-password")}
+            onRegisterClick={() => navigate("/register")}
+          />
+        </div>
+      );
+    }
     return (
       <div className="flex flex-col items-center justify-center gap-4 p-4">
         <div className="text-lg font-medium">Signed in successfully</div>

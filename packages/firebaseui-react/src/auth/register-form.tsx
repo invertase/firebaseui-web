@@ -19,7 +19,7 @@ export function RegisterForm({
   onBackToSignInClick: () => void;
 }) {
   const auth = useAuth();
-  const { language } = useConfig();
+  const { language, enableAutoUpgradeAnonymous } = useConfig();
   const translations = useTranslations();
   const [formError, setFormError] = useState<string | null>(null);
   const emailFormSchema = useMemo(
@@ -43,7 +43,11 @@ export function RegisterForm({
           auth,
           value.email,
           value.password,
-          { translations, language }
+          {
+            translations,
+            language,
+            enableAutoUpgradeAnonymous,
+          }
         );
       } catch (error) {
         if (error instanceof FirebaseUIError) {

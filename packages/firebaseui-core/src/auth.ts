@@ -36,13 +36,14 @@ export async function fuiSignInWithEmailAndPassword(
   opts?: {
     language?: string;
     translations?: TranslationsConfig;
+    enableAutoUpgradeAnonymous?: boolean;
   }
 ): Promise<UserCredential> {
   try {
     const currentUser = auth.currentUser;
     const credential = EmailAuthProvider.credential(email, password);
 
-    if (currentUser?.isAnonymous) {
+    if (currentUser?.isAnonymous && opts?.enableAutoUpgradeAnonymous) {
       return await linkWithCredential(currentUser, credential);
     }
 
@@ -59,13 +60,14 @@ export async function fuiCreateUserWithEmailAndPassword(
   opts?: {
     language?: string;
     translations?: TranslationsConfig;
+    enableAutoUpgradeAnonymous?: boolean;
   }
 ): Promise<UserCredential> {
   try {
     const currentUser = auth.currentUser;
     const credential = EmailAuthProvider.credential(email, password);
 
-    if (currentUser?.isAnonymous) {
+    if (currentUser?.isAnonymous && opts?.enableAutoUpgradeAnonymous) {
       return await linkWithCredential(currentUser, credential);
     }
 
@@ -82,13 +84,14 @@ export async function fuiSignInWithPhoneNumber(
   opts?: {
     language?: string;
     translations?: TranslationsConfig;
+    enableAutoUpgradeAnonymous?: boolean;
   }
 ): Promise<ConfirmationResult> {
   try {
     const currentUser = auth.currentUser;
     const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
 
-    if (currentUser?.isAnonymous) {
+    if (currentUser?.isAnonymous && opts?.enableAutoUpgradeAnonymous) {
       window.localStorage.setItem('anonymousUpgrade', 'true');
     } else {
       window.localStorage.removeItem('anonymousUpgrade');
@@ -106,6 +109,7 @@ export async function fuiConfirmPhoneNumber(
   opts?: {
     language?: string;
     translations?: TranslationsConfig;
+    enableAutoUpgradeAnonymous?: boolean;
   }
 ): Promise<UserCredential> {
   try {
@@ -114,7 +118,7 @@ export async function fuiConfirmPhoneNumber(
     const isAnonymousUpgrade = window.localStorage.getItem('anonymousUpgrade') === 'true';
     const credential = PhoneAuthProvider.credential(confirmationResult.verificationId, verificationCode);
 
-    if (currentUser?.isAnonymous && isAnonymousUpgrade) {
+    if (currentUser?.isAnonymous && isAnonymousUpgrade && opts?.enableAutoUpgradeAnonymous) {
       const result = await linkWithCredential(currentUser, credential);
       window.localStorage.removeItem('anonymousUpgrade');
       return result;
@@ -149,6 +153,7 @@ export async function fuiSendSignInLinkToEmail(
   opts?: {
     language?: string;
     translations?: TranslationsConfig;
+    enableAutoUpgradeAnonymous?: boolean;
   }
 ): Promise<void> {
   try {
@@ -157,7 +162,7 @@ export async function fuiSendSignInLinkToEmail(
       url: window.location.href,
       handleCodeInApp: true,
     };
-    if (currentUser?.isAnonymous) {
+    if (currentUser?.isAnonymous && opts?.enableAutoUpgradeAnonymous) {
       window.localStorage.setItem('emailLinkAnonymousUpgrade', 'true');
     } else {
       window.localStorage.removeItem('emailLinkAnonymousUpgrade');
@@ -180,6 +185,7 @@ export async function fuiSignInWithEmailLink(
   opts?: {
     language?: string;
     translations?: TranslationsConfig;
+    enableAutoUpgradeAnonymous?: boolean;
   }
 ): Promise<UserCredential> {
   try {
@@ -187,7 +193,7 @@ export async function fuiSignInWithEmailLink(
     const isAnonymousUpgrade = window.localStorage.getItem('emailLinkAnonymousUpgrade') === 'true';
     const credential = EmailAuthProvider.credentialWithLink(email, link);
 
-    if (currentUser?.isAnonymous && isAnonymousUpgrade) {
+    if (currentUser?.isAnonymous && isAnonymousUpgrade && opts?.enableAutoUpgradeAnonymous) {
       const result = await linkWithCredential(currentUser, credential);
       window.localStorage.removeItem('emailLinkAnonymousUpgrade');
       return result;

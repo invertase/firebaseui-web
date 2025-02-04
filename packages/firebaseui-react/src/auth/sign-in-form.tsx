@@ -22,7 +22,7 @@ export function SignInForm({
 }) {
   const auth = useAuth();
   const translations = useTranslations();
-  const { language } = useConfig();
+  const { language, enableAutoUpgradeAnonymous } = useConfig();
   const [formError, setFormError] = useState<string | null>(null);
   const emailFormSchema = useMemo(
     () => createEmailFormSchema(translations),
@@ -44,6 +44,7 @@ export function SignInForm({
         await fuiSignInWithEmailAndPassword(auth, value.email, value.password, {
           translations,
           language,
+          enableAutoUpgradeAnonymous,
         });
       } catch (error) {
         if (error instanceof FirebaseUIError) {

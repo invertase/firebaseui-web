@@ -18,7 +18,7 @@ import { z } from "zod";
 export function PhoneForm() {
   const auth = useAuth();
   const translations = useTranslations();
-  const { language } = useConfig();
+  const { language, enableAutoUpgradeAnonymous } = useConfig();
   const [confirmationResult, setConfirmationResult] = useState<any>();
   const [formError, setFormError] = useState<string | null>(null);
   const recaptchaContainerRef = useRef<HTMLDivElement>(null);
@@ -46,7 +46,11 @@ export function PhoneForm() {
           auth,
           value.phoneNumber,
           value.recaptchaVerifier,
-          { translations, language }
+          {
+            translations,
+            language,
+            enableAutoUpgradeAnonymous,
+          }
         );
         setConfirmationResult(result);
       } catch (error) {
@@ -75,7 +79,11 @@ export function PhoneForm() {
         await fuiConfirmPhoneNumber(
           confirmationResult,
           value.verificationCode,
-          { translations, language }
+          {
+            translations,
+            language,
+            enableAutoUpgradeAnonymous,
+          }
         );
       } catch (error) {
         if (error instanceof FirebaseUIError) {

@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 
 export function EmailLinkForm() {
   const auth = useAuth();
-  const { language } = useConfig();
+  const { language, enableAutoUpgradeAnonymous } = useConfig();
   const translations = useTranslations();
   const [formError, setFormError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
@@ -37,6 +37,7 @@ export function EmailLinkForm() {
         await fuiSendSignInLinkToEmail(auth, value.email, {
           translations,
           language,
+          enableAutoUpgradeAnonymous,
         });
         setEmailSent(true);
       } catch (error) {
@@ -58,6 +59,7 @@ export function EmailLinkForm() {
           await fuiSignInWithEmailLink(auth, email, window.location.href, {
             translations,
             language,
+            enableAutoUpgradeAnonymous,
           });
           window.localStorage.removeItem("emailForSignIn");
         }
