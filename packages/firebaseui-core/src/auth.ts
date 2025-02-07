@@ -8,6 +8,7 @@ import {
   isSignInWithEmailLink,
   signInAnonymously,
   linkWithCredential,
+  linkWithRedirect,
   EmailAuthProvider,
   PhoneAuthProvider,
   OAuthProvider,
@@ -84,20 +85,10 @@ export async function fuiSignInWithPhoneNumber(
   opts?: {
     language?: string;
     translations?: TranslationsConfig;
-    enableAutoUpgradeAnonymous?: boolean;
   }
 ): Promise<ConfirmationResult> {
   try {
-    const currentUser = auth.currentUser;
-    const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
-
-    if (currentUser?.isAnonymous && opts?.enableAutoUpgradeAnonymous) {
-      window.localStorage.setItem('anonymousUpgrade', 'true');
-    } else {
-      window.localStorage.removeItem('anonymousUpgrade');
-    }
-
-    return confirmationResult;
+    return await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
   } catch (error) {
     handleFirebaseError(error, opts?.translations, opts?.language);
   }
@@ -115,18 +106,14 @@ export async function fuiConfirmPhoneNumber(
   try {
     const auth = getAuth();
     const currentUser = auth.currentUser;
-    const isAnonymousUpgrade = window.localStorage.getItem('anonymousUpgrade') === 'true';
     const credential = PhoneAuthProvider.credential(confirmationResult.verificationId, verificationCode);
 
-    if (currentUser?.isAnonymous && isAnonymousUpgrade && opts?.enableAutoUpgradeAnonymous) {
+    if (currentUser?.isAnonymous && opts?.enableAutoUpgradeAnonymous) {
       const result = await linkWithCredential(currentUser, credential);
-      window.localStorage.removeItem('anonymousUpgrade');
       return result;
     }
 
-    const result = await signInWithCredential(auth, credential);
-    window.localStorage.removeItem('anonymousUpgrade');
-    return result;
+    return await signInWithCredential(auth, credential);
   } catch (error) {
     handleFirebaseError(error, opts?.translations, opts?.language);
   }
@@ -227,10 +214,17 @@ export async function fuiSignInWithOAuth(
   opts?: {
     language?: string;
     translations?: TranslationsConfig;
+    enableAutoUpgradeAnonymous?: boolean;
   }
 ): Promise<void> {
   try {
-    await signInWithRedirect(auth, provider);
+    const currentUser = auth.currentUser;
+
+    if (currentUser?.isAnonymous && opts?.enableAutoUpgradeAnonymous) {
+      await linkWithRedirect(currentUser, provider);
+    } else {
+      await signInWithRedirect(auth, provider);
+    }
   } catch (error) {
     handleFirebaseError(error, opts?.translations, opts?.language);
   }
