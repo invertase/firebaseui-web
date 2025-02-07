@@ -49,7 +49,6 @@ export function PhoneForm() {
           {
             translations,
             language,
-            enableAutoUpgradeAnonymous,
           }
         );
         setConfirmationResult(result);
