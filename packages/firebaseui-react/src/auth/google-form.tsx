@@ -13,7 +13,7 @@ import { GoogleAuthProvider } from "firebase/auth";
 export function GoogleForm() {
   const auth = useAuth();
   const translations = useTranslations();
-  const { language } = useConfig();
+  const { language, enableAutoUpgradeAnonymous } = useConfig();
   const [formError, setFormError] = useState<string | null>(null);
 
   const handleGoogleSignIn = async () => {
@@ -22,6 +22,7 @@ export function GoogleForm() {
       await fuiSignInWithOAuth(auth, new GoogleAuthProvider(), {
         translations,
         language,
+        enableAutoUpgradeAnonymous,
       });
     } catch (error) {
       if (error instanceof FirebaseUIError) {
