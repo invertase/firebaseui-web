@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { RecaptchaVerifier } from "firebase/auth";
 import { useAuth, useConfig, useTranslations } from "~/hooks";
 import {
@@ -25,10 +25,14 @@ export function PhoneForm() {
   const [recaptchaVerifier, setRecaptchaVerifier] =
     useState<RecaptchaVerifier>();
 
-  const phoneFormSchema = createPhoneFormSchema(translations).pick({
-    phoneNumber: true,
-    recaptchaVerifier: true,
-  });
+  const phoneFormSchema = useMemo(
+    () =>
+      createPhoneFormSchema(translations).pick({
+        phoneNumber: true,
+        recaptchaVerifier: true,
+      }),
+    [translations]
+  );
 
   const phoneForm = useForm<z.infer<typeof phoneFormSchema>>({
     defaultValues: {
@@ -60,9 +64,13 @@ export function PhoneForm() {
     },
   });
 
-  const verificationFormSchema = createPhoneFormSchema(translations).pick({
-    verificationCode: true,
-  });
+  const verificationFormSchema = useMemo(
+    () =>
+      createPhoneFormSchema(translations).pick({
+        verificationCode: true,
+      }),
+    [translations]
+  );
   const verificationForm = useForm<z.infer<typeof verificationFormSchema>>({
     defaultValues: {
       verificationCode: "",

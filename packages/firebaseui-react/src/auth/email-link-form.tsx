@@ -12,7 +12,7 @@ import {
 } from "@firebase-ui/core";
 import { Button } from "../components/button";
 import { FieldInfo } from "../components/field-info";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 export function EmailLinkForm() {
   const auth = useAuth();
@@ -21,7 +21,10 @@ export function EmailLinkForm() {
   const [formError, setFormError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
 
-  const emailLinkFormSchema = createEmailLinkFormSchema(translations);
+  const emailLinkFormSchema = useMemo(
+    () => createEmailLinkFormSchema(translations),
+    [translations]
+  );
 
   const form = useForm({
     defaultValues: {
