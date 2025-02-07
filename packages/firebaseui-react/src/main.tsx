@@ -1,16 +1,18 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { initializeUI } from "@firebase-ui/core";
-import { SignInScreen } from "./auth/sign-in-screen";
+import { CustomSignInScreen } from "./auth/custom-sign-in-screen";
 import { useAuth } from "~/hooks";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useState, useEffect } from "react";
-import { ForgotPasswordScreen } from "./auth/forgot-password-screen";
-import { RegisterScreen } from "./auth/register-screen";
-import { PhoneScreen } from "./auth/phone-screen";
-import { GoogleScreen } from "./auth/google-screen";
-import { EmailLinkScreen } from "./auth/email-link-screen";
+import { EmailPasswordForm } from "./auth/email-password-form";
+import { ForgotPasswordForm } from "./auth/forgot-password-form";
+import { RegisterForm } from "./auth/register-form";
+import { PhoneForm } from "./auth/phone-form";
+import { GoogleForm } from "./auth/google-form";
+import { EmailLinkForm } from "./auth/email-link-form";
 import { Button } from "./components/button";
+import { Divider } from "./components/divider";
 
 import "./styles.css";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
@@ -95,31 +97,47 @@ function App() {
 
   if (path === "/signin") {
     return (
-      <SignInScreen
-        onForgotPasswordClick={() => navigate("/forgot-password")}
-        onRegisterClick={() => navigate("/register")}
-      />
+      <CustomSignInScreen>
+        <EmailPasswordForm
+          onForgotPasswordClick={() => navigate("/forgot-password")}
+          onRegisterClick={() => navigate("/register")}
+        />
+        <Divider text="or" />
+        <GoogleForm />
+      </CustomSignInScreen>
     );
   }
 
   if (path === "/forgot-password") {
-    return <ForgotPasswordScreen />;
+    return (
+      <CustomSignInScreen>
+        <ForgotPasswordForm />
+      </CustomSignInScreen>
+    );
   }
 
   if (path === "/register") {
-    return <RegisterScreen onBackToSignInClick={() => navigate("/signin")} />;
+    return (
+      <CustomSignInScreen>
+        <RegisterForm onBackToSignInClick={() => navigate("/signin")} />
+      </CustomSignInScreen>
+    );
   }
 
   if (path === "/phone") {
-    return <PhoneScreen />;
-  }
-
-  if (path === "/google") {
-    return <GoogleScreen />;
+    return (
+      <CustomSignInScreen>
+        <PhoneForm />
+      </CustomSignInScreen>
+    );
   }
 
   if (path === "/email-link") {
-    return <EmailLinkScreen />;
+    return (
+      <CustomSignInScreen>
+        <EmailLinkForm />
+      </CustomSignInScreen>
+    );
   }
 
   if (isSignedIn) {
@@ -130,10 +148,13 @@ function App() {
           <div className="text-lg font-medium">
             You are signed in anonymously
           </div>
-          <SignInScreen
-            onForgotPasswordClick={() => navigate("/forgot-password")}
-            onRegisterClick={() => navigate("/register")}
-          />
+          <CustomSignInScreen>
+            <EmailPasswordForm
+              onForgotPasswordClick={() => navigate("/forgot-password")}
+              onRegisterClick={() => navigate("/register")}
+            />
+            <GoogleForm />
+          </CustomSignInScreen>
         </div>
       );
     }

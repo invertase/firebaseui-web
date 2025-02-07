@@ -85,3 +85,15 @@
 .fui-provider__icon {
   @apply w-5 h-5;
 }
+
+.fui-divider {
+  @apply flex items-center gap-[var(--fui-spacing-sm)] my-[var(--fui-spacing-md)];
+}
+
+.fui-divider__line {
+  @apply flex-1 h-px bg-[var(--fui-border)];
+}
+
+.fui-divider__text {
+  @apply text-[var(--fui-text-secondary)] text-sm;
+}

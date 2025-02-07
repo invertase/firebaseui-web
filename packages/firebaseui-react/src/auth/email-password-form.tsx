@@ -13,7 +13,7 @@ import { useMemo, useState } from "react";
 import { Button } from "../components/button";
 import { FieldInfo } from "../components/field-info";
 
-export function SignInForm({
+export function EmailPasswordForm({
   onForgotPasswordClick,
   onRegisterClick,
 }: {
