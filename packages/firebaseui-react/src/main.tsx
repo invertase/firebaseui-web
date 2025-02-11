@@ -13,6 +13,9 @@ import { GoogleForm } from "./auth/google-form";
 import { EmailLinkForm } from "./auth/email-link-form";
 import { Button } from "./components/button";
 import { Divider } from "./components/divider";
+import Example1 from "./examples/example_1";
+import Example2 from "./examples/example_2";
+import Example3 from "./examples/example_3";
 
 import "./styles.css";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
@@ -94,6 +97,18 @@ function App() {
       }
     });
   }, [auth, path, navigate]);
+
+  if (path === "/examples/1") {
+    return <Example1 />;
+  }
+
+  if (path === "/examples/2") {
+    return <Example2 />;
+  }
+
+  if (path === "/examples/3") {
+    return <Example3 />;
+  }
 
   if (path === "/signin") {
     return (

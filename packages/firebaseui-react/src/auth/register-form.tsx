@@ -16,7 +16,7 @@ import { FieldInfo } from "../components/field-info";
 export function RegisterForm({
   onBackToSignInClick,
 }: {
-  onBackToSignInClick: () => void;
+  onBackToSignInClick?: () => void;
 }) {
   const auth = useAuth();
   const { language, enableAutoUpgradeAnonymous } = useConfig();
@@ -134,24 +134,26 @@ export function RegisterForm({
         </div>
       )}
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          marginTop: "var(--fui-spacing-sm)",
-          fontSize: "14px",
-        }}
-      >
-        {getTranslation("prompts", "haveAccount", translations, language)}{" "}
-        <button
-          type="button"
-          onClick={onBackToSignInClick}
-          className="fui-link"
-          style={{ marginLeft: "4px" }}
+      {onBackToSignInClick && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "var(--fui-spacing-sm)",
+            fontSize: "14px",
+          }}
         >
-          {getTranslation("labels", "signIn", translations, language)}
-        </button>
-      </div>
+          {getTranslation("prompts", "haveAccount", translations, language)}{" "}
+          <button
+            type="button"
+            onClick={onBackToSignInClick}
+            className="fui-link"
+            style={{ marginLeft: "4px" }}
+          >
+            {getTranslation("labels", "signIn", translations, language)}
+          </button>
+        </div>
+      )}
     </form>
   );
 }
