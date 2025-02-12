@@ -1,5 +1,6 @@
 import { useConfig, useTranslations } from "~/hooks";
 import { getTranslation } from "@firebase-ui/core";
+import { cn } from "~/utils/cn";
 
 interface CardSubtitleProps {
   text?: string;
@@ -14,7 +15,5 @@ export function CardSubtitle({ text, className }: CardSubtitleProps) {
     text ||
     getTranslation("prompts", "signInToAccount", translations, language);
 
-  return (
-    <p className={`fui-card__subtitle ${className || ""}`}>{subtitleText}</p>
-  );
+  return <p className={cn("fui-card__subtitle", className)}>{subtitleText}</p>;
 }

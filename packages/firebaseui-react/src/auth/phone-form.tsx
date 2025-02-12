@@ -14,6 +14,7 @@ import {
 import { Button } from "../components/button";
 import { FieldInfo } from "../components/field-info";
 import { z } from "zod";
+import { cn } from "~/utils/cn";
 
 export function PhoneForm() {
   const auth = useAuth();
@@ -143,11 +144,10 @@ export function PhoneForm() {
                   )}
                 </label>
                 <input
-                  className={`fui-form__input ${
-                    field.state.meta.errors.length
-                      ? "fui-form__input--error"
-                      : ""
-                  }`}
+                  className={cn(
+                    "fui-form__input",
+                    field.state.meta.errors.length && "fui-form__input--error"
+                  )}
                   id={field.name}
                   name={field.name}
                   type="tel"
@@ -204,9 +204,10 @@ export function PhoneForm() {
                 )}
               </label>
               <input
-                className={`fui-form__input ${
-                  field.state.meta.errors.length ? "fui-form__input--error" : ""
-                }`}
+                className={cn(
+                  "fui-form__input",
+                  field.state.meta.errors.length && "fui-form__input--error"
+                )}
                 id={field.name}
                 name={field.name}
                 type="text"

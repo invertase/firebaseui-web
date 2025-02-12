@@ -1,5 +1,6 @@
 import { useConfig, useTranslations } from "~/hooks";
 import { getTranslation } from "@firebase-ui/core";
+import { cn } from "~/utils/cn";
 
 interface CardTitleProps {
   text?: string;
@@ -13,5 +14,5 @@ export function CardTitle({ text, className }: CardTitleProps) {
   const titleText =
     text || getTranslation("labels", "signIn", translations, language);
 
-  return <h2 className={`fui-card__title ${className || ""}`}>{titleText}</h2>;
+  return <h2 className={cn("fui-card__title", className)}>{titleText}</h2>;
 }

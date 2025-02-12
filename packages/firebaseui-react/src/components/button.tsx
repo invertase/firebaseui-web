@@ -1,4 +1,5 @@
-import { type ButtonHTMLAttributes } from "react";
+import { ButtonHTMLAttributes } from "react";
+import { cn } from "~/utils/cn";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary";
@@ -12,9 +13,11 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`fui-form__button ${
-        variant === "secondary" ? "fui-form__button--secondary" : ""
-      } ${className}`}
+      className={cn(
+        "fui-form__button",
+        variant === "secondary" && "fui-form__button--secondary",
+        className
+      )}
       {...props}
     >
       {children}

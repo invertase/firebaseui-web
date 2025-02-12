@@ -12,6 +12,7 @@ import { useAuth, useConfig, useTranslations } from "~/hooks";
 import { useMemo, useState } from "react";
 import { Button } from "../components/button";
 import { FieldInfo } from "../components/field-info";
+import { cn } from "~/utils/cn";
 
 export function RegisterForm({
   onBackToSignInClick,
@@ -80,9 +81,10 @@ export function RegisterForm({
                 )}
               </label>
               <input
-                className={`fui-form__input ${
-                  field.state.meta.errors.length ? "fui-form__input--error" : ""
-                }`}
+                className={cn(
+                  "fui-form__input",
+                  field.state.meta.errors.length && "fui-form__input--error"
+                )}
                 id={field.name}
                 name={field.name}
                 type="email"
@@ -105,9 +107,10 @@ export function RegisterForm({
                 {getTranslation("labels", "password", translations, language)}
               </label>
               <input
-                className={`fui-form__input ${
-                  field.state.meta.errors.length ? "fui-form__input--error" : ""
-                }`}
+                className={cn(
+                  "fui-form__input",
+                  field.state.meta.errors.length && "fui-form__input--error"
+                )}
                 id={field.name}
                 name={field.name}
                 type="password"

@@ -138,7 +138,6 @@ function App() {
     );
   }
 
-  // Handle forms for both anonymous and not signed-in users
   const getFormContent = () => {
     switch (path) {
       case "/signin":

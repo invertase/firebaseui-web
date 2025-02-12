@@ -1,3 +1,5 @@
+import { cn } from "~/utils/cn";
+
 interface CustomSignInScreenProps {
   children: React.ReactNode;
   className?: string;
@@ -7,5 +9,5 @@ export function CustomSignInScreen({
   children,
   className,
 }: CustomSignInScreenProps) {
-  return <div className={`fui-screen ${className || ""}`}>{children}</div>;
+  return <div className={cn("fui-screen", className)}>{children}</div>;
 }
