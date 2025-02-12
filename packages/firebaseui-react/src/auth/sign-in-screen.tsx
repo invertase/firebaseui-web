@@ -4,8 +4,8 @@ import { CustomSignInScreen } from "./custom-sign-in-screen";
 import { EmailPasswordForm } from "./email-password-form";
 
 interface SignInScreenProps {
-  onForgotPasswordClick: () => void;
-  onRegisterClick: () => void;
+  onForgotPasswordClick?: () => void;
+  onRegisterClick?: () => void;
 }
 
 export function SignInScreen({
