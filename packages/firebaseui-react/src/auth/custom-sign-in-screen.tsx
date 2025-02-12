@@ -1,15 +1,11 @@
-import { useConfig, useTranslations } from "~/hooks";
+interface CustomSignInScreenProps {
+  children: React.ReactNode;
+  className?: string;
+}
 
 export function CustomSignInScreen({
   children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="fui-screen">
-      <div className="fui-card">
-        <div className="fui-card__container">{children}</div>
-      </div>
-    </div>
-  );
+  className,
+}: CustomSignInScreenProps) {
+  return <div className={`fui-screen ${className || ""}`}>{children}</div>;
 }

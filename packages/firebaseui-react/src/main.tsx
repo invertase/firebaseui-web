@@ -1,7 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { initializeUI } from "@firebase-ui/core";
-import { CustomSignInScreen } from "./auth/custom-sign-in-screen";
 import { useAuth } from "~/hooks";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useState, useEffect } from "react";
@@ -17,6 +16,8 @@ import Example1 from "./examples/example_1";
 import Example2 from "./examples/example_2";
 import Example3 from "./examples/example_3";
 import { CardHeader } from "./components/card-header";
+import { Card } from "./components/card";
+import { CustomSignInScreen } from "./auth/custom-sign-in-screen";
 
 import "./styles.css";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
@@ -114,13 +115,15 @@ function App() {
   if (path === "/signin") {
     return (
       <CustomSignInScreen>
-        <CardHeader titleKey="signIn" subtitleKey="signInToAccount" />
-        <EmailPasswordForm
-          onForgotPasswordClick={() => navigate("/forgot-password")}
-          onRegisterClick={() => navigate("/register")}
-        />
-        <Divider text="or" />
-        <GoogleForm />
+        <Card>
+          <CardHeader titleKey="signIn" subtitleKey="signInToAccount" />
+          <EmailPasswordForm
+            onForgotPasswordClick={() => navigate("/forgot-password")}
+            onRegisterClick={() => navigate("/register")}
+          />
+          <Divider text="or" />
+          <GoogleForm />
+        </Card>
       </CustomSignInScreen>
     );
   }
@@ -128,8 +131,13 @@ function App() {
   if (path === "/forgot-password") {
     return (
       <CustomSignInScreen>
-        <CardHeader titleKey="resetPassword" subtitleKey="enterEmailToReset" />
-        <ForgotPasswordForm />
+        <Card>
+          <CardHeader
+            titleKey="resetPassword"
+            subtitleKey="enterEmailToReset"
+          />
+          <ForgotPasswordForm />
+        </Card>
       </CustomSignInScreen>
     );
   }
@@ -137,11 +145,13 @@ function App() {
   if (path === "/register") {
     return (
       <CustomSignInScreen>
-        <CardHeader
-          titleKey="createAccount"
-          subtitleKey="enterDetailsToCreate"
-        />
-        <RegisterForm onBackToSignInClick={() => navigate("/signin")} />
+        <Card>
+          <CardHeader
+            titleKey="createAccount"
+            subtitleKey="enterDetailsToCreate"
+          />
+          <RegisterForm onBackToSignInClick={() => navigate("/signin")} />
+        </Card>
       </CustomSignInScreen>
     );
   }
@@ -149,8 +159,13 @@ function App() {
   if (path === "/phone") {
     return (
       <CustomSignInScreen>
-        <CardHeader titleKey="signInWithPhone" subtitleKey="enterPhoneNumber" />
-        <PhoneForm />
+        <Card>
+          <CardHeader
+            titleKey="signInWithPhone"
+            subtitleKey="enterPhoneNumber"
+          />
+          <PhoneForm />
+        </Card>
       </CustomSignInScreen>
     );
   }
@@ -158,11 +173,13 @@ function App() {
   if (path === "/email-link") {
     return (
       <CustomSignInScreen>
-        <CardHeader
-          titleKey="signInWithEmailLink"
-          subtitleKey="enterEmailForLink"
-        />
-        <EmailLinkForm />
+        <Card>
+          <CardHeader
+            titleKey="signInWithEmailLink"
+            subtitleKey="enterEmailForLink"
+          />
+          <EmailLinkForm />
+        </Card>
       </CustomSignInScreen>
     );
   }
@@ -176,12 +193,14 @@ function App() {
             You are signed in anonymously
           </div>
           <CustomSignInScreen>
-            <CardHeader titleKey="signIn" subtitleKey="signInToAccount" />
-            <EmailPasswordForm
-              onForgotPasswordClick={() => navigate("/forgot-password")}
-              onRegisterClick={() => navigate("/register")}
-            />
-            <GoogleForm />
+            <Card>
+              <CardHeader titleKey="signIn" subtitleKey="signInToAccount" />
+              <EmailPasswordForm
+                onForgotPasswordClick={() => navigate("/forgot-password")}
+                onRegisterClick={() => navigate("/register")}
+              />
+              <GoogleForm />
+            </Card>
           </CustomSignInScreen>
         </div>
       );
