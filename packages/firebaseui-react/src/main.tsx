@@ -219,6 +219,7 @@ function App() {
 }
 
 createRoot(document.getElementById("root")!).render(
+  // @ts-ignore
   <StrictMode>
     <ConfigProvider config={config}>
       <App />
