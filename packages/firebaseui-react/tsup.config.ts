@@ -11,6 +11,7 @@ export default defineConfig({
   minify: true,
   loader: {
     ".tsx": "tsx",
+    ".jsx": "jsx",
   },
-  tsconfig: './tsconfig.json',
+  tsconfig: './tsconfig.app.json',
 });

@@ -5,7 +5,16 @@ import { initializeApp } from "firebase/app";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
 
 import { initializeUI } from "@firebase-ui/core";
-import { SignInScreen } from "@firebase-ui/react";
+import {
+  Card,
+  CardHeader,
+  CustomSignInScreen,
+  Divider,
+  EmailPasswordForm,
+  ForgotPasswordForm,
+  GoogleForm,
+  SignInScreen,
+} from "@firebase-ui/react";
 import "./styles.css";
 
 const firebaseConfig = {
@@ -52,7 +61,23 @@ createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
+        <Route
+          path="/custom-sign-in-screen"
+          element={
+            <CustomSignInScreen> {/* <Screen>? */}
+              <Card>
+                <CardHeader title="Sign in to your account" />
+                <EmailPasswordForm />
+                <Divider />
+                <GoogleForm />
+              </Card>
+            </CustomSignInScreen>
+          }
+        />
         <Route path="/sign-in-screen" element={<SignInScreen />} />
+        <Route path="/forgot-password-form" element={<ForgotPasswordForm />} />
+        <Route path="/email-password-form" element={<EmailPasswordForm />} />
+        <Route path="/google-form" element={<GoogleForm />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

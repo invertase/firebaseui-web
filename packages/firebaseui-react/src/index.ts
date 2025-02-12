@@ -1,5 +1,5 @@
 export { CustomSignInScreen } from "./auth/custom-sign-in-screen";
-export { SignInScreen } from "./auth/sign-in-screen";
+export { SignInScreen } from "./auth/sign-in-screen.jsx";
 export { EmailPasswordForm } from "./auth/email-password-form";
 export { ForgotPasswordForm } from "./auth/forgot-password-form";
 export { GoogleForm } from "./auth/google-form";
@@ -8,6 +8,7 @@ export { RegisterForm } from "./auth/register-form";
 export { EmailLinkForm } from "./auth/email-link-form";
 
 export { Button } from "./components/button";
+export { Card } from "./components/card";
 export { CardHeader } from "./components/card-header";
 export { CardSubtitle } from "./components/card-subtitle";
 export { CardTitle } from "./components/card-title";
