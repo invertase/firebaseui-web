@@ -1,13 +1,13 @@
+import type { HTMLAttributes, PropsWithChildren } from "react";
 import { cn } from "~/utils/cn";
 
-interface CardProps {
-  children: React.ReactNode;
-  className?: string;
-}
+type CardProps = PropsWithChildren<HTMLAttributes<HTMLDivElement>>;
 
-export function Card({ children, className }: CardProps) {
+export function Card({ children, className = "", ...props }: CardProps) {
   return (
-    <div className={cn("fui-card", className)}>
+    <div className={cn("fui-card", className)} {...props}>
+      {/* FIXME: children type does not match for some reason */}
+      {/* @ts-ignore */}
       <div className="fui-card__container">{children}</div>
     </div>
   );

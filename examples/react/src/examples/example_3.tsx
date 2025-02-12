@@ -1,6 +1,5 @@
-import { EmailPasswordForm } from "../auth/email-password-form";
-import { RegisterForm } from "../auth/register-form";
 import { useState } from "react";
+import { EmailPasswordForm, RegisterForm } from "@firebase-ui/react";
 
 export default function Example3() {
   const [showModal, setShowModal] = useState(false);

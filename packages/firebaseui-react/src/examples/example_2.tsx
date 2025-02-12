@@ -1,11 +1,4 @@
 import { useState } from "react";
-import {
-  EmailPasswordForm,
-  RegisterForm,
-  CustomSignInScreen,
-  Card,
-  CardHeader,
-} from "@firebase-ui/react";
 
 export default function Example2() {
   const [showRegister, setShowRegister] = useState(false);

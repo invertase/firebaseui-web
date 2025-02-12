@@ -1,4 +1,4 @@
-import { SignInScreen } from "../auth/sign-in-screen";
+import { SignInScreen } from "@firebase-ui/react";
 
 export default function Example4() {
   return (

@@ -1,5 +1,4 @@
-import { EmailPasswordForm } from "../auth/email-password-form";
-import { RegisterForm } from "../auth/register-form";
+import { EmailPasswordForm, RegisterForm } from "@firebase-ui/react";
 import { useState } from "react";
 
 export default function Example1() {

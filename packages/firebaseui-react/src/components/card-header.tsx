@@ -1,16 +1,21 @@
+import { HTMLAttributes } from "react";
 import { CardTitle } from "./card-title";
 import { CardSubtitle } from "./card-subtitle";
 import { cn } from "~/utils/cn";
 
-interface CardHeaderProps {
+interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {
   title?: string;
   subtitle?: string;
-  className?: string;
 }
 
-export function CardHeader({ title, subtitle, className }: CardHeaderProps) {
+export function CardHeader({
+  title,
+  subtitle,
+  className = "",
+  ...props
+}: CardHeaderProps) {
   return (
-    <div className={cn("fui-card__header", className)}>
+    <div className={cn("fui-card__header", className)} {...props}>
       <CardTitle text={title} />
       <CardSubtitle text={subtitle} />
     </div>

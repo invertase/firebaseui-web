@@ -1,13 +1,17 @@
+import { HTMLAttributes } from "react";
 import { useConfig, useTranslations } from "~/hooks";
 import { getTranslation } from "@firebase-ui/core";
 import { cn } from "~/utils/cn";
 
-interface CardSubtitleProps {
+interface CardSubtitleProps extends HTMLAttributes<HTMLParagraphElement> {
   text?: string;
-  className?: string;
 }
 
-export function CardSubtitle({ text, className }: CardSubtitleProps) {
+export function CardSubtitle({
+  text,
+  className = "",
+  ...props
+}: CardSubtitleProps) {
   const { language } = useConfig();
   const translations = useTranslations();
 
@@ -15,5 +19,9 @@ export function CardSubtitle({ text, className }: CardSubtitleProps) {
     text ||
     getTranslation("prompts", "signInToAccount", translations, language);
 
-  return <p className={cn("fui-card__subtitle", className)}>{subtitleText}</p>;
+  return (
+    <p className={cn("fui-card__subtitle", className)} {...props}>
+      {subtitleText}
+    </p>
+  );
 }
