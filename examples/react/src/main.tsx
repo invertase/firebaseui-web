@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { initializeApp } from "firebase/app";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
 
@@ -12,8 +12,11 @@ import {
   Divider,
   EmailPasswordForm,
   ForgotPasswordForm,
-  GoogleForm,
+  GoogleSignInButton,
   SignInScreen,
+  RegisterForm,
+  PhoneForm,
+  EmailLinkForm,
 } from "@firebase-ui/react";
 import "./styles.css";
 
@@ -64,12 +67,14 @@ createRoot(document.getElementById("root")!).render(
         <Route
           path="/custom-sign-in-screen"
           element={
-            <CustomSignInScreen> {/* <Screen>? */}
+            <CustomSignInScreen>
+              {" "}
+              {/* <Screen>? */}
               <Card>
                 <CardHeader title="Sign in to your account" />
                 <EmailPasswordForm />
                 <Divider />
-                <GoogleForm />
+                <GoogleSignInButton />
               </Card>
             </CustomSignInScreen>
           }
@@ -77,12 +82,81 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/sign-in-screen" element={<SignInScreen />} />
         <Route path="/forgot-password-form" element={<ForgotPasswordForm />} />
         <Route path="/email-password-form" element={<EmailPasswordForm />} />
-        <Route path="/google-form" element={<GoogleForm />} />
+        <Route path="/google-sign-in-button" element={<GoogleSignInButton />} />
+        <Route path="/register-form" element={<RegisterForm />} />
+        <Route path="/phone-form" element={<PhoneForm />} />
+        <Route path="/email-link-form" element={<EmailLinkForm />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
 );
 
-function App() {
-  return <div>Hello</div>;
+export function App() {
+  return (
+    <div className="p-8">
+      <h1 className="text-3xl font-bold mb-6">Firebase UI Demo</h1>
+      <nav className="space-y-4">
+        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <li>
+            <Link
+              to="/sign-in-screen"
+              className="text-blue-500 hover:underline"
+            >
+              Sign In Screen
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/custom-sign-in-screen"
+              className="text-blue-500 hover:underline"
+            >
+              Custom Sign In Screen
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/email-password-form"
+              className="text-blue-500 hover:underline"
+            >
+              Email Password Form
+            </Link>
+          </li>
+          <li>
+            <Link to="/register-form" className="text-blue-500 hover:underline">
+              Register Form
+            </Link>
+          </li>
+          <li>
+            <Link to="/phone-form" className="text-blue-500 hover:underline">
+              Phone Form
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/email-link-form"
+              className="text-blue-500 hover:underline"
+            >
+              Email Link Form
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/forgot-password-form"
+              className="text-blue-500 hover:underline"
+            >
+              Forgot Password Form
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/google-sign-in-button"
+              className="text-blue-500 hover:underline"
+            >
+              Google Sign In Button
+            </Link>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  );
 }

@@ -2,7 +2,7 @@ export { CustomSignInScreen } from "./auth/custom-sign-in-screen";
 export { SignInScreen } from "./auth/sign-in-screen.jsx";
 export { EmailPasswordForm } from "./auth/email-password-form";
 export { ForgotPasswordForm } from "./auth/forgot-password-form";
-export { GoogleForm } from "./auth/google-form";
+export { GoogleSignInButton } from "./auth/google-sign-in-button.js";
 export { PhoneForm } from "./auth/phone-form";
 export { RegisterForm } from "./auth/register-form";
 export { EmailLinkForm } from "./auth/email-link-form";

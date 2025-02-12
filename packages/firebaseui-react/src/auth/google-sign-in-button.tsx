@@ -10,7 +10,7 @@ import { Button } from "../components/button";
 import { useState } from "react";
 import { GoogleAuthProvider } from "firebase/auth";
 
-export function GoogleForm() {
+export function GoogleSignInButton() {
   const auth = useAuth();
   const translations = useTranslations();
   const { language, enableAutoUpgradeAnonymous } = useConfig();
