@@ -1,6 +1,9 @@
 import { EmailPasswordForm } from "../auth/email-password-form";
 import { RegisterForm } from "../auth/register-form";
 import { useState } from "react";
+import { CustomSignInScreen } from "../auth/custom-sign-in-screen";
+import { Card } from "../components/card";
+import { CardHeader } from "../components/card-header";
 
 export default function Example2() {
   const [showRegister, setShowRegister] = useState(false);
@@ -43,43 +46,37 @@ export default function Example2() {
               style={{ animationDelay: "1s" }}
             ></div>
 
-            <div className="relative rounded-xl border border-white/10 bg-black/40 p-8 shadow-2xl backdrop-blur-xl">
-              {showRegister ? (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-3xl font-bold text-white">
-                      Join DemoStyle
-                    </h2>
-                    <p className="mt-2 text-sm text-gray-400">
-                      Experience this demo styling
+            <CustomSignInScreen className="!min-h-0 !bg-transparent !p-0">
+              <Card className="relative rounded-xl border border-white/10 bg-black/40 shadow-2xl backdrop-blur-xl">
+                <CardHeader
+                  title={showRegister ? "Join DemoStyle" : "Welcome Back"}
+                  subtitle={
+                    showRegister
+                      ? "Experience this demo styling"
+                      : "Sign in to continue your journey"
+                  }
+                />
+                {showRegister ? (
+                  <>
+                    <RegisterForm />
+                    <p className="text-center text-xs text-gray-500">
+                      By signing up, you agree to our Terms of Service
                     </p>
-                  </div>
-                  <RegisterForm />
-                  <p className="text-center text-xs text-gray-500">
-                    By signing up, you agree to our Terms of Service
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-3xl font-bold text-white">
-                      Welcome Back
-                    </h2>
-                    <p className="mt-2 text-sm text-gray-400">
-                      Sign in to continue your journey
-                    </p>
-                  </div>
-                  <EmailPasswordForm onForgotPasswordClick={() => {}} />
-                  <div className="flex items-center gap-4 pt-4">
-                    <div className="h-px flex-1 bg-white/10"></div>
-                    <span className="text-xs text-gray-500">
-                      Example Style Demo
-                    </span>
-                    <div className="h-px flex-1 bg-white/10"></div>
-                  </div>
-                </div>
-              )}
-            </div>
+                  </>
+                ) : (
+                  <>
+                    <EmailPasswordForm onForgotPasswordClick={() => {}} />
+                    <div className="flex items-center gap-4 pt-4">
+                      <div className="h-px flex-1 bg-white/10"></div>
+                      <span className="text-xs text-gray-500">
+                        Example Style Demo
+                      </span>
+                      <div className="h-px flex-1 bg-white/10"></div>
+                    </div>
+                  </>
+                )}
+              </Card>
+            </CustomSignInScreen>
           </div>
         </main>
 

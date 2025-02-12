@@ -1,27 +1,17 @@
-import { useConfig, useTranslations } from "~/hooks";
-import { getTranslation } from "@firebase-ui/core";
-import type { TranslationStrings } from "@firebase-ui/core";
-
-type LabelKeys = keyof Required<TranslationStrings>["labels"];
-type PromptKeys = keyof Required<TranslationStrings>["prompts"];
+import { CardTitle } from "./card-title";
+import { CardSubtitle } from "./card-subtitle";
 
 interface CardHeaderProps {
-  titleKey: LabelKeys;
-  subtitleKey: PromptKeys;
+  title?: string;
+  subtitle?: string;
+  className?: string;
 }
 
-export function CardHeader({ titleKey, subtitleKey }: CardHeaderProps) {
-  const { language } = useConfig();
-  const translations = useTranslations();
-
+export function CardHeader({ title, subtitle, className }: CardHeaderProps) {
   return (
-    <div className="fui-card__header">
-      <h2 className="fui-card__title">
-        {getTranslation("labels", titleKey, translations, language)}
-      </h2>
-      <p className="fui-card__subtitle">
-        {getTranslation("prompts", subtitleKey, translations, language)}
-      </p>
+    <div className={`fui-card__header ${className || ""}`}>
+      <CardTitle text={title} />
+      <CardSubtitle text={subtitle} />
     </div>
   );
 }

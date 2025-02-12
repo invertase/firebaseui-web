@@ -15,6 +15,7 @@ import { Divider } from "./components/divider";
 import Example1 from "./examples/example_1";
 import Example2 from "./examples/example_2";
 import Example3 from "./examples/example_3";
+import Example4 from "./examples/example_4";
 import { CardHeader } from "./components/card-header";
 import { Card } from "./components/card";
 import { CustomSignInScreen } from "./auth/custom-sign-in-screen";
@@ -75,6 +76,24 @@ function useRouter() {
   return { path, navigate };
 }
 
+interface AnonymousUserWrapperProps {
+  children: React.ReactNode;
+  user: ReturnType<typeof useAuth>["currentUser"];
+}
+
+function AnonymousUserWrapper({ children, user }: AnonymousUserWrapperProps) {
+  if (!user?.isAnonymous) {
+    return <>{children}</>;
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center gap-4 p-4">
+      <div className="text-lg font-medium">You are signed in anonymously</div>
+      {children}
+    </div>
+  );
+}
+
 function App() {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const auth = useAuth();
@@ -83,16 +102,7 @@ function App() {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       setIsSignedIn(!!user);
-      if (
-        user &&
-        !user.isAnonymous &&
-        (path === "/signin" ||
-          path === "/forgot-password" ||
-          path === "/register" ||
-          path === "/phone" ||
-          path === "/google" ||
-          path === "/email-link")
-      ) {
+      if (user && !user.isAnonymous) {
         navigate("/");
       } else if (!user && path === "/") {
         navigate("/signin");
@@ -100,111 +110,18 @@ function App() {
     });
   }, [auth, path, navigate]);
 
-  if (path === "/examples/1") {
-    return <Example1 />;
-  }
+  if (path === "/examples/1") return <Example1 />;
+  if (path === "/examples/2") return <Example2 />;
+  if (path === "/examples/3") return <Example3 />;
+  if (path === "/examples/4") return <Example4 />;
 
-  if (path === "/examples/2") {
-    return <Example2 />;
-  }
-
-  if (path === "/examples/3") {
-    return <Example3 />;
-  }
-
-  if (path === "/signin") {
-    return (
-      <CustomSignInScreen>
-        <Card>
-          <CardHeader titleKey="signIn" subtitleKey="signInToAccount" />
-          <EmailPasswordForm
-            onForgotPasswordClick={() => navigate("/forgot-password")}
-            onRegisterClick={() => navigate("/register")}
-          />
-          <Divider text="or" />
-          <GoogleForm />
-        </Card>
-      </CustomSignInScreen>
-    );
-  }
-
-  if (path === "/forgot-password") {
-    return (
-      <CustomSignInScreen>
-        <Card>
-          <CardHeader
-            titleKey="resetPassword"
-            subtitleKey="enterEmailToReset"
-          />
-          <ForgotPasswordForm />
-        </Card>
-      </CustomSignInScreen>
-    );
-  }
-
-  if (path === "/register") {
-    return (
-      <CustomSignInScreen>
-        <Card>
-          <CardHeader
-            titleKey="createAccount"
-            subtitleKey="enterDetailsToCreate"
-          />
-          <RegisterForm onBackToSignInClick={() => navigate("/signin")} />
-        </Card>
-      </CustomSignInScreen>
-    );
-  }
-
-  if (path === "/phone") {
-    return (
-      <CustomSignInScreen>
-        <Card>
-          <CardHeader
-            titleKey="signInWithPhone"
-            subtitleKey="enterPhoneNumber"
-          />
-          <PhoneForm />
-        </Card>
-      </CustomSignInScreen>
-    );
-  }
-
-  if (path === "/email-link") {
-    return (
-      <CustomSignInScreen>
-        <Card>
-          <CardHeader
-            titleKey="signInWithEmailLink"
-            subtitleKey="enterEmailForLink"
-          />
-          <EmailLinkForm />
-        </Card>
-      </CustomSignInScreen>
-    );
-  }
-
-  if (isSignedIn) {
-    const user = auth.currentUser;
-    if (user?.isAnonymous) {
-      return (
-        <div className="flex flex-col items-center justify-center gap-4 p-4">
-          <div className="text-lg font-medium">
-            You are signed in anonymously
-          </div>
-          <CustomSignInScreen>
-            <Card>
-              <CardHeader titleKey="signIn" subtitleKey="signInToAccount" />
-              <EmailPasswordForm
-                onForgotPasswordClick={() => navigate("/forgot-password")}
-                onRegisterClick={() => navigate("/register")}
-              />
-              <GoogleForm />
-            </Card>
-          </CustomSignInScreen>
-        </div>
-      );
+  console.log("User is anonymous", auth.currentUser?.isAnonymous);
+  if (isSignedIn && !auth.currentUser?.isAnonymous) {
+    if (path !== "/") {
+      navigate("/");
+      return null;
     }
+
     return (
       <div className="flex flex-col items-center justify-center gap-4 p-4">
         <div className="text-lg font-medium">Signed in successfully</div>
@@ -221,7 +138,71 @@ function App() {
     );
   }
 
-  return null;
+  // Handle forms for both anonymous and not signed-in users
+  const getFormContent = () => {
+    switch (path) {
+      case "/signin":
+        return (
+          <Card>
+            <CardHeader />
+            <EmailPasswordForm
+              onForgotPasswordClick={() => navigate("/forgot-password")}
+              onRegisterClick={() => navigate("/register")}
+            />
+            <Divider text="or" />
+            <GoogleForm />
+          </Card>
+        );
+
+      case "/forgot-password":
+        return (
+          <Card>
+            <CardHeader />
+            <ForgotPasswordForm />
+          </Card>
+        );
+
+      case "/register":
+        return (
+          <Card>
+            <CardHeader />
+            <RegisterForm onBackToSignInClick={() => navigate("/signin")} />
+          </Card>
+        );
+
+      case "/phone":
+        return (
+          <Card>
+            <CardHeader />
+            <PhoneForm />
+          </Card>
+        );
+
+      case "/email-link":
+        return (
+          <Card>
+            <CardHeader />
+            <EmailLinkForm />
+          </Card>
+        );
+
+      default:
+        return (
+          <div className="flex min-h-screen flex-col items-center justify-center gap-4">
+            <div className="text-2xl font-bold">404 - Page Not Found</div>
+            <Button variant="secondary" onClick={() => navigate("/signin")}>
+              Back to Sign In
+            </Button>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <AnonymousUserWrapper user={auth.currentUser}>
+      <CustomSignInScreen>{getFormContent()}</CustomSignInScreen>
+    </AnonymousUserWrapper>
+  );
 }
 
 createRoot(document.getElementById("root")!).render(
