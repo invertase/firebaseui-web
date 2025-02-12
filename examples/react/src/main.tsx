@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { initializeApp } from "firebase/app";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
 
-import { initializeUI } from "@firebase-ui/core";
+import { getTranslation, initializeUI } from "@firebase-ui/core";
 import {
   Card,
   CardHeader,
@@ -17,6 +17,11 @@ import {
   RegisterForm,
   PhoneForm,
   EmailLinkForm,
+  CardTitle,
+  CardSubtitle,
+  ConfigProvider,
+  useConfig,
+  useTranslations,
 } from "@firebase-ui/react";
 import "./styles.css";
 
@@ -61,9 +66,28 @@ connectAuthEmulator(getAuth(ui.get().app), "http://localhost:9099");
 // Render the app
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <ConfigProvider config={ui}>
+      <App />
+    </ConfigProvider>
+  </StrictMode>
+);
+
+function App() {
+  const { language } = useConfig();
+  const translations = useTranslations();
+
+  const signInText = getTranslation("labels", "signIn", translations, language);
+  const signInToAccountText = getTranslation(
+    "prompts",
+    "signInToAccount",
+    translations,
+    language
+  );
+
+  return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<App />} />
+        <Route path="/" element={<Main />} />
         <Route
           path="/custom-sign-in-screen"
           element={
@@ -71,7 +95,10 @@ createRoot(document.getElementById("root")!).render(
               {" "}
               {/* <Screen>? */}
               <Card>
-                <CardHeader title="Sign in to your account" />
+                <CardHeader>
+                  <CardTitle>{signInText}</CardTitle>
+                  <CardSubtitle>{signInToAccountText}</CardSubtitle>
+                </CardHeader>
                 <EmailPasswordForm />
                 <Divider />
                 <GoogleSignInButton />
@@ -88,10 +115,10 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/email-link-form" element={<EmailLinkForm />} />
       </Routes>
     </BrowserRouter>
-  </StrictMode>
-);
+  );
+}
 
-export function App() {
+export function Main() {
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-6">Firebase UI Demo</h1>

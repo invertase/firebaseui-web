@@ -5,6 +5,8 @@ import {
   CustomSignInScreen,
   Card,
   CardHeader,
+  CardTitle,
+  CardSubtitle,
 } from "@firebase-ui/react";
 
 export default function Example2() {
@@ -50,14 +52,16 @@ export default function Example2() {
 
             <CustomSignInScreen className="!min-h-0 !bg-transparent !p-0">
               <Card className="relative rounded-xl border border-white/10 bg-black/40 shadow-2xl backdrop-blur-xl">
-                <CardHeader
-                  title={showRegister ? "Join DemoStyle" : "Welcome Back"}
-                  subtitle={
-                    showRegister
+                <CardHeader>
+                  <CardTitle>
+                    {showRegister ? "Join DemoStyle" : "Welcome Back"}
+                  </CardTitle>
+                  <CardSubtitle>
+                    {showRegister
                       ? "Experience this demo styling"
-                      : "Sign in to continue your journey"
-                  }
-                />
+                      : "Sign in to continue your journey"}
+                  </CardSubtitle>
+                </CardHeader>
                 {showRegister ? (
                   <>
                     <RegisterForm />

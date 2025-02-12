@@ -15,6 +15,8 @@ import { Divider } from "./components/divider";
 import { CardHeader } from "./components/card-header";
 import { Card } from "./components/card";
 import { CustomSignInScreen } from "./auth/custom-sign-in-screen";
+import { CardTitle } from "./components/card-title";
+import { CardSubtitle } from "./components/card-subtitle";
 
 import "./styles.css";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
@@ -134,7 +136,12 @@ function App() {
       case "/signin":
         return (
           <Card>
-            <CardHeader />
+            <CardHeader>
+              <CardTitle>Sign in to your account</CardTitle>
+              <CardSubtitle>
+                Welcome back! Please enter your details.
+              </CardSubtitle>
+            </CardHeader>
             <EmailPasswordForm
               onForgotPasswordClick={() => navigate("/forgot-password")}
               onRegisterClick={() => navigate("/register")}
@@ -147,7 +154,12 @@ function App() {
       case "/forgot-password":
         return (
           <Card>
-            <CardHeader />
+            <CardHeader>
+              <CardTitle>Reset your password</CardTitle>
+              <CardSubtitle>
+                Enter your email to receive reset instructions
+              </CardSubtitle>
+            </CardHeader>
             <ForgotPasswordForm />
           </Card>
         );
@@ -155,7 +167,10 @@ function App() {
       case "/register":
         return (
           <Card>
-            <CardHeader />
+            <CardHeader>
+              <CardTitle>Create an account</CardTitle>
+              <CardSubtitle>Sign up to get started</CardSubtitle>
+            </CardHeader>
             <RegisterForm onBackToSignInClick={() => navigate("/signin")} />
           </Card>
         );
@@ -163,7 +178,10 @@ function App() {
       case "/phone":
         return (
           <Card>
-            <CardHeader />
+            <CardHeader>
+              <CardTitle>Phone verification</CardTitle>
+              <CardSubtitle>Enter your phone number to continue</CardSubtitle>
+            </CardHeader>
             <PhoneForm />
           </Card>
         );
@@ -171,7 +189,12 @@ function App() {
       case "/email-link":
         return (
           <Card>
-            <CardHeader />
+            <CardHeader>
+              <CardTitle>Email link sign in</CardTitle>
+              <CardSubtitle>
+                Enter your email to receive a sign in link
+              </CardSubtitle>
+            </CardHeader>
             <EmailLinkForm />
           </Card>
         );
