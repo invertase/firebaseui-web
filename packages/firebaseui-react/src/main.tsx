@@ -16,6 +16,7 @@ import { Divider } from "./components/divider";
 import Example1 from "./examples/example_1";
 import Example2 from "./examples/example_2";
 import Example3 from "./examples/example_3";
+import { CardHeader } from "./components/card-header";
 
 import "./styles.css";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
@@ -113,6 +114,7 @@ function App() {
   if (path === "/signin") {
     return (
       <CustomSignInScreen>
+        <CardHeader titleKey="signIn" subtitleKey="signInToAccount" />
         <EmailPasswordForm
           onForgotPasswordClick={() => navigate("/forgot-password")}
           onRegisterClick={() => navigate("/register")}
@@ -126,6 +128,7 @@ function App() {
   if (path === "/forgot-password") {
     return (
       <CustomSignInScreen>
+        <CardHeader titleKey="resetPassword" subtitleKey="enterEmailToReset" />
         <ForgotPasswordForm />
       </CustomSignInScreen>
     );
@@ -134,6 +137,10 @@ function App() {
   if (path === "/register") {
     return (
       <CustomSignInScreen>
+        <CardHeader
+          titleKey="createAccount"
+          subtitleKey="enterDetailsToCreate"
+        />
         <RegisterForm onBackToSignInClick={() => navigate("/signin")} />
       </CustomSignInScreen>
     );
@@ -142,6 +149,7 @@ function App() {
   if (path === "/phone") {
     return (
       <CustomSignInScreen>
+        <CardHeader titleKey="signInWithPhone" subtitleKey="enterPhoneNumber" />
         <PhoneForm />
       </CustomSignInScreen>
     );
@@ -150,6 +158,10 @@ function App() {
   if (path === "/email-link") {
     return (
       <CustomSignInScreen>
+        <CardHeader
+          titleKey="signInWithEmailLink"
+          subtitleKey="enterEmailForLink"
+        />
         <EmailLinkForm />
       </CustomSignInScreen>
     );
@@ -164,6 +176,7 @@ function App() {
             You are signed in anonymously
           </div>
           <CustomSignInScreen>
+            <CardHeader titleKey="signIn" subtitleKey="signInToAccount" />
             <EmailPasswordForm
               onForgotPasswordClick={() => navigate("/forgot-password")}
               onRegisterClick={() => navigate("/register")}
