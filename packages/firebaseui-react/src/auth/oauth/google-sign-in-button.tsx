@@ -1,41 +1,16 @@
 "use client";
 
-import { useAuth, useConfig, useTranslations } from "~/hooks";
-import {
-  FirebaseUIError,
-  fuiSignInWithOAuth,
-  getTranslation,
-} from "@firebase-ui/core";
-import { Button } from "../../components/button";
+import { useConfig, useTranslations } from "~/hooks";
+import { getTranslation } from "@firebase-ui/core";
 import { GoogleAuthProvider } from "firebase/auth";
+import { OAuthButton } from "./oauth-button";
 
 export function GoogleSignInButton() {
-  const auth = useAuth();
   const translations = useTranslations();
-  const { language, enableAutoUpgradeAnonymous } = useConfig();
-
-  const handleGoogleSignIn = async () => {
-    try {
-      await fuiSignInWithOAuth(auth, new GoogleAuthProvider(), {
-        translations,
-        language,
-        enableAutoUpgradeAnonymous,
-      });
-    } catch (error) {
-      if (error instanceof FirebaseUIError) {
-        // TODO: What happen shere?
-      }
-    }
-  };
-
-  // TODO: Should we have an error handler in here?
+  const { language } = useConfig();
 
   return (
-    <Button
-      type="button"
-      onClick={handleGoogleSignIn}
-      className="fui-provider__button"
-    >
+    <OAuthButton provider={new GoogleAuthProvider()}>
       <svg
         className="fui-provider__icon"
         xmlns="http://www.w3.org/2000/svg"
@@ -61,6 +36,6 @@ export function GoogleSignInButton() {
       <span>
         {getTranslation("labels", "signInWithGoogle", translations, language)}
       </span>
-    </Button>
+    </OAuthButton>
   );
 }

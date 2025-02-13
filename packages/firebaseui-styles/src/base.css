@@ -73,7 +73,7 @@
 }
 
 .fui-button {
-  @apply w-full flex items-center justify-center gap-3 px-4 py-2 rounded text-sm font-medium shadow-xs bg-primary text-surface transition hover:bg-primary-hover;
+  @apply w-full flex items-center justify-center gap-3 px-4 py-2 rounded text-sm font-medium shadow-xs bg-primary text-surface transition hover:bg-primary-hover hover:cursor-pointer;
 }
 
 .fui-provider__button > svg {

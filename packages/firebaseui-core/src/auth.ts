@@ -11,13 +11,12 @@ import {
   linkWithRedirect,
   EmailAuthProvider,
   PhoneAuthProvider,
-  OAuthProvider,
-  GoogleAuthProvider,
   signInWithRedirect,
   Auth,
   UserCredential,
   ConfirmationResult,
   RecaptchaVerifier,
+  AuthProvider,
 } from 'firebase/auth';
 import { FirebaseUIError } from './errors';
 import { type TranslationsConfig } from './translations';
@@ -210,7 +209,7 @@ export async function fuiSignInAnonymously(
 
 export async function fuiSignInWithOAuth(
   auth: Auth,
-  provider: OAuthProvider | GoogleAuthProvider,
+  provider: AuthProvider,
   opts?: {
     language?: string;
     translations?: TranslationsConfig;

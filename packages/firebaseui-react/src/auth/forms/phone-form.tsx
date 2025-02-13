@@ -19,7 +19,7 @@ interface PhoneNumberFormProps {
   onSubmit: (phoneNumber: string) => Promise<void>;
   formError: string | null;
   recaptchaVerifier: RecaptchaVerifier | null;
-  recaptchaContainerRef: React.MutableRefObject<HTMLDivElement | null>;
+  recaptchaContainerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 function PhoneNumberForm({
@@ -258,6 +258,7 @@ export function PhoneForm() {
         return;
       }
       console.error(error);
+      // TODO: Add translation
       setFormError("Something went wrong");
     }
   };
