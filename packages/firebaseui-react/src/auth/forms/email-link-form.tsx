@@ -58,6 +58,7 @@ export function EmailLinkForm() {
 
   // Handle email link sign-in if URL contains the link
   useEffect(() => {
+    // TODO: We should wrap this logic within `isSignInWithEmailLink`
     const completeSignIn = async () => {
       try {
         const email = window.localStorage.getItem("emailForSignIn");
