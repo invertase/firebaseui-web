@@ -81,7 +81,7 @@ function App() {
         <Route
           path="/sign-in-auth-screen-w-oauth"
           element={
-            <SignInAuthScreen>
+            <SignInAuthScreen onForgotPasswordClick={() => {}} onRegisterClick={() => {}}>
               <GoogleSignInButton />
             </SignInAuthScreen>
           }
@@ -126,7 +126,7 @@ function App() {
         />
         <Route
           path="/password-reset-screen"
-          element={<PasswordResetScreen />}
+          element={<PasswordResetScreen onBackToSignInClick={() => {}} />}
         />
         {/* <Route path="/examples/1" element={<Example1 />} />
         <Route path="/examples/2" element={<Example2 />} />

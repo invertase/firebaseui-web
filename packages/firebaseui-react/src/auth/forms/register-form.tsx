@@ -12,7 +12,6 @@ import { useAuth, useConfig, useTranslations } from "~/hooks";
 import { useMemo, useState } from "react";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
-import { cn } from "~/utils/cn";
 
 export function RegisterForm({
   onBackToSignInClick,
@@ -67,93 +66,77 @@ export function RegisterForm({
         await form.handleSubmit();
       }}
     >
-      <div className="fui-form__group">
+      <fieldset>
         <form.Field
           name="email"
           children={(field) => (
             <>
-              <label className="fui-form__label" htmlFor={field.name}>
-                {getTranslation(
-                  "labels",
-                  "emailAddress",
-                  translations,
-                  language
-                )}
+              <label htmlFor={field.name}>
+                <span>
+                  {getTranslation(
+                    "labels",
+                    "emailAddress",
+                    translations,
+                    language
+                  )}
+                </span>
+                <input
+                  aria-invalid={field.state.meta.errors.length > 0}
+                  id={field.name}
+                  name={field.name}
+                  type="email"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+                <FieldInfo field={field} />
               </label>
-              <input
-                className={cn(
-                  "fui-form__input",
-                  field.state.meta.errors.length && "fui-form__input--error"
-                )}
-                id={field.name}
-                name={field.name}
-                type="email"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
-              <FieldInfo field={field} />
             </>
           )}
         />
-      </div>
+      </fieldset>
 
-      <div className="fui-form__group">
+      <fieldset>
         <form.Field
           name="password"
           children={(field) => (
             <>
-              <label className="fui-form__label" htmlFor={field.name}>
-                {getTranslation("labels", "password", translations, language)}
+              <label htmlFor={field.name}>
+                <span>
+                  {getTranslation("labels", "password", translations, language)}
+                </span>
+                <input
+                  aria-invalid={field.state.meta.errors.length > 0}
+                  id={field.name}
+                  name={field.name}
+                  type="password"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+                <FieldInfo field={field} />
               </label>
-              <input
-                className={cn(
-                  "fui-form__input",
-                  field.state.meta.errors.length && "fui-form__input--error"
-                )}
-                id={field.name}
-                name={field.name}
-                type="password"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
-              <FieldInfo field={field} />
             </>
           )}
         />
-      </div>
+      </fieldset>
 
-      <Button type="submit" variant="primary">
-        {getTranslation("labels", "createAccount", translations, language)}
-      </Button>
-
-      {formError && (
-        <div
-          className="fui-form__error"
-          style={{ textAlign: "center", marginTop: "var(--fui-spacing-sm)" }}
-        >
-          {formError}
-        </div>
-      )}
+      <fieldset>
+        <Button type="submit">
+          {getTranslation("labels", "createAccount", translations, language)}
+        </Button>
+        {formError && <div className="fui-form__error">{formError}</div>}
+      </fieldset>
 
       {onBackToSignInClick && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "var(--fui-spacing-sm)",
-            fontSize: "14px",
-          }}
-        >
-          {getTranslation("prompts", "haveAccount", translations, language)}{" "}
+        <div className="flex justify-center items-center">
           <button
             type="button"
             onClick={onBackToSignInClick}
-            className="fui-link"
-            style={{ marginLeft: "4px" }}
+            className="fui-form__action"
           >
-            {getTranslation("labels", "signIn", translations, language)}
+            {getTranslation("prompts", "haveAccount", translations, language)}{" "}
+            {getTranslation("labels", "signIn", translations, language)} &rarr;
           </button>
         </div>
       )}

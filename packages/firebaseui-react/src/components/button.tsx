@@ -1,25 +1,11 @@
 import { ButtonHTMLAttributes } from "react";
 import { cn } from "~/utils/cn";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary";
-}
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
 
-export function Button({
-  children,
-  variant = "primary",
-  className = "",
-  ...props
-}: ButtonProps) {
+export function Button({ children, className, ...props }: ButtonProps) {
   return (
-    <button
-      className={cn(
-        "fui-form__button",
-        variant === "secondary" && "fui-form__button--secondary",
-        className
-      )}
-      {...props}
-    >
+    <button type="button" className={cn("fui-button", className)} {...props}>
       {children}
     </button>
   );

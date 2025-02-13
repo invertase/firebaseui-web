@@ -13,7 +13,13 @@ import { useMemo, useState } from "react";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
 
-export function ForgotPasswordForm() {
+interface ForgotPasswordFormProps {
+  onBackToSignInClick?: () => void;
+}
+
+export function ForgotPasswordForm({
+  onBackToSignInClick,
+}: ForgotPasswordFormProps) {
   const auth = useAuth();
   const translations = useTranslations();
   const { language } = useConfig();
@@ -43,7 +49,12 @@ export function ForgotPasswordForm() {
       } catch (error) {
         if (error instanceof FirebaseUIError) {
           setFormError(error.message);
+          return;
         }
+
+        console.error(error);
+        // TODO: Add translation
+        setFormError("Something went wrong");
       }
     },
   });
@@ -70,46 +81,53 @@ export function ForgotPasswordForm() {
         await form.handleSubmit();
       }}
     >
-      <div className="fui-form__group">
+      <fieldset>
         <form.Field
           name="email"
           children={(field) => (
             <>
-              <label className="fui-form__label" htmlFor={field.name}>
-                {getTranslation(
-                  "labels",
-                  "emailAddress",
-                  translations,
-                  language
-                )}
+              <label htmlFor={field.name}>
+                <span>
+                  {getTranslation(
+                    "labels",
+                    "emailAddress",
+                    translations,
+                    language
+                  )}
+                </span>
+                <input
+                  aria-invalid={field.state.meta.errors.length > 0}
+                  id={field.name}
+                  name={field.name}
+                  type="email"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+                <FieldInfo field={field} />
               </label>
-              <input
-                className={`fui-form__input ${
-                  field.state.meta.errors.length ? "fui-form__input--error" : ""
-                }`}
-                id={field.name}
-                name={field.name}
-                type="email"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
-              <FieldInfo field={field} />
             </>
           )}
         />
-      </div>
+      </fieldset>
 
-      <Button type="submit" variant="primary">
-        {getTranslation("labels", "resetPassword", translations, language)}
-      </Button>
+      <fieldset>
+        <Button type="submit">
+          {getTranslation("labels", "resetPassword", translations, language)}
+        </Button>
+        {formError && <div className="fui-form__error">{formError}</div>}
+      </fieldset>
 
-      {formError && (
-        <div
-          className="fui-form__error"
-          style={{ textAlign: "center", marginTop: "var(--fui-spacing-sm)" }}
-        >
-          {formError}
+      {onBackToSignInClick && (
+        <div className="flex justify-center items-center">
+          <button
+            type="button"
+            onClick={onBackToSignInClick}
+            className="fui-form__action"
+          >
+            {/* TODO: Add translation */}
+            Back to sign in &rarr;
+          </button>
         </div>
       )}
     </form>

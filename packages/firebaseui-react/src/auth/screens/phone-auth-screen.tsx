@@ -1,7 +1,4 @@
-import { Card } from "../../components/card";
-import { CardHeader } from "../../components/card-header";
-import { CardTitle } from "../../components/card-title";
-import { CardSubtitle } from "../../components/card-subtitle";
+import { Card, CardHeader, CardTitle, CardSubtitle } from "../../components/card";
 import { useConfig, useTranslations } from "~/hooks";
 import { getTranslation } from "@firebase-ui/core";
 import { Divider } from "~/components/divider";
@@ -33,7 +30,8 @@ export function PhoneAuthScreen({ children }: PhoneAuthScreenProps) {
         <PhoneForm />
         {children ? (
           <>
-            <Divider />
+            {/* TODO: Add translation */}
+            <Divider>or</Divider>
             <div className="space-y-4">{children}</div>
           </>
         ) : null}

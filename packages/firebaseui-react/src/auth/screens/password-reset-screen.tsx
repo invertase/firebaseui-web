@@ -1,14 +1,20 @@
-import { Card } from "../../components/card";
-import { CardHeader } from "../../components/card-header";
-import { CardTitle } from "../../components/card-title";
-import { CardSubtitle } from "../../components/card-subtitle";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardSubtitle,
+} from "../../components/card";
 import { useConfig, useTranslations } from "~/hooks";
 import { getTranslation } from "@firebase-ui/core";
 import { ForgotPasswordForm } from "../forms/forgot-password-form";
 
-export interface PasswordResetScreenProps {}
+export interface PasswordResetScreenProps {
+  onBackToSignInClick?: () => void;
+}
 
-export function PasswordResetScreen(_: PasswordResetScreenProps) {
+export function PasswordResetScreen({
+  onBackToSignInClick,
+}: PasswordResetScreenProps) {
   const { language } = useConfig();
   const translations = useTranslations();
 
@@ -30,7 +36,7 @@ export function PasswordResetScreen(_: PasswordResetScreenProps) {
           <CardTitle>{titleText}</CardTitle>
           <CardSubtitle>{subtitleText}</CardSubtitle>
         </CardHeader>
-        <ForgotPasswordForm />
+        <ForgotPasswordForm onBackToSignInClick={onBackToSignInClick} />
       </Card>
     </div>
   );

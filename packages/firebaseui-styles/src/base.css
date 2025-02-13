@@ -1,0 +1,93 @@
+:root {
+  --fui-primary: var(--color-black);
+  --fui-primary-hover: --alpha(var(--fui-primary) / 85%);
+  --fui-secondary: var(--color-gray-800);
+  --fui-background: var(--color-white);
+  --fui-surface: var(--color-white);
+  --fui-border: var(--color-gray-200);
+  --fui-input: var(--color-gray-300);
+  --fui-error: var(--color-red-500);
+  --fui-radius: var(--radius-sm);
+  --fui-radius-card: var(--radius-xl);
+}
+
+@theme {
+  --color-primary: var(--fui-primary);
+  --color-primary-hover: var(--fui-primary-hover);
+  --color-secondary: var(--fui-secondary);
+  --color-background: var(--fui-background);
+  --color-surface: var(--fui-surface);
+  --color-border: var(--fui-border);
+  --color-input: var(--fui-input);
+  --color-error: var(--fui-error);
+  --radius: var(--fui-radius);
+  --radius-card: var(--fui-radius-card);
+}
+
+.fui-screen {
+  @apply pt-24 max-w-md mx-auto;
+}
+
+.fui-card {
+  @apply bg-background p-10 border border-border rounded-card space-y-6;
+}
+
+.fui-card__header {
+  @apply text-center space-y-1;
+}
+
+.fui-card__title {
+  @apply text-xl font-bold;
+}
+
+.fui-card__subtitle {
+  @apply text-sm text-secondary;
+}
+
+.fui-form {
+  @apply space-y-6;
+}
+
+.fui-form fieldset, .fui-form fieldset > label {
+  @apply flex flex-col gap-2;
+}
+
+.fui-form fieldset > label > span {
+  @apply inline-flex gap-3 text-sm font-medium;
+}
+
+.fui-form .fui-form__action {
+  @apply px-1 hover:underline text-xs text-secondary;
+}
+
+.fui-form fieldset > label > input {
+  @apply border-1 border-input rounded px-2 py-2 text-sm focus:outline-2 focus:outline-primary shadow-xs bg-transparent;
+}
+
+.fui-form fieldset > label > input[aria-invalid="true"] {
+  @apply outline-error outline-2;
+}
+
+.fui-form .fui-form__error {
+  @apply text-error text-xs;
+}
+
+.fui-button {
+  @apply w-full flex items-center justify-center gap-3 px-4 py-2 rounded text-sm font-medium shadow-xs bg-primary text-surface transition hover:bg-primary-hover;
+}
+
+.fui-provider__button > svg {
+  @apply w-5 h-5;
+}
+
+.fui-divider {
+  @apply flex items-center gap-3;
+}
+
+.fui-divider__line {
+  @apply flex-1 h-px bg-border;
+}
+
+.fui-divider__text {
+  @apply text-secondary text-xs;
+}

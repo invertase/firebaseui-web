@@ -1,7 +1,4 @@
-import { Card } from "../../components/card";
-import { CardHeader } from "../../components/card-header";
-import { CardTitle } from "../../components/card-title";
-import { CardSubtitle } from "../../components/card-subtitle";
+import { Card, CardTitle, CardSubtitle, CardHeader } from "../../components/card";
 import { EmailPasswordForm } from "../forms/email-password-form";
 import { useConfig, useTranslations } from "~/hooks";
 import { getTranslation } from "@firebase-ui/core";
@@ -42,7 +39,7 @@ export function SignInAuthScreen({
         />
         {children ? (
           <>
-            <Divider />
+            <Divider>or</Divider>
             <div className="space-y-4">{children}</div>
           </>
         ) : null}

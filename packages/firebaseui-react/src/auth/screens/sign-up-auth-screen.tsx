@@ -1,7 +1,9 @@
-import { Card } from "../../components/card";
-import { CardHeader } from "../../components/card-header";
-import { CardTitle } from "../../components/card-title";
-import { CardSubtitle } from "../../components/card-subtitle";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardSubtitle,
+} from "../../components/card";
 import { RegisterForm } from "../forms/register-form";
 import { useConfig, useTranslations } from "~/hooks";
 import { getTranslation } from "@firebase-ui/core";
@@ -19,7 +21,12 @@ export function SignUpAuthScreen({
   const { language } = useConfig();
   const translations = useTranslations();
 
-  const titleText = getTranslation("labels", "register", translations, language);
+  const titleText = getTranslation(
+    "labels",
+    "register",
+    translations,
+    language
+  );
   const subtitleText = getTranslation(
     "prompts",
     "enterDetailsToCreate",
@@ -37,7 +44,7 @@ export function SignUpAuthScreen({
         <RegisterForm onBackToSignInClick={onBackToSignInClick} />
         {children ? (
           <>
-            <Divider />
+            <Divider>or</Divider>
             <div className="space-y-4">{children}</div>
           </>
         ) : null}

@@ -25,4 +25,3 @@ export {
 } from "./screens/password-reset-screen";
 
 export { GoogleSignInButton } from "./oauth/google-sign-in-button";
-export { FacebookSignInButton } from "./oauth/facebook-sign-in-button";

@@ -8,13 +8,13 @@ interface FieldInfoProps<TData> extends HTMLAttributes<HTMLDivElement> {
 
 export function FieldInfo<TData>({
   field,
-  className = "",
+  className,
   ...props
 }: FieldInfoProps<TData>) {
   return (
     <>
       {field.state.meta.isTouched && field.state.meta.errors.length ? (
-        <div className={cn("fui-form__error", className)} {...props}>
+        <div role="alert" aria-live="polite" className={cn("fui-form__error", className)} {...props}>
           {field.state.meta.errors.join(", ")}
         </div>
       ) : null}

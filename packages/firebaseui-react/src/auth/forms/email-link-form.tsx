@@ -46,7 +46,12 @@ export function EmailLinkForm() {
       } catch (error) {
         if (error instanceof FirebaseUIError) {
           setFormError(error.message);
+          return;
         }
+
+        console.error(error);
+        // TODO: Add translation
+        setFormError("Something went wrong");
       }
     },
   });
@@ -77,11 +82,10 @@ export function EmailLinkForm() {
   }, [auth, translations]);
 
   if (emailSent) {
+    // TODO: Improve this UI
     return (
-      <div className="fui-form">
-        <div className="text-center mb-4">
-          {getTranslation("messages", "signInLinkSent", translations, language)}
-        </div>
+      <div>
+        {getTranslation("messages", "signInLinkSent", translations, language)}
       </div>
     );
   }
@@ -95,50 +99,42 @@ export function EmailLinkForm() {
         await form.handleSubmit();
       }}
     >
-      <div className="fui-form__group">
+      <fieldset>
         <form.Field
           name="email"
           children={(field) => (
             <>
-              <label className="fui-form__label" htmlFor={field.name}>
-                {getTranslation(
-                  "labels",
-                  "emailAddress",
-                  translations,
-                  language
-                )}
+              <label htmlFor={field.name}>
+                <span>
+                  {getTranslation(
+                    "labels",
+                    "emailAddress",
+                    translations,
+                    language
+                  )}
+                </span>
+                <input
+                  aria-invalid={field.state.meta.errors.length > 0}
+                  id={field.name}
+                  name={field.name}
+                  type="email"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+                <FieldInfo field={field} />
               </label>
-              <input
-                className={`fui-form__input ${
-                  field.state.meta.errors.length ? "fui-form__input--error" : ""
-                }`}
-                id={field.name}
-                name={field.name}
-                type="email"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
-              <FieldInfo field={field} />
             </>
           )}
         />
-      </div>
+      </fieldset>
 
-      <div className="flex flex-col gap-2">
-        <Button type="submit" variant="primary">
+      <fieldset>
+        <Button type="submit">
           {getTranslation("labels", "sendSignInLink", translations, language)}
         </Button>
-      </div>
-
-      {formError && (
-        <div
-          className="fui-form__error"
-          style={{ textAlign: "center", marginTop: "var(--fui-spacing-sm)" }}
-        >
-          {formError}
-        </div>
-      )}
+        {formError && <div className="fui-form__error">{formError}</div>}
+      </fieldset>
     </form>
   );
 }
