@@ -23,7 +23,7 @@ import { FirebaseUIError } from './errors';
 import { type TranslationsConfig } from './translations';
 
 function handleFirebaseError(error: any, translations?: TranslationsConfig, language?: string): never {
-  // TODO: Debug this weird name thing
+  // TODO: Debug why instanceof FirebaseError is not working
   if (error?.name === 'FirebaseError') {
     throw new FirebaseUIError(error, translations, language);
   }
