@@ -1,7 +1,7 @@
-import { SignInScreen } from "@firebase-ui/react";
+// import { SignInScreen } from "@firebase-ui/react";
 
-export default function Example4() {
-  return (
-    <SignInScreen onForgotPasswordClick={() => {}} onRegisterClick={() => {}} />
-  );
-}
+// export default function Example4() {
+//   return (
+//     <SignInScreen onForgotPasswordClick={() => {}} onRegisterClick={() => {}} />
+//   );
+// }

@@ -11,8 +11,8 @@ import {
   fuiSignInWithPhoneNumber,
   fuiConfirmPhoneNumber,
 } from "@firebase-ui/core";
-import { Button } from "../components/button";
-import { FieldInfo } from "../components/field-info";
+import { Button } from "../../components/button";
+import { FieldInfo } from "../../components/field-info";
 import { z } from "zod";
 import { cn } from "~/utils/cn";
 

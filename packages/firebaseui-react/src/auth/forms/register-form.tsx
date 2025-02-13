@@ -3,27 +3,25 @@
 import { useForm } from "@tanstack/react-form";
 import {
   FirebaseUIError,
-  fuiSignInWithEmailAndPassword,
+  fuiCreateUserWithEmailAndPassword,
   type EmailFormSchema,
   getTranslation,
   createEmailFormSchema,
 } from "@firebase-ui/core";
 import { useAuth, useConfig, useTranslations } from "~/hooks";
 import { useMemo, useState } from "react";
-import { Button } from "../components/button";
-import { FieldInfo } from "../components/field-info";
+import { Button } from "../../components/button";
+import { FieldInfo } from "../../components/field-info";
 import { cn } from "~/utils/cn";
 
-export function EmailPasswordForm({
-  onForgotPasswordClick,
-  onRegisterClick,
+export function RegisterForm({
+  onBackToSignInClick,
 }: {
-  onForgotPasswordClick?: () => void;
-  onRegisterClick?: () => void;
+  onBackToSignInClick?: () => void;
 }) {
   const auth = useAuth();
-  const translations = useTranslations();
   const { language, enableAutoUpgradeAnonymous } = useConfig();
+  const translations = useTranslations();
   const [formError, setFormError] = useState<string | null>(null);
   const emailFormSchema = useMemo(
     () => createEmailFormSchema(translations),
@@ -42,11 +40,16 @@ export function EmailPasswordForm({
     onSubmit: async ({ value }) => {
       setFormError(null);
       try {
-        await fuiSignInWithEmailAndPassword(auth, value.email, value.password, {
-          translations,
-          language,
-          enableAutoUpgradeAnonymous,
-        });
+        await fuiCreateUserWithEmailAndPassword(
+          auth,
+          value.email,
+          value.password,
+          {
+            translations,
+            language,
+            enableAutoUpgradeAnonymous,
+          }
+        );
       } catch (error) {
         if (error instanceof FirebaseUIError) {
           setFormError(error.message);
@@ -100,32 +103,9 @@ export function EmailPasswordForm({
           name="password"
           children={(field) => (
             <>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <label className="fui-form__label" htmlFor={field.name}>
-                  {getTranslation("labels", "password", translations, language)}
-                </label>
-                {onForgotPasswordClick && (
-                  <button
-                    type="button"
-                    onClick={onForgotPasswordClick}
-                    className="fui-link"
-                    style={{ fontSize: "14px" }}
-                  >
-                    {getTranslation(
-                      "labels",
-                      "forgotPassword",
-                      translations,
-                      language
-                    )}
-                  </button>
-                )}
-              </div>
+              <label className="fui-form__label" htmlFor={field.name}>
+                {getTranslation("labels", "password", translations, language)}
+              </label>
               <input
                 className={cn(
                   "fui-form__input",
@@ -145,7 +125,7 @@ export function EmailPasswordForm({
       </div>
 
       <Button type="submit" variant="primary">
-        {getTranslation("labels", "signIn", translations, language)}
+        {getTranslation("labels", "createAccount", translations, language)}
       </Button>
 
       {formError && (
@@ -157,7 +137,7 @@ export function EmailPasswordForm({
         </div>
       )}
 
-      {onRegisterClick && (
+      {onBackToSignInClick && (
         <div
           style={{
             display: "flex",
@@ -166,14 +146,14 @@ export function EmailPasswordForm({
             fontSize: "14px",
           }}
         >
-          {getTranslation("prompts", "noAccount", translations, language)}{" "}
+          {getTranslation("prompts", "haveAccount", translations, language)}{" "}
           <button
             type="button"
-            onClick={onRegisterClick}
+            onClick={onBackToSignInClick}
             className="fui-link"
             style={{ marginLeft: "4px" }}
           >
-            {getTranslation("labels", "register", translations, language)}
+            {getTranslation("labels", "signIn", translations, language)}
           </button>
         </div>
       )}

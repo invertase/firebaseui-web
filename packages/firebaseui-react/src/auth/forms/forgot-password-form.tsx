@@ -10,8 +10,8 @@ import {
 } from "@firebase-ui/core";
 import { useAuth, useConfig, useTranslations } from "~/hooks";
 import { useMemo, useState } from "react";
-import { Button } from "../components/button";
-import { FieldInfo } from "../components/field-info";
+import { Button } from "../../components/button";
+import { FieldInfo } from "../../components/field-info";
 
 export function ForgotPasswordForm() {
   const auth = useAuth();

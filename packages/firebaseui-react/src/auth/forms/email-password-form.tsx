@@ -3,26 +3,32 @@
 import { useForm } from "@tanstack/react-form";
 import {
   FirebaseUIError,
-  fuiCreateUserWithEmailAndPassword,
+  fuiSignInWithEmailAndPassword,
   type EmailFormSchema,
   getTranslation,
   createEmailFormSchema,
 } from "@firebase-ui/core";
 import { useAuth, useConfig, useTranslations } from "~/hooks";
 import { useMemo, useState } from "react";
-import { Button } from "../components/button";
-import { FieldInfo } from "../components/field-info";
+import { Button } from "../../components/button";
+import { FieldInfo } from "../../components/field-info";
 import { cn } from "~/utils/cn";
 
-export function RegisterForm({
-  onBackToSignInClick,
-}: {
-  onBackToSignInClick?: () => void;
-}) {
+interface EmailPasswordFormProps {
+  onForgotPasswordClick?: () => void;
+  onRegisterClick?: () => void;
+}
+
+export function EmailPasswordForm({
+  onForgotPasswordClick,
+  onRegisterClick,
+}: EmailPasswordFormProps) {
   const auth = useAuth();
-  const { language, enableAutoUpgradeAnonymous } = useConfig();
   const translations = useTranslations();
+  const { language, enableAutoUpgradeAnonymous } = useConfig();
   const [formError, setFormError] = useState<string | null>(null);
+
+  // TODO: Do we need to memoize this?
   const emailFormSchema = useMemo(
     () => createEmailFormSchema(translations),
     [translations]
@@ -40,20 +46,20 @@ export function RegisterForm({
     onSubmit: async ({ value }) => {
       setFormError(null);
       try {
-        await fuiCreateUserWithEmailAndPassword(
-          auth,
-          value.email,
-          value.password,
-          {
-            translations,
-            language,
-            enableAutoUpgradeAnonymous,
-          }
-        );
+        await fuiSignInWithEmailAndPassword(auth, value.email, value.password, {
+          translations,
+          language,
+          enableAutoUpgradeAnonymous,
+        });
       } catch (error) {
         if (error instanceof FirebaseUIError) {
           setFormError(error.message);
+          return;
         }
+
+        console.error(error);
+        // TODO: Translation for this
+        setFormError("Something went wrong");
       }
     },
   });
@@ -103,9 +109,25 @@ export function RegisterForm({
           name="password"
           children={(field) => (
             <>
-              <label className="fui-form__label" htmlFor={field.name}>
-                {getTranslation("labels", "password", translations, language)}
-              </label>
+              <div className="flex justify-between items-center">
+                <label className="fui-form__label" htmlFor={field.name}>
+                  {getTranslation("labels", "password", translations, language)}
+                </label>
+                {onForgotPasswordClick && (
+                  <button
+                    type="button"
+                    onClick={onForgotPasswordClick}
+                    className="fui-link text-sm"
+                  >
+                    {getTranslation(
+                      "labels",
+                      "forgotPassword",
+                      translations,
+                      language
+                    )}
+                  </button>
+                )}
+              </div>
               <input
                 className={cn(
                   "fui-form__input",
@@ -125,11 +147,12 @@ export function RegisterForm({
       </div>
 
       <Button type="submit" variant="primary">
-        {getTranslation("labels", "createAccount", translations, language)}
+        {getTranslation("labels", "signIn", translations, language)}
       </Button>
 
       {formError && (
         <div
+          // TODO: Check class vs styles
           className="fui-form__error"
           style={{ textAlign: "center", marginTop: "var(--fui-spacing-sm)" }}
         >
@@ -137,23 +160,23 @@ export function RegisterForm({
         </div>
       )}
 
-      {onBackToSignInClick && (
+      {onRegisterClick && (
         <div
+          className="flex justify-center items-center"
           style={{
-            display: "flex",
-            justifyContent: "center",
+            // TODO: Make this utility class
             marginTop: "var(--fui-spacing-sm)",
-            fontSize: "14px",
           }}
         >
-          {getTranslation("prompts", "haveAccount", translations, language)}{" "}
+          {getTranslation("prompts", "noAccount", translations, language)}{" "}
           <button
             type="button"
-            onClick={onBackToSignInClick}
+            onClick={onRegisterClick}
             className="fui-link"
+            // TODO: Make this utility class - do we need it?
             style={{ marginLeft: "4px" }}
           >
-            {getTranslation("labels", "signIn", translations, language)}
+            {getTranslation("labels", "register", translations, language)}
           </button>
         </div>
       )}

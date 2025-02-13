@@ -5,13 +5,11 @@ type CardHeaderProps = HTMLAttributes<HTMLDivElement>;
 
 export function CardHeader({
   children,
-  className = "",
+  className,
   ...props
 }: CardHeaderProps) {
   return (
     <div className={cn("fui-card__header", className)} {...props}>
-      {/* FIXME: children type does not match for some reason */}
-      {/* @ts-ignore */}
       {children}
     </div>
   );

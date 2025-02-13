@@ -1,21 +1,3 @@
-export { CustomSignInScreen } from "./auth/custom-sign-in-screen";
-export { SignInScreen } from "./auth/sign-in-screen.jsx";
-export { EmailPasswordForm } from "./auth/email-password-form";
-export { ForgotPasswordForm } from "./auth/forgot-password-form";
-export { GoogleSignInButton } from "./auth/google-sign-in-button.js";
-export { PhoneForm } from "./auth/phone-form";
-export { RegisterForm } from "./auth/register-form";
-export { EmailLinkForm } from "./auth/email-link-form";
-
-export { Button } from "./components/button";
-export { Card } from "./components/card";
-export { CardHeader } from "./components/card-header";
-export { CardSubtitle } from "./components/card-subtitle";
-export { CardTitle } from "./components/card-title";
-export { Divider } from "./components/divider";
-export { FieldInfo } from "./components/field-info";
-
-export { ConfigContext } from "./context/config-context";
-export { ConfigProvider } from "./context/config-provider";
-
+export * from "./auth";
 export * from "./hooks";
+export { ConfigProvider } from "./context/config-provider";

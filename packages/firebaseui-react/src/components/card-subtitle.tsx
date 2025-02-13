@@ -5,13 +5,11 @@ type CardSubtitleProps = HTMLAttributes<HTMLParagraphElement>;
 
 export function CardSubtitle({
   children,
-  className = "",
+  className,
   ...props
 }: CardSubtitleProps) {
   return (
     <p className={cn("fui-card__subtitle", className)} {...props}>
-      {/* FIXME: children type does not match for some reason */}
-      {/* @ts-ignore */}
       {children}
     </p>
   );

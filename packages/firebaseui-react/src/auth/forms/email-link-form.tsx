@@ -10,8 +10,8 @@ import {
   fuiSignInWithEmailLink,
   fuiIsSignInWithEmailLink,
 } from "@firebase-ui/core";
-import { Button } from "../components/button";
-import { FieldInfo } from "../components/field-info";
+import { Button } from "../../components/button";
+import { FieldInfo } from "../../components/field-info";
 import { useEffect, useState, useMemo } from "react";
 
 export function EmailLinkForm() {

@@ -6,20 +6,20 @@ import {
   fuiSignInWithOAuth,
   getTranslation,
 } from "@firebase-ui/core";
-import { Button } from "../components/button";
+import { Button } from "../../components/button";
 import { useState } from "react";
-import { GoogleAuthProvider } from "firebase/auth";
+import { FacebookAuthProvider } from "firebase/auth";
 
-export function GoogleSignInButton() {
+export function FacebookSignInButton() {
   const auth = useAuth();
   const translations = useTranslations();
   const { language, enableAutoUpgradeAnonymous } = useConfig();
   const [formError, setFormError] = useState<string | null>(null);
 
-  const handleGoogleSignIn = async () => {
+  const handleFacebookSignIn = async () => {
     setFormError(null);
     try {
-      await fuiSignInWithOAuth(auth, new GoogleAuthProvider(), {
+      await fuiSignInWithOAuth(auth, new FacebookAuthProvider(), {
         translations,
         language,
         enableAutoUpgradeAnonymous,
@@ -31,13 +31,15 @@ export function GoogleSignInButton() {
     }
   };
 
+  // TODO: Add translations for facebook provider
+
   return (
     <div className="fui-form">
       <div className="flex flex-col gap-2">
         <Button
           type="button"
           variant="primary"
-          onClick={handleGoogleSignIn}
+          onClick={handleFacebookSignIn}
           className="fui-provider__button"
         >
           <svg

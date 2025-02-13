@@ -1,21 +1,23 @@
-import { Card } from "../components/card";
-import { CardHeader } from "../components/card-header";
-import { CardTitle } from "../components/card-title";
-import { CardSubtitle } from "../components/card-subtitle";
-import { CustomSignInScreen } from "./custom-sign-in-screen";
-import { EmailPasswordForm } from "./email-password-form";
+import { Card } from "../../components/card";
+import { CardHeader } from "../../components/card-header";
+import { CardTitle } from "../../components/card-title";
+import { CardSubtitle } from "../../components/card-subtitle";
+import { EmailPasswordForm } from "../forms/email-password-form";
 import { useConfig, useTranslations } from "~/hooks";
 import { getTranslation } from "@firebase-ui/core";
+import { Divider } from "~/components/divider";
 
-interface SignInScreenProps {
+export interface SignInAuthScreenProps {
   onForgotPasswordClick?: () => void;
   onRegisterClick?: () => void;
+  children?: React.ReactNode | React.ReactNode[];
 }
 
-export function SignInScreen({
+export function SignInAuthScreen({
   onForgotPasswordClick,
   onRegisterClick,
-}: SignInScreenProps) {
+  children,
+}: SignInAuthScreenProps) {
   const { language } = useConfig();
   const translations = useTranslations();
 
@@ -28,7 +30,7 @@ export function SignInScreen({
   );
 
   return (
-    <CustomSignInScreen>
+    <div className="fui-screen">
       <Card>
         <CardHeader>
           <CardTitle>{titleText}</CardTitle>
@@ -38,7 +40,13 @@ export function SignInScreen({
           onForgotPasswordClick={onForgotPasswordClick}
           onRegisterClick={onRegisterClick}
         />
+        {children ? (
+          <>
+            <Divider />
+            <div className="space-y-4">{children}</div>
+          </>
+        ) : null}
       </Card>
-    </CustomSignInScreen>
+    </div>
   );
 }
