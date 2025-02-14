@@ -18,11 +18,15 @@ export function PasswordResetScreen({
   const { language } = useConfig();
   const translations = useTranslations();
 
-  // TODO: Translations for password reset
-  const titleText = getTranslation("labels", "signIn", translations, language);
+  const titleText = getTranslation(
+    "labels",
+    "resetPassword",
+    translations,
+    language
+  );
   const subtitleText = getTranslation(
     "prompts",
-    "signInToAccount",
+    "enterEmailToReset",
     translations,
     language
   );
