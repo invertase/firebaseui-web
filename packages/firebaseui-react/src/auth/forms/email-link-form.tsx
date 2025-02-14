@@ -50,8 +50,9 @@ export function EmailLinkForm() {
         }
 
         console.error(error);
-        // TODO: Add translation
-        setFormError("Something went wrong");
+        setFormError(
+          getTranslation("errors", "unknownError", translations, language)
+        );
       }
     },
   });

@@ -236,7 +236,9 @@ export function PhoneForm() {
         return;
       }
       console.error(error);
-      setFormError("Something went wrong");
+      setFormError(
+        getTranslation("errors", "unknownError", translations, language)
+      );
     }
   };
 
@@ -258,8 +260,9 @@ export function PhoneForm() {
         return;
       }
       console.error(error);
-      // TODO: Add translation
-      setFormError("Something went wrong");
+      setFormError(
+        getTranslation("errors", "unknownError", translations, language)
+      );
     }
   };
 

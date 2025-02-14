@@ -57,8 +57,9 @@ export function EmailPasswordForm({
         }
 
         console.error(error);
-        // TODO: Translation for this
-        setFormError("Something went wrong");
+        setFormError(
+          getTranslation("errors", "unknownError", translations, language)
+        );
       }
     },
   });
