@@ -31,6 +31,7 @@ export type TranslationStrings = {
     signInLinkSent?: string;
     verificationCodeFirst?: string;
     checkEmailForReset?: string;
+    dividerOr?: string;
   };
   labels?: {
     emailAddress?: string;

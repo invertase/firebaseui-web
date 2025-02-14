@@ -44,7 +44,9 @@ export function SignUpAuthScreen({
         <RegisterForm onBackToSignInClick={onBackToSignInClick} />
         {children ? (
           <>
-            <Divider>or</Divider>
+            <Divider>
+              {getTranslation("messages", "dividerOr", translations, language)}
+            </Divider>
             <div className="space-y-4">{children}</div>
           </>
         ) : null}

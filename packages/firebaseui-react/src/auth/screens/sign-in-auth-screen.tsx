@@ -1,4 +1,9 @@
-import { Card, CardTitle, CardSubtitle, CardHeader } from "../../components/card";
+import {
+  Card,
+  CardTitle,
+  CardSubtitle,
+  CardHeader,
+} from "../../components/card";
 import { EmailPasswordForm } from "../forms/email-password-form";
 import { useConfig, useTranslations } from "~/hooks";
 import { getTranslation } from "@firebase-ui/core";
@@ -39,7 +44,9 @@ export function SignInAuthScreen({
         />
         {children ? (
           <>
-            <Divider>or</Divider>
+            <Divider>
+              {getTranslation("messages", "dividerOr", translations, language)}
+            </Divider>
             <div className="space-y-4">{children}</div>
           </>
         ) : null}

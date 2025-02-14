@@ -88,6 +88,7 @@ export const defaultTranslations: Record<'en', TranslationStrings> = {
       signInLinkSent: 'Sign-in link sent successfully',
       verificationCodeFirst: 'Please request a verification code first',
       checkEmailForReset: 'Check your email for password reset instructions',
+      dividerOr: 'or',
     },
     labels: {
       emailAddress: 'Email Address',

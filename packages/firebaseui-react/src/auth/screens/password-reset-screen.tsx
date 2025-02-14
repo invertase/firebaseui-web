@@ -31,8 +31,6 @@ export function PasswordResetScreen({
     language
   );
 
-  // TODO: Should forgot password have a back button to sign in screen prop?
-
   return (
     <div className="fui-screen">
       <Card>
