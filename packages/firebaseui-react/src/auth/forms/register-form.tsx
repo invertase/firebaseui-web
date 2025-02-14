@@ -52,7 +52,13 @@ export function RegisterForm({
       } catch (error) {
         if (error instanceof FirebaseUIError) {
           setFormError(error.message);
+          return;
         }
+
+        console.error(error);
+        setFormError(
+          getTranslation("errors", "unknownError", translations, language)
+        );
       }
     },
   });
