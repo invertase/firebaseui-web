@@ -228,3 +228,28 @@ export async function fuiSignInWithOAuth(
     handleFirebaseError(error, opts?.translations, opts?.language);
   }
 }
+
+export async function fuiCompleteEmailLinkSignIn(
+  auth: Auth,
+  currentUrl: string,
+  opts?: {
+    language?: string;
+    translations?: TranslationsConfig;
+    enableAutoUpgradeAnonymous?: boolean;
+  }
+): Promise<UserCredential | null> {
+  try {
+    if (!fuiIsSignInWithEmailLink(auth, currentUrl)) {
+      return null;
+    }
+
+    const email = window.localStorage.getItem('emailForSignIn');
+    if (!email) return null;
+
+    const result = await fuiSignInWithEmailLink(auth, email, currentUrl, opts);
+    window.localStorage.removeItem('emailForSignIn');
+    return result;
+  } catch (error) {
+    handleFirebaseError(error, opts?.translations, opts?.language);
+  }
+}

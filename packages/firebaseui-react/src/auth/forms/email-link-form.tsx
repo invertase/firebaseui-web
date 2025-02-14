@@ -7,8 +7,7 @@ import {
   getTranslation,
   createEmailLinkFormSchema,
   fuiSendSignInLinkToEmail,
-  fuiSignInWithEmailLink,
-  fuiIsSignInWithEmailLink,
+  fuiCompleteEmailLinkSignIn,
 } from "@firebase-ui/core";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
@@ -59,20 +58,13 @@ export function EmailLinkForm() {
 
   // Handle email link sign-in if URL contains the link
   useEffect(() => {
-    // TODO: We should wrap this logic within `isSignInWithEmailLink`
     const completeSignIn = async () => {
       try {
-        const email = window.localStorage.getItem("emailForSignIn");
-        if (!email) return;
-
-        if (fuiIsSignInWithEmailLink(auth, window.location.href)) {
-          await fuiSignInWithEmailLink(auth, email, window.location.href, {
-            translations,
-            language,
-            enableAutoUpgradeAnonymous,
-          });
-          window.localStorage.removeItem("emailForSignIn");
-        }
+        await fuiCompleteEmailLinkSignIn(auth, window.location.href, {
+          translations,
+          language,
+          enableAutoUpgradeAnonymous,
+        });
       } catch (error) {
         if (error instanceof FirebaseUIError) {
           setFormError(error.message);
@@ -81,7 +73,7 @@ export function EmailLinkForm() {
     };
 
     void completeSignIn();
-  }, [auth, translations]);
+  }, [auth, translations, language, enableAutoUpgradeAnonymous]);
 
   if (emailSent) {
     // TODO: Improve this UI
