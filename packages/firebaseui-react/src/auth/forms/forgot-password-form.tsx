@@ -126,8 +126,8 @@ export function ForgotPasswordForm({
             onClick={onBackToSignInClick}
             className="fui-form__action"
           >
-            {/* TODO: Add translation */}
-            Back to sign in &rarr;
+            {getTranslation("labels", "backToSignIn", translations, language)}{" "}
+            &rarr;
           </button>
         </div>
       )}
