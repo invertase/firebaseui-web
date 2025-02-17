@@ -1,12 +1,16 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { FirebaseUIModule } from '@firebase-ui/angular';
+import { ButtonComponent } from '@firebase-ui/angular';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, FirebaseUIModule],
+  imports: [RouterOutlet, ButtonComponent],
   standalone: true,
-  templateUrl: './app.component.html',
+  template: `
+    <h1>Hello World</h1>
+    <fui-button>Click me</fui-button>
+    <router-outlet />
+  `,
 })
 export class AppComponent {
   title = 'angular';
