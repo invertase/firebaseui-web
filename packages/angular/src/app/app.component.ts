@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {ButtonComponent} from "../../firebaseui-angular/dist/";
+import {ButtonComponent} from "../../firebaseui-angular/dist";
 
 @Component({
   selector: 'app-root',
