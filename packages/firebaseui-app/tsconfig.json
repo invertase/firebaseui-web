@@ -16,11 +16,7 @@
     "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
-    "module": "ES2022",
-    "baseUrl": ".",
-    "paths": {
-      "@firebase-ui/angular": ["../packages/firebaseui-angular/projects/firebaseui-angular/src/public-api"]
-    }
+    "module": "ES2022"
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
