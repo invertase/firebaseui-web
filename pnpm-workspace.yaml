@@ -1,4 +1,4 @@
 packages:
   - 'packages/*'
-  - 'packages/firebaseui-angular/projects/*'
+  - 'packages/angular/projects/*'
   - 'examples/*'
