@@ -37,10 +37,8 @@ export class FirebaseUi {
     category: T,
     key: keyof Required<TranslationStrings>[T]
   ) {
-    const foo = this.config().pipe(
+    return this.config().pipe(
       map(config => getTranslation(category, key, config.translations))
     );
-
-    return foo;
   }
 }

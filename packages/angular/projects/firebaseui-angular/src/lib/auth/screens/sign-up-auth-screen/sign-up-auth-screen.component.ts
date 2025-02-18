@@ -1,7 +1,6 @@
-import { Component, ElementRef, EventEmitter, inject, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardComponent, CardHeaderComponent, CardTitleComponent, CardSubtitleComponent } from '../../../components/card/card.component';
-import { DividerComponent } from '../../../components/divider/divider.component';
 
 import { FirebaseUi } from '../../../provider';
 import { RegisterFormComponent } from '../../forms/register-form/register-form.component';
@@ -12,7 +11,6 @@ import { RegisterFormComponent } from '../../forms/register-form/register-form.c
   imports: [
     CommonModule,
     CardComponent,
-    DividerComponent,
     CardHeaderComponent,
     CardTitleComponent,
     CardSubtitleComponent,
@@ -32,14 +30,8 @@ import { RegisterFormComponent } from '../../forms/register-form/register-form.c
 })
 export class SignUpAuthScreenComponent {
   private ui = inject(FirebaseUi);
-  private ref = inject(ElementRef);
 
   @Output() onBackToSignInClick = new EventEmitter<void>();
-
-  get hasContent(): boolean {
-    const element = this.ref.nativeElement;
-    return element.childNodes.length > 0;
-  }
 
   get titleText() {
     return this.ui.translation('labels', 'register');
