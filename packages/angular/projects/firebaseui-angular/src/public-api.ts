@@ -3,3 +3,4 @@
 // export * from './lib/components/card/card.component';
 
 export * from './lib/auth/screens/sign-up-auth-screen/sign-up-auth-screen.component';
+export * from './lib/provider';

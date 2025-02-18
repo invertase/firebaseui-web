@@ -1,7 +1,10 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, inject, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardComponent, CardHeaderComponent, CardTitleComponent, CardSubtitleComponent } from '../../../components/card/card.component';
 import { DividerComponent } from '../../../components/divider/divider.component';
+
+import { FirebaseUi } from '../../../provider';
+import { RegisterFormComponent } from '../../forms/register-form/register-form.component';
 
 @Component({
   selector: 'fui-sign-up-auth-screen',
@@ -13,60 +16,36 @@ import { DividerComponent } from '../../../components/divider/divider.component'
     CardHeaderComponent,
     CardTitleComponent,
     CardSubtitleComponent,
+    RegisterFormComponent,
   ],
   template: `
     <div class="fui-screen">
       <fui-card>
         <fui-card-header>
-          <fui-card-title>TODO</fui-card-title>
-          <fui-card-subtitle>TODO DESC</fui-card-subtitle>
+          <fui-card-title>{{ titleText | async }}</fui-card-title>
+          <fui-card-subtitle>{{ subtitleText | async }}</fui-card-subtitle>
         </fui-card-header>
-        <!-- <fui-register-form (backToSignInClick)="onBackToSignInClick.emit()"></fui-register-form> -->
-        <ng-container *ngIf="hasContent">
-          <fui-divider>
-           TODO: Add divider
-          </fui-divider>
-          <div class="space-y-4">
-            <ng-content></ng-content>
-          </div>
-        </ng-container>
+        <fui-register-form></fui-register-form>
       </fui-card>
     </div>
   `
 })
 export class SignUpAuthScreenComponent {
+  private ui = inject(FirebaseUi);
+  private ref = inject(ElementRef);
+
   @Output() onBackToSignInClick = new EventEmitter<void>();
 
-  // titleText: string;
-  // subtitleText: string;
-  translations: any;
-  // language: string;
-
   get hasContent(): boolean {
-    // const element = this.elementRef.nativeElement;
-    // return element.childNodes.length > 0;
-    return false;
+    const element = this.ref.nativeElement;
+    return element.childNodes.length > 0;
   }
 
-  // constructor(
-  //   private configService: ConfigService,
-  //   private elementRef: ElementRef
-  // ) {
-  //   this.language = this.configService.language;
-  //   this.translations = this.configService.translations;
+  get titleText() {
+    return this.ui.translation('labels', 'register');
+  }
 
-  //   this.titleText = getTranslation(
-  //     'labels',
-  //     'register',
-  //     this.translations,
-  //     this.language
-  //   );
-    
-  //   this.subtitleText = getTranslation(
-  //     'prompts',
-  //     'enterDetailsToCreate',
-  //     this.translations,
-  //     this.language
-  //   );
-  // }
+  get subtitleText() {
+    return this.ui.translation('prompts', 'enterDetailsToCreate');
+  }
 }

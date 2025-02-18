@@ -11,6 +11,7 @@
   },
   "private": true,
   "dependencies": {
+    "@firebase-ui/core": "workspace:*",
     "@angular/animations": "^19.1.0",
     "@angular/common": "^19.1.0",
     "@angular/compiler": "^19.1.0",
@@ -31,6 +32,7 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
+    "@nanostores/angular": "^0.0.4",
     "@angular-devkit/build-angular": "^19.1.7",
     "@angular/cli": "^19.1.7",
     "@angular/compiler-cli": "^19.1.0",
