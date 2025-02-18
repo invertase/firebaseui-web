@@ -18,6 +18,9 @@ export class CardComponent {
   selector: 'fui-card-header',
   standalone: true,
   imports: [CommonModule],
+  host: {
+    style: 'display: block;',
+  },
   template: `
     <div class="fui-card__header">
       <ng-content></ng-content>
