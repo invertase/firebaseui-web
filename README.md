@@ -186,7 +186,7 @@ Allows users to sign in with an email and password:
 
 TODO: Update once configuration is finalized.
 
-### Theming
+## Theming
 
 FirebaseUI provides a basic default theme out of the box, however the theme can be customized to match your application's design.
 
