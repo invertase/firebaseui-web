@@ -53,6 +53,8 @@ export type TranslationStrings = {
     sendSignInLink?: string;
     termsOfService?: string;
     privacyPolicy?: string;
+    resendCode?: string;
+    sending?: string;
   };
   prompts?: {
     noAccount?: string;

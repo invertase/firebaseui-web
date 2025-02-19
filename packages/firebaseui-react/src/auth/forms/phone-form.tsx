@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { RecaptchaVerifier, ConfirmationResult } from "firebase/auth";
 import { useAuth, useConfig, useTranslations } from "~/hooks";
 import {
@@ -95,7 +95,7 @@ function PhoneNumberForm({
       </fieldset>
 
       <fieldset>
-        <div ref={recaptchaContainerRef} />
+        <div className="fui-recaptcha-container" ref={recaptchaContainerRef} />
       </fieldset>
 
       {showTerms && <TermsAndPrivacy />}
@@ -110,16 +110,66 @@ function PhoneNumberForm({
   );
 }
 
+function useResendTimer(initialDelay: number) {
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [isActive, setIsActive] = useState(false);
+  const timerRef = useRef<number>(0);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [initialDelay]);
+
+  const startTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+
+    setTimeLeft(initialDelay);
+    setIsActive(true);
+
+    timerRef.current = window.setInterval(() => {
+      setTimeLeft((prev) => {
+        const next = prev <= 1 ? 0 : prev - 1;
+        if (prev <= 1) {
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+          }
+          setIsActive(false);
+        }
+        return next;
+      });
+    }, 1000);
+  }, [initialDelay]);
+
+  const canResend = !isActive && timeLeft === 0;
+
+  return { timeLeft, canResend, startTimer };
+}
+
 interface VerificationFormProps {
   onSubmit: (code: string) => Promise<void>;
+  onResend: () => Promise<void>;
   formError: string | null;
   showTerms?: boolean;
+  isResending: boolean;
+  canResend: boolean;
+  timeLeft: number;
+  recaptchaContainerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 function VerificationForm({
   onSubmit,
+  onResend,
   formError,
   showTerms,
+  isResending,
+  canResend,
+  timeLeft,
+  recaptchaContainerRef,
 }: VerificationFormProps) {
   const { language } = useConfig();
   const translations = useTranslations();
@@ -184,11 +234,32 @@ function VerificationForm({
         />
       </fieldset>
 
+      <fieldset>
+        <div className="fui-recaptcha-container" ref={recaptchaContainerRef} />
+      </fieldset>
+
       {showTerms && <TermsAndPrivacy />}
 
       <fieldset>
         <Button type="submit">
           {getTranslation("labels", "verifyCode", translations, language)}
+        </Button>
+        <Button
+          type="button"
+          onClick={onResend}
+          disabled={isResending || !canResend}
+          className="fui-button--secondary"
+        >
+          {isResending
+            ? getTranslation("labels", "sending", translations, language)
+            : !canResend
+            ? `${getTranslation(
+                "labels",
+                "resendCode",
+                translations,
+                language
+              )} (${timeLeft}s)`
+            : getTranslation("labels", "resendCode", translations, language)}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
       </fieldset>
@@ -196,7 +267,11 @@ function VerificationForm({
   );
 }
 
-export function PhoneForm() {
+export interface PhoneFormProps {
+  resendDelay?: number;
+}
+
+export function PhoneForm({ resendDelay = 30 }: PhoneFormProps) {
   const auth = useAuth();
   const { language, recaptchaMode } = useConfig();
   const translations = useTranslations();
@@ -205,7 +280,10 @@ export function PhoneForm() {
     useState<ConfirmationResult | null>(null);
   const [recaptchaVerifier, setRecaptchaVerifier] =
     useState<RecaptchaVerifier | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [isResending, setIsResending] = useState(false);
   const recaptchaContainerRef = useRef<HTMLDivElement | null>(null);
+  const { timeLeft, canResend, startTimer } = useResendTimer(resendDelay);
 
   useEffect(() => {
     if (!recaptchaContainerRef.current) return;
@@ -222,10 +300,11 @@ export function PhoneForm() {
 
     return () => {
       verifier.clear();
+      setRecaptchaVerifier(null);
     };
   }, [auth, recaptchaMode]);
 
-  const handlePhoneSubmit = async (phoneNumber: string) => {
+  const handlePhoneSubmit = async (number: string) => {
     setFormError(null);
     try {
       if (!recaptchaVerifier) {
@@ -234,14 +313,16 @@ export function PhoneForm() {
 
       const result = await fuiSignInWithPhoneNumber(
         auth,
-        phoneNumber,
+        number,
         recaptchaVerifier,
         {
           translations,
           language,
         }
       );
+      setPhoneNumber(number);
       setConfirmationResult(result);
+      startTimer();
     } catch (error) {
       if (error instanceof FirebaseUIError) {
         setFormError(error.message);
@@ -251,6 +332,58 @@ export function PhoneForm() {
       setFormError(
         getTranslation("errors", "unknownError", translations, language)
       );
+    }
+  };
+
+  const handleResend = async () => {
+    if (
+      isResending ||
+      !canResend ||
+      !phoneNumber ||
+      !recaptchaContainerRef.current
+    ) {
+      return;
+    }
+
+    setIsResending(true);
+    setFormError(null);
+
+    try {
+      if (recaptchaVerifier) {
+        recaptchaVerifier.clear();
+      }
+
+      const verifier = new RecaptchaVerifier(
+        auth,
+        recaptchaContainerRef.current,
+        {
+          size: recaptchaMode ?? "normal",
+        }
+      );
+      setRecaptchaVerifier(verifier);
+
+      const result = await fuiSignInWithPhoneNumber(
+        auth,
+        phoneNumber,
+        verifier,
+        {
+          translations,
+          language,
+        }
+      );
+      setConfirmationResult(result);
+      startTimer();
+    } catch (error) {
+      if (error instanceof FirebaseUIError) {
+        setFormError(error.message);
+      } else {
+        console.error(error);
+        setFormError(
+          getTranslation("errors", "unknownError", translations, language)
+        );
+      }
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -278,23 +411,28 @@ export function PhoneForm() {
     }
   };
 
-  if (confirmationResult) {
-    return (
-      <VerificationForm
-        onSubmit={handleVerificationSubmit}
-        formError={formError}
-        showTerms
-      />
-    );
-  }
-
   return (
-    <PhoneNumberForm
-      onSubmit={handlePhoneSubmit}
-      formError={formError}
-      recaptchaVerifier={recaptchaVerifier}
-      recaptchaContainerRef={recaptchaContainerRef}
-      showTerms
-    />
+    <div className="fui-form-container">
+      {confirmationResult ? (
+        <VerificationForm
+          onSubmit={handleVerificationSubmit}
+          onResend={handleResend}
+          formError={formError}
+          showTerms={false}
+          isResending={isResending}
+          canResend={canResend}
+          timeLeft={timeLeft}
+          recaptchaContainerRef={recaptchaContainerRef}
+        />
+      ) : (
+        <PhoneNumberForm
+          onSubmit={handlePhoneSubmit}
+          formError={formError}
+          recaptchaVerifier={recaptchaVerifier}
+          recaptchaContainerRef={recaptchaContainerRef}
+          showTerms
+        />
+      )}
+    </div>
   );
 }

@@ -110,6 +110,8 @@ export const defaultTranslations: Record<'en', TranslationStrings> = {
       sendSignInLink: 'Send Sign-in Link',
       termsOfService: 'Terms of Service',
       privacyPolicy: 'Privacy Policy',
+      resendCode: 'Resend Code',
+      sending: 'Sending...',
     },
     prompts: {
       noAccount: "Don't have an account?",

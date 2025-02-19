@@ -11,9 +11,13 @@ import { PhoneForm } from "../forms/phone-form";
 
 export interface PhoneAuthScreenProps {
   children?: React.ReactNode | React.ReactNode[];
+  resendDelay?: number;
 }
 
-export function PhoneAuthScreen({ children }: PhoneAuthScreenProps) {
+export function PhoneAuthScreen({
+  children,
+  resendDelay,
+}: PhoneAuthScreenProps) {
   const { language } = useConfig();
   const translations = useTranslations();
 
@@ -32,7 +36,7 @@ export function PhoneAuthScreen({ children }: PhoneAuthScreenProps) {
           <CardTitle>{titleText}</CardTitle>
           <CardSubtitle>{subtitleText}</CardSubtitle>
         </CardHeader>
-        <PhoneForm />
+        <PhoneForm resendDelay={resendDelay} />
         {children ? (
           <>
             <Divider>
