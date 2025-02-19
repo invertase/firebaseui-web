@@ -126,7 +126,7 @@
   }
 
   .fui-country-selector {
-    @apply relative inline-block min-w-[120px];
+    @apply relative inline-block w-[80px];
   }
 
   .fui-country-selector__wrapper {
@@ -138,6 +138,10 @@
   }
 
   .fui-country-selector select {
-    @apply w-full pl-8 pr-2 py-2 text-sm focus:outline-2 focus:outline-primary shadow-xs bg-transparent appearance-none cursor-pointer;
+    @apply w-full pl-8 pr-2 py-2 text-sm focus:outline-2 focus:outline-primary shadow-xs bg-transparent appearance-none cursor-pointer text-transparent;
+  }
+
+  .fui-country-selector__dial-code {
+    @apply absolute left-8 top-1/2 -translate-y-1/2 text-sm pointer-events-none text-text;
   }
 }
