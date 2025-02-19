@@ -7,7 +7,7 @@ This repository contains the source code for the FirebaseUI for Web project rewr
 FirebaseUI requires the `firebase` package to be installed:
 
 ```bash
-npm intall firebase
+npm install firebase
 ```
 
 Next, follow the installation flow for your framework:
@@ -18,22 +18,25 @@ Next, follow the installation flow for your framework:
   ```bash
   npm install @firebase-ui/react
   ```
+
 </details>
 
 <details>
   <summary>Angular</summary>
 
-  FirebaseUI for Angular dependes on the [AngularFire](https://github.com/angular/angularfire) package:
+  FirebaseUI for Angular depends on the [AngularFire](https://github.com/angular/angularfire) package:
 
   ```bash
   npm install @firebase-ui/angular @angular/fire
   ```
-</details>
 
+</details>
 
 ## Setup
 
 FirebaseUI requires that your Firebase app is setup following the [Getting Started with Firebase](https://firebase.google.com/docs/web/setup) flow for Web:
+
+### Initialization
 
 ```ts
 import { initializeApp } from 'firebase/app';
@@ -56,7 +59,7 @@ Next, follow the flow for your framework to setup FirebaseUI:
 <details>
   <summary>React</summary>
 
-  FirebaseUI for React requires that your application be wrapped in the `ConfigProvider`, providing the initalized UI configuration. React expects the `FirebaseApp` instance be provided to the `initializeUI` configuration:
+  FirebaseUI for React requires that your application be wrapped in the `ConfigProvider`, providing the initialized UI configuration. React expects the `FirebaseApp` instance be provided to the `initializeUI` configuration:
 
   ```tsx
   import { initializeApp } from 'firebase/app';
@@ -74,6 +77,7 @@ Next, follow the flow for your framework to setup FirebaseUI:
     </StrictMode>
   );
   ```
+
 </details>
 
 <details>
@@ -97,7 +101,10 @@ Next, follow the flow for your framework to setup FirebaseUI:
     ...
   })
   ```
+
 </details>
+
+### Styling
 
 Next, import the CSS styles for the FirebaseUI project.
 
@@ -114,7 +121,7 @@ If you are not using Tailwind, import the distributable CSS in your project:
 @import "@firebase-ui/styles/dist.css";
 ```
 
-> To learn more about theming, view the [theming](#theming) section.
+To learn more about theming, view the [theming](#theming) section.
 
 ## Authentication Components
 
@@ -150,6 +157,7 @@ Allows users to sign in with an email and password:
     );
   }
   ```
+
 </details>
 
 <details>
@@ -180,6 +188,7 @@ Allows users to sign in with an email and password:
   })
   export class AppComponent { }
   ```
+
 </details>
 
 ## Configuration
