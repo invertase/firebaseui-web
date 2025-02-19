@@ -5,19 +5,13 @@ import { map } from 'rxjs/operators';
 
 type Store = ReturnType<typeof initializeUI>;
 
-export const FIREBASE_UI_STORE = new InjectionToken<Store>('firebaseui.store');
-
-let isNanostoresRegistered = false;
+const FIREBASE_UI_STORE = new InjectionToken<Store>('firebaseui.store');
 
 export function provideFirebaseUi(uiFactory: () => Store): EnvironmentProviders {
   const providers: Provider[] = [
-    { provide: FIREBASE_UI_STORE, useFactory: uiFactory }
+    { provide: FIREBASE_UI_STORE, useFactory: uiFactory },
+    { provide: NANOSTORES, useClass: NanostoresService },
   ];
-
-  if (!isNanostoresRegistered) {
-    providers.push({ provide: NANOSTORES, useClass: NanostoresService });
-    isNanostoresRegistered = true;
-  }
 
   return makeEnvironmentProviders(providers);
 }
