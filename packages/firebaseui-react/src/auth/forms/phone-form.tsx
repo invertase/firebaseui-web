@@ -10,10 +10,14 @@ import {
   createPhoneFormSchema,
   fuiSignInWithPhoneNumber,
   fuiConfirmPhoneNumber,
+  CountryData,
+  countryData,
+  formatPhoneNumberWithCountry,
 } from "@firebase-ui/core";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
 import { TermsAndPrivacy } from "../../components/terms-and-privacy";
+import { CountrySelector } from "../../components/country-selector";
 import { z } from "zod";
 
 interface PhoneNumberFormProps {
@@ -33,6 +37,9 @@ function PhoneNumberForm({
 }: PhoneNumberFormProps) {
   const { language } = useConfig();
   const translations = useTranslations();
+  const [selectedCountry, setSelectedCountry] = useState<CountryData>(
+    countryData[0]
+  );
 
   const phoneFormSchema = useMemo(
     () =>
@@ -51,7 +58,11 @@ function PhoneNumberForm({
       onSubmit: phoneFormSchema,
     },
     onSubmit: async ({ value }) => {
-      await onSubmit(value.phoneNumber);
+      const formattedNumber = formatPhoneNumberWithCountry(
+        value.phoneNumber,
+        selectedCountry.dialCode
+      );
+      await onSubmit(formattedNumber);
     },
   });
 
@@ -78,15 +89,23 @@ function PhoneNumberForm({
                     language
                   )}
                 </span>
-                <input
-                  aria-invalid={field.state.meta.errors.length > 0}
-                  id={field.name}
-                  name={field.name}
-                  type="tel"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
+                <div className="fui-phone-input">
+                  <CountrySelector
+                    value={selectedCountry}
+                    onChange={setSelectedCountry}
+                    className="fui-phone-input__country-selector"
+                  />
+                  <input
+                    aria-invalid={field.state.meta.errors.length > 0}
+                    id={field.name}
+                    name={field.name}
+                    type="tel"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    className="fui-phone-input__number-input"
+                  />
+                </div>
                 <FieldInfo field={field} />
               </label>
             </>

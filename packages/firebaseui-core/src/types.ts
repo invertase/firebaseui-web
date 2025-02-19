@@ -78,3 +78,10 @@ export interface FUIConfig {
   privacyPolicyUrl?: string;
   recaptchaMode?: 'normal' | 'invisible';
 }
+
+export interface CountryData {
+  name: string;
+  dialCode: string;
+  code: string;
+  emoji: string;
+}
