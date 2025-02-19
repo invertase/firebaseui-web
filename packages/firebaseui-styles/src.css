@@ -1,0 +1,8 @@
+/**
+ * This file is the entrypoint for the dist.css file build process.
+ * It imports the tailwindcss and base.css, allowing for users to import
+ * the firebaseui-styles package without having to install tailwindcss.
+ */
+
+@import "tailwindcss";
+@import "src/base.css";

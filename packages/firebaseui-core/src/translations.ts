@@ -88,6 +88,8 @@ export const defaultTranslations: Record<'en', TranslationStrings> = {
       signInLinkSent: 'Sign-in link sent successfully',
       verificationCodeFirst: 'Please request a verification code first',
       checkEmailForReset: 'Check your email for password reset instructions',
+      dividerOr: 'or',
+      termsAndPrivacy: 'By continuing, you agree to our {tos} and {privacy}.',
     },
     labels: {
       emailAddress: 'Email Address',
@@ -106,6 +108,10 @@ export const defaultTranslations: Record<'en', TranslationStrings> = {
       signInWithGoogle: 'Sign in with Google',
       signInWithEmailLink: 'Sign in with Email Link',
       sendSignInLink: 'Send Sign-in Link',
+      termsOfService: 'Terms of Service',
+      privacyPolicy: 'Privacy Policy',
+      resendCode: 'Resend Code',
+      sending: 'Sending...',
     },
     prompts: {
       noAccount: "Don't have an account?",

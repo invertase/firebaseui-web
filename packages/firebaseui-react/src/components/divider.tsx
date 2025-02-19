@@ -1,23 +1,21 @@
+import { HTMLAttributes } from "react";
 import { cn } from "~/utils/cn";
 
-interface DividerProps {
-  text?: string;
-  className?: string;
-}
+type DividerProps = HTMLAttributes<HTMLDivElement>;
 
-export function Divider({ text, className }: DividerProps) {
-  if (!text) {
+export function Divider({ className, children, ...props }: DividerProps) {
+  if (!children) {
     return (
-      <div className={cn("fui-divider", className)}>
+      <div className={cn("fui-divider", className)} {...props}>
         <div className="fui-divider__line" />
       </div>
     );
   }
 
   return (
-    <div className={cn("fui-divider", className)}>
+    <div className={cn("fui-divider", className)} {...props}>
       <div className="fui-divider__line" />
-      <div className="fui-divider__text">{text}</div>
+      <div className="fui-divider__text">{children}</div>
       <div className="fui-divider__line" />
     </div>
   );

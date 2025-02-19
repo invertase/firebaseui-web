@@ -1,34 +1,47 @@
 {
-  "name": "firebaseui-react",
+  "name": "@firebase-ui/react",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "lint": "tsc --noEmit",
-    "preview": "vite preview"
+    "format": "prettier --write \"src/**/*.ts\"",
+    "clean": "rimraf dist"
   },
   "dependencies": {
     "@firebase-ui/core": "workspace:*",
     "@firebase-ui/styles": "workspace:*",
     "@nanostores/react": "^0.8.4",
-    "@tailwindcss/vite": "^4.0.0",
     "@tanstack/react-form": "^0.41.3",
     "clsx": "^2.1.1",
     "firebase": "^11.2.0",
     "nanostores": "^0.11.3",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "tailwind-merge": "^3.0.1",
-    "tailwindcss": "^4.0.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@types/react": "^18.3.18",
-    "@types/react-dom": "^18.3.5",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
     "typescript": "~5.6.2",
-    "vite": "^6.0.5"
+    "vite": "^6.0.5",
+    "tsup": "^8.3.6"
   }
 }

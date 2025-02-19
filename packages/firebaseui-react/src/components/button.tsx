@@ -1,23 +1,27 @@
 import { ButtonHTMLAttributes } from "react";
 import { cn } from "~/utils/cn";
 
+const buttonVariants = {
+  primary: "fui-button",
+  secondary: "fui-button fui-button--secondary",
+} as const;
+
+type ButtonVariant = keyof typeof buttonVariants;
+
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary";
+  variant?: ButtonVariant;
 }
 
 export function Button({
   children,
+  className,
   variant = "primary",
-  className = "",
   ...props
 }: ButtonProps) {
   return (
     <button
-      className={cn(
-        "fui-form__button",
-        variant === "secondary" && "fui-form__button--secondary",
-        className
-      )}
+      type="button"
+      className={cn(buttonVariants[variant], className)}
       {...props}
     >
       {children}

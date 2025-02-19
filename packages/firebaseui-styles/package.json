@@ -4,16 +4,13 @@
   "private": true,
   "type": "module",
   "files": [
-    "dist/styles.css",
-    "dist/dist.css",
-    "dist/auth.css"
+    "dist.css",
+    "src"
   ],
   "scripts": {
-    "build": "vite build"
+    "build": "npx @tailwindcss/cli -i ./src.css -o ./dist.css --minify"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.0.0",
-    "tailwindcss": "^4.0.0",
-    "vite": "^5.0.0"
+    "tailwindcss": "^4.0.0"
   }
 }

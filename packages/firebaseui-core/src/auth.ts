@@ -11,19 +11,18 @@ import {
   linkWithRedirect,
   EmailAuthProvider,
   PhoneAuthProvider,
-  OAuthProvider,
-  GoogleAuthProvider,
   signInWithRedirect,
   Auth,
   UserCredential,
   ConfirmationResult,
   RecaptchaVerifier,
+  AuthProvider,
 } from 'firebase/auth';
 import { FirebaseUIError } from './errors';
 import { type TranslationsConfig } from './translations';
 
 function handleFirebaseError(error: any, translations?: TranslationsConfig, language?: string): never {
-  // TODO: Debug this weird name thing
+  // TODO: Debug why instanceof FirebaseError is not working
   if (error?.name === 'FirebaseError') {
     throw new FirebaseUIError(error, translations, language);
   }
@@ -210,7 +209,7 @@ export async function fuiSignInAnonymously(
 
 export async function fuiSignInWithOAuth(
   auth: Auth,
-  provider: OAuthProvider | GoogleAuthProvider,
+  provider: AuthProvider,
   opts?: {
     language?: string;
     translations?: TranslationsConfig;
@@ -225,6 +224,31 @@ export async function fuiSignInWithOAuth(
     } else {
       await signInWithRedirect(auth, provider);
     }
+  } catch (error) {
+    handleFirebaseError(error, opts?.translations, opts?.language);
+  }
+}
+
+export async function fuiCompleteEmailLinkSignIn(
+  auth: Auth,
+  currentUrl: string,
+  opts?: {
+    language?: string;
+    translations?: TranslationsConfig;
+    enableAutoUpgradeAnonymous?: boolean;
+  }
+): Promise<UserCredential | null> {
+  try {
+    if (!fuiIsSignInWithEmailLink(auth, currentUrl)) {
+      return null;
+    }
+
+    const email = window.localStorage.getItem('emailForSignIn');
+    if (!email) return null;
+
+    const result = await fuiSignInWithEmailLink(auth, email, currentUrl, opts);
+    window.localStorage.removeItem('emailForSignIn');
+    return result;
   } catch (error) {
     handleFirebaseError(error, opts?.translations, opts?.language);
   }

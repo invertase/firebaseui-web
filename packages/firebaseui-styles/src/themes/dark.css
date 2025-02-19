@@ -1,0 +1,15 @@
+@layer theme {
+  :root {
+    --fui-primary: var(--color-white);
+    --fui-primary-hover: --alpha(var(--fui-primary) / 85%);
+    --fui-primary-surface: var(--color-black);
+    --fui-text: var(--color-white);
+    --fui-text-muted: var(--color-gray-200);
+    --fui-background: var(--color-black);
+    --fui-border: var(--color-gray-200);
+    --fui-input: var(--color-gray-300);
+    --fui-error: var(--color-red-500);
+    --fui-radius: var(--radius-sm);
+    --fui-radius-card: var(--radius-xl);
+  }
+}

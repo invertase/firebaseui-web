@@ -1,0 +1,14 @@
+@layer theme {
+  :root {
+    --fui-primary: black;
+    --fui-primary-surface: yellow;
+    --fui-text: black;
+    --fui-text-muted: black;
+    --fui-background: yellow;
+    --fui-border: green;
+    --fui-input: green;
+    --fui-error: blue;
+    --fui-radius: 0;
+    --fui-radius-card: 0;
+  }
+}

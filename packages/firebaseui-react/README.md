@@ -1,50 +1,80 @@
-# React + TypeScript + Vite
+# @firebase-ui/react
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This package contains the React components for the FirebaseUI.
 
-Currently, two official plugins are available:
+## Installation
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Install the package from NPM:
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm install @firebase-ui/react
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Usage
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+### Importing styles
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+To use the components, you need to import the styles from the `@firebase-ui/styles` package.
+
+If using Tailwind CSS, you can import the styles directly into your project.
+
+```css
+@import "tailwindcss";
+@import "@firebase-ui/styles/src/base.css";
+```
+
+Alternatively, you can import the fully compiled CSS file into your project.
+
+```tsx
+import "@firebase-ui/styles/dist.css";
+```
+
+### Initializing the UI
+
+First, initalize the Firebase JS SDK:
+
+```tsx
+import { initializeApp } from "firebase/app";
+
+const app = initializeApp({ ... });
+```
+
+Then, initialize the FirebaseUI with the configuration:
+
+```tsx
+import { initializeUI } from "@firebase-ui/react";
+
+const ui = initializeUI({
+  app,
+});
+```
+
+Finally, wrap your app in the `ConfigProvider` component:
+
+```tsx
+import { ConfigProvider } from "@firebase-ui/react";
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <ConfigProvider config={ui}>
+      <App />
+    </ConfigProvider>
+  </StrictMode>
+);
+```
+
+### Importing components
+
+To use the components, you need to import the components from the `@firebase-ui/react` package.
+
+```tsx
+import { SignInAuthScreen, GoogleSignInButton } from "@firebase-ui/react";
+
+function App() {
+  return (
+    <SignInAuthScreen>
+      <GoogleSignInButton />
+    </SignInAuthScreen>
+  );
+}
 ```
