@@ -7,8 +7,10 @@ type Store = ReturnType<typeof initializeUI>;
 
 const FIREBASE_UI_STORE = new InjectionToken<Store>('firebaseui.store');
 
-export function provideFirebaseUi(uiFactory: () => Store): EnvironmentProviders {
+export function provideFirebaseUI(uiFactory: () => Store): EnvironmentProviders {
   const providers: Provider[] = [
+    // TODO: This should depend on the FirebaseAuth provider via deps,
+    // see https://github.com/angular/angularfire/blob/35e0a9859299010488852b1826e4083abe56528f/src/firestore/firestore.module.ts#L76
     { provide: FIREBASE_UI_STORE, useFactory: uiFactory },
     { provide: NANOSTORES, useClass: NanostoresService },
   ];

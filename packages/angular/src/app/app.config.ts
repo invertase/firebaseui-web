@@ -6,7 +6,7 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
-import { provideFirebaseUi } from '@firebase-ui/angular';
+import { provideFirebaseUI } from '@firebase-ui/angular';
 import { initializeUI } from '@firebase-ui/core';
 
 const firebaseConfig = {
@@ -28,6 +28,6 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
     provideFirebaseApp(() => initializeApp(firebaseConfig)),
     provideAuth(() => getAuth()),
-    provideFirebaseUi(() => initializeUI({}))
+    provideFirebaseUI(() => initializeUI({}))
   ]
 };
