@@ -1,12 +1,10 @@
 {
-  "name": "firebaseui-angular",
+  "name": "@firebase-ui/angular",
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/common": "^19.1.0",
     "@angular/core": "^19.1.0",
-    "@firebase-ui/core": "workspace:*"
-  },
-  "dependencies": {
+    "@firebase-ui/core": "workspace:*",
     "@tanstack/angular-form": "^0.42.0",
     "@nanostores/angular": "^0.0.4",
     "tslib": "^2.3.0"

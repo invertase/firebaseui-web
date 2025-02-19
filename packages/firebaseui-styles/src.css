@@ -5,4 +5,4 @@
  */
 
 @import "tailwindcss";
-@import "src/base.css";
+@import "./src/base.css";
