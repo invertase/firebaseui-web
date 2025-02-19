@@ -32,6 +32,7 @@ export type TranslationStrings = {
     verificationCodeFirst?: string;
     checkEmailForReset?: string;
     dividerOr?: string;
+    termsAndPrivacy?: string;
   };
   labels?: {
     emailAddress?: string;
@@ -50,6 +51,8 @@ export type TranslationStrings = {
     signInWithGoogle?: string;
     signInWithEmailLink?: string;
     sendSignInLink?: string;
+    termsOfService?: string;
+    privacyPolicy?: string;
   };
   prompts?: {
     noAccount?: string;
@@ -69,5 +72,7 @@ export interface FUIConfig {
   enableAutoAnonymousLogin?: boolean;
   enableAutoUpgradeAnonymous?: boolean;
   translations?: Partial<Record<string, Partial<TranslationStrings>>>;
+  tosUrl?: string;
+  privacyPolicyUrl?: string;
   recaptchaMode?: 'normal' | 'invisible';
 }

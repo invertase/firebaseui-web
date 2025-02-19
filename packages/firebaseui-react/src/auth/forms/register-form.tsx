@@ -12,6 +12,7 @@ import { useAuth, useConfig, useTranslations } from "~/hooks";
 import { useMemo, useState } from "react";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
+import { TermsAndPrivacy } from "../../components/terms-and-privacy";
 
 export function RegisterForm({
   onBackToSignInClick,
@@ -126,6 +127,8 @@ export function RegisterForm({
           )}
         />
       </fieldset>
+
+      <TermsAndPrivacy />
 
       <fieldset>
         <Button type="submit">

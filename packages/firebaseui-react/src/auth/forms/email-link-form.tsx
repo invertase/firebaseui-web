@@ -12,6 +12,7 @@ import {
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
 import { useEffect, useState, useMemo } from "react";
+import { TermsAndPrivacy } from "../../components/terms-and-privacy";
 
 export function EmailLinkForm() {
   const auth = useAuth();
@@ -122,6 +123,8 @@ export function EmailLinkForm() {
           )}
         />
       </fieldset>
+
+      <TermsAndPrivacy />
 
       <fieldset>
         <Button type="submit">

@@ -12,6 +12,7 @@ import { useAuth, useConfig, useTranslations } from "~/hooks";
 import { useMemo, useState } from "react";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
+import { TermsAndPrivacy } from "../../components/terms-and-privacy";
 
 interface EmailPasswordFormProps {
   onForgotPasswordClick?: () => void;
@@ -146,6 +147,8 @@ export function EmailPasswordForm({
           )}
         />
       </fieldset>
+
+      <TermsAndPrivacy />
 
       <fieldset>
         <Button type="submit">

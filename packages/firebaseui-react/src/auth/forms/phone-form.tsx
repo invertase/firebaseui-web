@@ -13,6 +13,7 @@ import {
 } from "@firebase-ui/core";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
+import { TermsAndPrivacy } from "../../components/terms-and-privacy";
 import { z } from "zod";
 
 interface PhoneNumberFormProps {
@@ -20,6 +21,7 @@ interface PhoneNumberFormProps {
   formError: string | null;
   recaptchaVerifier: RecaptchaVerifier | null;
   recaptchaContainerRef: React.RefObject<HTMLDivElement | null>;
+  showTerms?: boolean;
 }
 
 function PhoneNumberForm({
@@ -27,6 +29,7 @@ function PhoneNumberForm({
   formError,
   recaptchaVerifier,
   recaptchaContainerRef,
+  showTerms,
 }: PhoneNumberFormProps) {
   const { language } = useConfig();
   const translations = useTranslations();
@@ -95,6 +98,8 @@ function PhoneNumberForm({
         <div ref={recaptchaContainerRef} />
       </fieldset>
 
+      {showTerms && <TermsAndPrivacy />}
+
       <fieldset>
         <Button type="submit" disabled={!recaptchaVerifier}>
           {getTranslation("labels", "sendCode", translations, language)}
@@ -108,9 +113,14 @@ function PhoneNumberForm({
 interface VerificationFormProps {
   onSubmit: (code: string) => Promise<void>;
   formError: string | null;
+  showTerms?: boolean;
 }
 
-function VerificationForm({ onSubmit, formError }: VerificationFormProps) {
+function VerificationForm({
+  onSubmit,
+  formError,
+  showTerms,
+}: VerificationFormProps) {
   const { language } = useConfig();
   const translations = useTranslations();
 
@@ -173,6 +183,8 @@ function VerificationForm({ onSubmit, formError }: VerificationFormProps) {
           )}
         />
       </fieldset>
+
+      {showTerms && <TermsAndPrivacy />}
 
       <fieldset>
         <Button type="submit">
@@ -271,6 +283,7 @@ export function PhoneForm() {
       <VerificationForm
         onSubmit={handleVerificationSubmit}
         formError={formError}
+        showTerms
       />
     );
   }
@@ -281,6 +294,7 @@ export function PhoneForm() {
       formError={formError}
       recaptchaVerifier={recaptchaVerifier}
       recaptchaContainerRef={recaptchaContainerRef}
+      showTerms
     />
   );
 }
