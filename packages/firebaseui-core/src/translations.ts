@@ -66,7 +66,7 @@ export const defaultTranslations: Record<'en', TranslationStrings> = {
       networkRequestFailed: 'Unable to connect to the server. Please check your internet connection',
       tooManyRequests: 'Too many failed attempts. Please try again later',
       emailAlreadyInUse: 'An account already exists with this email',
-      weakPassword: 'Password should be at least 6 characters',
+      weakPassword: 'Password should be at least 8 characters',
       operationNotAllowed: 'Email/password accounts are not enabled. Please contact support.',
       invalidPhoneNumber: 'The phone number is invalid',
       missingPhoneNumber: 'Please provide a phone number',
