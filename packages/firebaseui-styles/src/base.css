@@ -82,6 +82,10 @@
     @apply w-full flex items-center justify-center gap-3 px-4 py-2 rounded text-sm font-medium shadow-xs bg-primary text-primary-surface transition hover:bg-primary-hover hover:cursor-pointer;
   }
 
+  .fui-button--secondary {
+    @apply bg-transparent text-text border border-input hover:bg-background hover:border-primary;
+  }
+
   .fui-provider__button>svg {
     @apply w-5 h-5;
   }
@@ -96,5 +100,33 @@
 
   .fui-divider__text {
     @apply text-text-muted text-xs;
+  }
+
+  .fui-phone-input {
+    @apply flex gap-2 items-center;
+  }
+
+  .fui-phone-input__number-input {
+    @apply border-1 border-input rounded px-2 py-2 text-sm focus:outline-2 focus:outline-primary shadow-xs bg-transparent flex-1;
+  }
+
+  .fui-phone-input__number-input[aria-invalid="true"] {
+    @apply outline-error outline-2;
+  }
+
+  .fui-country-selector {
+    @apply relative inline-block min-w-[120px];
+  }
+
+  .fui-country-selector__wrapper {
+    @apply relative flex items-center border-1 border-input rounded bg-transparent overflow-hidden;
+  }
+
+  .fui-country-selector__flag {
+    @apply absolute left-2 text-lg pointer-events-none;
+  }
+
+  .fui-country-selector select {
+    @apply w-full pl-8 pr-2 py-2 text-sm focus:outline-2 focus:outline-primary shadow-xs bg-transparent appearance-none cursor-pointer;
   }
 }

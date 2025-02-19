@@ -12,6 +12,7 @@ import { useAuth, useConfig, useTranslations } from "~/hooks";
 import { useMemo, useState } from "react";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
+import { TermsAndPrivacy } from "../../components/terms-and-privacy";
 
 interface EmailPasswordFormProps {
   onForgotPasswordClick?: () => void;
@@ -88,7 +89,10 @@ export function EmailPasswordForm({
                   )}
                 </span>
                 <input
-                  aria-invalid={field.state.meta.errors.length > 0}
+                  aria-invalid={
+                    field.state.meta.isTouched &&
+                    field.state.meta.errors.length > 0
+                  }
                   id={field.name}
                   name={field.name}
                   type="email"
@@ -132,7 +136,10 @@ export function EmailPasswordForm({
                   </button>
                 </span>
                 <input
-                  aria-invalid={field.state.meta.errors.length > 0}
+                  aria-invalid={
+                    field.state.meta.isTouched &&
+                    field.state.meta.errors.length > 0
+                  }
                   id={field.name}
                   name={field.name}
                   type="password"
@@ -146,6 +153,8 @@ export function EmailPasswordForm({
           )}
         />
       </fieldset>
+
+      <TermsAndPrivacy />
 
       <fieldset>
         <Button type="submit">

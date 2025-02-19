@@ -22,6 +22,8 @@ export const ui = initializeUI({
   app,
   enableAutoAnonymousLogin: true,
   enableAutoUpgradeAnonymous: true,
+  tosUrl: "https://www.google.com",
+  privacyPolicyUrl: "https://www.google.com",
   translations: {
     en: {
       labels: {

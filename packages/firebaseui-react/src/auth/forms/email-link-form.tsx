@@ -12,6 +12,7 @@ import {
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
 import { useEffect, useState, useMemo } from "react";
+import { TermsAndPrivacy } from "../../components/terms-and-privacy";
 
 export function EmailLinkForm() {
   const auth = useAuth();
@@ -108,7 +109,10 @@ export function EmailLinkForm() {
                   )}
                 </span>
                 <input
-                  aria-invalid={field.state.meta.errors.length > 0}
+                  aria-invalid={
+                    field.state.meta.isTouched &&
+                    field.state.meta.errors.length > 0
+                  }
                   id={field.name}
                   name={field.name}
                   type="email"
@@ -122,6 +126,8 @@ export function EmailLinkForm() {
           )}
         />
       </fieldset>
+
+      <TermsAndPrivacy />
 
       <fieldset>
         <Button type="submit">

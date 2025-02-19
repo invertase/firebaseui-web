@@ -12,6 +12,7 @@ import { useAuth, useConfig, useTranslations } from "~/hooks";
 import { useMemo, useState } from "react";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
+import { TermsAndPrivacy } from "../../components/terms-and-privacy";
 
 export function RegisterForm({
   onBackToSignInClick,
@@ -87,7 +88,10 @@ export function RegisterForm({
                   )}
                 </span>
                 <input
-                  aria-invalid={field.state.meta.errors.length > 0}
+                  aria-invalid={
+                    field.state.meta.isTouched &&
+                    field.state.meta.errors.length > 0
+                  }
                   id={field.name}
                   name={field.name}
                   type="email"
@@ -112,7 +116,10 @@ export function RegisterForm({
                   {getTranslation("labels", "password", translations, language)}
                 </span>
                 <input
-                  aria-invalid={field.state.meta.errors.length > 0}
+                  aria-invalid={
+                    field.state.meta.isTouched &&
+                    field.state.meta.errors.length > 0
+                  }
                   id={field.name}
                   name={field.name}
                   type="password"
@@ -126,6 +133,8 @@ export function RegisterForm({
           )}
         />
       </fieldset>
+
+      <TermsAndPrivacy />
 
       <fieldset>
         <Button type="submit">
