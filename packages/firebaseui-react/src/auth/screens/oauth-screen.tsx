@@ -1,14 +1,18 @@
-import { Card, CardHeader, CardTitle, CardSubtitle } from "../../components/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardSubtitle,
+} from "../../components/card";
 import { useConfig, useTranslations } from "~/hooks";
 import { getTranslation } from "@firebase-ui/core";
+import { TermsAndPrivacy } from "../../components/terms-and-privacy";
 
 export interface OAuthAuthScreenProps {
   children: React.ReactNode | React.ReactNode[];
 }
 
-export function OAuthScreen({
-  children,
-}: OAuthAuthScreenProps) {
+export function OAuthScreen({ children }: OAuthAuthScreenProps) {
   const { language } = useConfig();
   const translations = useTranslations();
 
@@ -29,6 +33,7 @@ export function OAuthScreen({
           <CardSubtitle>{subtitleText}</CardSubtitle>
         </CardHeader>
         {children}
+        <TermsAndPrivacy />
       </Card>
     </div>
   );
