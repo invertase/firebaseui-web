@@ -273,7 +273,7 @@ function VerificationForm({
           type="button"
           onClick={onResend}
           disabled={isResending || !canResend}
-          className="fui-button--secondary"
+          variant="secondary"
         >
           {isResending
             ? getTranslation("labels", "sending", translations, language)
