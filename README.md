@@ -181,3 +181,42 @@ Allows users to sign in with an email and password:
   export class AppComponent { }
   ```
 </details>
+
+## Configuration
+
+TODO: Update once configuration is finalized.
+
+### Theming
+
+FirebaseUI provides a basic default theme out of the box, however the theme can be customized to match your application's design.
+
+The package uses CSS Variables, which can be overridden in your application's CSS. Below is a list of all available variables:
+
+```css
+:root {
+  /* The primary color is used for the button and link colors */
+  --fui-primary: var(--color-black);
+  /* The primary hover color is used for the button and link colors when hovered */
+  --fui-primary-hover: --alpha(var(--fui-primary) / 85%);
+  /* The primary surface color is used for the button text color */
+  --fui-primary-surface: var(--color-white);
+  /* The text color used for body text */
+  --fui-text: var(--color-black);
+  /* The muted text color used for body text, such as subtitles */
+  --fui-text-muted: var(--color-gray-800);
+  /* The background color of the cards */
+  --fui-background: var(--color-white);
+  /* The border color used for none input fields */
+  --fui-border: var(--color-gray-200);
+  /* The input color used for input fields */
+  --fui-input: var(--color-gray-300);
+  /* The error color used for error messages */
+  --fui-error: var(--color-red-500);
+  /* The radius used for the input fields */
+  --fui-radius: var(--radius-sm);
+  /* The radius used for the cards */
+  --fui-radius-card: var(--radius-xl);
+}
+```
+
+The default values are based on the [TailwindCSS](https://tailwindcss.com/docs/theme) theme variables. You can override these values with other TailwindCSS theme variables, or custom CSS values.
