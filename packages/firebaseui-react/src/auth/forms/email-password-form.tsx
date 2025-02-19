@@ -89,7 +89,10 @@ export function EmailPasswordForm({
                   )}
                 </span>
                 <input
-                  aria-invalid={field.state.meta.errors.length > 0}
+                  aria-invalid={
+                    field.state.meta.isTouched &&
+                    field.state.meta.errors.length > 0
+                  }
                   id={field.name}
                   name={field.name}
                   type="email"
@@ -133,7 +136,10 @@ export function EmailPasswordForm({
                   </button>
                 </span>
                 <input
-                  aria-invalid={field.state.meta.errors.length > 0}
+                  aria-invalid={
+                    field.state.meta.isTouched &&
+                    field.state.meta.errors.length > 0
+                  }
                   id={field.name}
                   name={field.name}
                   type="password"
