@@ -10,14 +10,24 @@ FirebaseUI requires the `firebase` package to be installed:
 npm install firebase
 ```
 
+(Since the packages are not published, the peer dependencies are not installed automatically from source (core & styles). This will not be required once published.)
+
 Next, follow the installation flow for your framework:
 
 <details>
   <summary>React</summary>
 
-  ```bash
-  npm install @firebase-ui/react
+  ```json
+  {
+    "dependencies": {
+      "@firebase-ui/core": "path-to-repo/releases/firebase-ui-core-0.0.1.tgz",
+      "@firebase-ui/styles": "path-to-repo/releases/firebase-ui-styles-0.0.1.tgz",
+      "@firebase-ui/react": "path-to-repo/releases/firebase-ui-react-0.0.1.tgz"
+    }
+  }
   ```
+
+  (Once published, this will be `npm install @firebase-ui/react`)
 
 </details>
 
@@ -26,9 +36,18 @@ Next, follow the installation flow for your framework:
 
   FirebaseUI for Angular depends on the [AngularFire](https://github.com/angular/angularfire) package:
 
-  ```bash
-  npm install @firebase-ui/angular @angular/fire
+  ```json
+  {
+    "dependencies": {
+      "@firebase-ui/core": "path-to-repo/releases/firebase-ui-core-0.0.1.tgz",
+      "@firebase-ui/styles": "path-to-repo/releases/firebase-ui-styles-0.0.1.tgz",
+      "@firebase-ui/amgular": "path-to-repo/releases/firebase-ui-angular-0.0.1.tgz",
+      "@angular/fire": "^19.0.0"
+    }
+  }
   ```
+
+  (Once published, this will be `npm install @firebase-ui/angular @angular/fire`)
 
 </details>
 
@@ -94,7 +113,7 @@ Next, follow the flow for your framework to setup FirebaseUI:
   export const appConfig: ApplicationConfig = {
     providers: [
       provideFirebaseApp(() => initializeApp({ ... })),
-      provideFirestore(() => getFirestore()),
+      provideAuth(() => getAuth()),
       provideFirebaseUI(() => initializeUI({}))
       ...
     ],
@@ -173,22 +192,6 @@ Allows users to sign in with an email and password:
   })
   export class AppComponent { }
   ```
-
-  TODO: Props: `onForgotPasswordClick` / `onRegisterClick`
-
-  TODO: Additionally, allow the user to sign in with an OAuth provider by providing children:
-
-  ```tsx
-  import { SignUpAuthScreenComponent } from "@firebase-ui/angular";
-
-  @Component({
-    selector: 'app-root',
-    imports: [SignUpAuthScreenComponent],
-    template: `<fui-sign-up-auth-screen></fui-sign-up-auth-screen>`,
-  })
-  export class AppComponent { }
-  ```
-
 </details>
 
 ## Configuration
