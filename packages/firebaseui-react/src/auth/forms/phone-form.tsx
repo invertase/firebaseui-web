@@ -186,7 +186,7 @@ function VerificationForm({ onSubmit, formError }: VerificationFormProps) {
 
 export function PhoneForm() {
   const auth = useAuth();
-  const { language } = useConfig();
+  const { language, recaptchaMode } = useConfig();
   const translations = useTranslations();
   const [formError, setFormError] = useState<string | null>(null);
   const [confirmationResult, setConfirmationResult] =
@@ -202,7 +202,7 @@ export function PhoneForm() {
       auth,
       recaptchaContainerRef.current,
       {
-        size: "normal",
+        size: recaptchaMode ?? "normal",
       }
     );
 
@@ -211,7 +211,7 @@ export function PhoneForm() {
     return () => {
       verifier.clear();
     };
-  }, [auth]);
+  }, [auth, recaptchaMode]);
 
   const handlePhoneSubmit = async (phoneNumber: string) => {
     setFormError(null);

@@ -69,4 +69,5 @@ export interface FUIConfig {
   enableAutoAnonymousLogin?: boolean;
   enableAutoUpgradeAnonymous?: boolean;
   translations?: Partial<Record<string, Partial<TranslationStrings>>>;
+  recaptchaMode?: 'normal' | 'invisible';
 }
