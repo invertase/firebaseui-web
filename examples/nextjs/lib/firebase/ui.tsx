@@ -1,8 +1,8 @@
 "use client";
 
-import { ui } from "@/lib/firebase";
+import { ui } from "@/lib/firebase/clientApp";
 import { ConfigProvider } from "@firebase-ui/react";
 
-export function InitUI({ children }: { children: React.ReactNode }) {
+export function FirebaseUIProvider({ children }: { children: React.ReactNode }) {
   return <ConfigProvider config={ui}>{children}</ConfigProvider>;
 }

@@ -2,6 +2,7 @@
   "name": "@firebaseui/root",
   "private": true,
   "scripts": {
+    "emulators": "firebase emulators:start --only auth"
   },
   "devDependencies": {
     "rimraf": "^6.0.1",

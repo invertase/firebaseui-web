@@ -1,16 +1,23 @@
+'use client';
+
 import Link from "next/link";
+import { useUser } from "@/lib/firebase/hooks";
 
 export default function Home() {
+  const user = useUser();
+
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-6">Firebase UI Demo</h1>
-
+      <div className="mb-6">
+        {user && <div>Welcome: {user.email || user.phoneNumber}</div>}
+      </div>
       <div>
         <h2 className="text-2xl font-bold mb-4">Auth Screens</h2>
         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <li>
             <Link
-              href="/sign-in-auth-screen"
+              href="/screens/sign-in-auth-screen"
               className="text-blue-500 hover:underline"
             >
               Sign In Auth Screen
@@ -18,7 +25,7 @@ export default function Home() {
           </li>
           <li>
             <Link
-              href="/sign-in-auth-screen-w-handlers"
+              href="/screens/sign-in-auth-screen-w-handlers"
               className="text-blue-500 hover:underline"
             >
               Sign In Auth Screen with Handlers
@@ -26,7 +33,7 @@ export default function Home() {
           </li>
           <li>
             <Link
-              href="/sign-in-auth-screen-w-oauth"
+              href="/screens/sign-in-auth-screen-w-oauth"
               className="text-blue-500 hover:underline"
             >
               Sign In Auth Screen with OAuth
@@ -34,7 +41,7 @@ export default function Home() {
           </li>
           <li>
             <Link
-              href="/email-link-auth-screen"
+              href="/screens/email-link-auth-screen"
               className="text-blue-500 hover:underline"
             >
               Email Link Auth Screen
@@ -42,7 +49,7 @@ export default function Home() {
           </li>
           <li>
             <Link
-              href="/email-link-auth-screen-w-oauth"
+              href="/screens/email-link-auth-screen-w-oauth"
               className="text-blue-500 hover:underline"
             >
               Email Link Auth Screen with OAuth
@@ -50,7 +57,7 @@ export default function Home() {
           </li>
           <li>
             <Link
-              href="/phone-auth-screen"
+              href="/screens/phone-auth-screen"
               className="text-blue-500 hover:underline"
             >
               Phone Auth Screen
@@ -58,7 +65,7 @@ export default function Home() {
           </li>
           <li>
             <Link
-              href="/phone-auth-screen-w-oauth"
+              href="/screens/phone-auth-screen-w-oauth"
               className="text-blue-500 hover:underline"
             >
               Phone Auth Screen with OAuth
@@ -66,7 +73,7 @@ export default function Home() {
           </li>
           <li>
             <Link
-              href="/sign-up-auth-screen"
+              href="/screens/sign-up-auth-screen"
               className="text-blue-500 hover:underline"
             >
               Sign Up Auth Screen
@@ -74,7 +81,7 @@ export default function Home() {
           </li>
           <li>
             <Link
-              href="/sign-up-auth-screen-w-oauth"
+              href="/screens/sign-up-auth-screen-w-oauth"
               className="text-blue-500 hover:underline"
             >
               Sign Up Auth Screen with OAuth
@@ -82,7 +89,7 @@ export default function Home() {
           </li>
           <li>
             <Link
-              href="/oauth-screen"
+              href="/screens/oauth-screen"
               className="text-blue-500 hover:underline"
             >
               OAuth Screen
@@ -90,7 +97,7 @@ export default function Home() {
           </li>
           <li>
             <Link
-              href="/password-reset-screen"
+              href="/screens/password-reset-screen"
               className="text-blue-500 hover:underline"
             >
               Password Reset Screen
