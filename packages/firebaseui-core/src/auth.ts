@@ -21,12 +21,47 @@ import {
 import { FirebaseUIError } from './errors';
 import { type TranslationsConfig } from './translations';
 
-function handleFirebaseError(error: any, translations?: TranslationsConfig, language?: string): never {
+async function handleFirebaseError(
+  error: any,
+  opts?: { language?: string; translations?: TranslationsConfig; enableHandleExistingCredential?: boolean }
+): Promise<never | UserCredential> {
+  if (error?.code === 'auth/account-exists-with-different-credential' && opts?.enableHandleExistingCredential) {
+    if (error.credential) {
+      window.sessionStorage.setItem('pendingCred', JSON.stringify(error.credential));
+    }
+
+    throw new FirebaseUIError(
+      {
+        code: 'auth/account-exists-with-different-credential',
+        customData: {
+          email: error.customData?.email,
+        },
+      },
+      opts?.translations,
+      opts?.language
+    );
+  }
+
   // TODO: Debug why instanceof FirebaseError is not working
   if (error?.name === 'FirebaseError') {
-    throw new FirebaseUIError(error, translations, language);
+    throw new FirebaseUIError(error, opts?.translations, opts?.language);
   }
-  throw new FirebaseUIError({ code: 'unknown' }, translations, language);
+  throw new FirebaseUIError({ code: 'unknown' }, opts?.translations, opts?.language);
+}
+
+async function handlePendingCredential(user: UserCredential): Promise<UserCredential> {
+  const pendingCredString = window.sessionStorage.getItem('pendingCred');
+  if (!pendingCredString) return user;
+
+  try {
+    const pendingCred = JSON.parse(pendingCredString);
+    const result = await linkWithCredential(user.user, pendingCred);
+    window.sessionStorage.removeItem('pendingCred');
+    return result;
+  } catch (error) {
+    window.sessionStorage.removeItem('pendingCred');
+    return user;
+  }
 }
 
 export async function fuiSignInWithEmailAndPassword(
@@ -37,6 +72,7 @@ export async function fuiSignInWithEmailAndPassword(
     language?: string;
     translations?: TranslationsConfig;
     enableAutoUpgradeAnonymous?: boolean;
+    enableHandleExistingCredential?: boolean;
   }
 ): Promise<UserCredential> {
   try {
@@ -44,12 +80,14 @@ export async function fuiSignInWithEmailAndPassword(
     const credential = EmailAuthProvider.credential(email, password);
 
     if (currentUser?.isAnonymous && opts?.enableAutoUpgradeAnonymous) {
-      return await linkWithCredential(currentUser, credential);
+      const result = await linkWithCredential(currentUser, credential);
+      return handlePendingCredential(result);
     }
 
-    return await signInWithCredential(auth, credential);
+    const result = await signInWithCredential(auth, credential);
+    return handlePendingCredential(result);
   } catch (error) {
-    handleFirebaseError(error, opts?.translations, opts?.language);
+    return await handleFirebaseError(error, opts);
   }
 }
 
@@ -61,6 +99,7 @@ export async function fuiCreateUserWithEmailAndPassword(
     language?: string;
     translations?: TranslationsConfig;
     enableAutoUpgradeAnonymous?: boolean;
+    enableHandleExistingCredential?: boolean;
   }
 ): Promise<UserCredential> {
   try {
@@ -68,12 +107,14 @@ export async function fuiCreateUserWithEmailAndPassword(
     const credential = EmailAuthProvider.credential(email, password);
 
     if (currentUser?.isAnonymous && opts?.enableAutoUpgradeAnonymous) {
-      return await linkWithCredential(currentUser, credential);
+      const result = await linkWithCredential(currentUser, credential);
+      return handlePendingCredential(result);
     }
 
-    return await createUserWithEmailAndPassword(auth, email, password);
+    const result = await createUserWithEmailAndPassword(auth, email, password);
+    return handlePendingCredential(result);
   } catch (error) {
-    handleFirebaseError(error, opts?.translations, opts?.language);
+    return await handleFirebaseError(error, opts);
   }
 }
 
@@ -89,7 +130,7 @@ export async function fuiSignInWithPhoneNumber(
   try {
     return await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
   } catch (error) {
-    handleFirebaseError(error, opts?.translations, opts?.language);
+    return (await handleFirebaseError(error, opts)) as never;
   }
 }
 
@@ -100,6 +141,7 @@ export async function fuiConfirmPhoneNumber(
     language?: string;
     translations?: TranslationsConfig;
     enableAutoUpgradeAnonymous?: boolean;
+    enableHandleExistingCredential?: boolean;
   }
 ): Promise<UserCredential> {
   try {
@@ -109,12 +151,13 @@ export async function fuiConfirmPhoneNumber(
 
     if (currentUser?.isAnonymous && opts?.enableAutoUpgradeAnonymous) {
       const result = await linkWithCredential(currentUser, credential);
-      return result;
+      return handlePendingCredential(result);
     }
 
-    return await signInWithCredential(auth, credential);
+    const result = await signInWithCredential(auth, credential);
+    return handlePendingCredential(result);
   } catch (error) {
-    handleFirebaseError(error, opts?.translations, opts?.language);
+    return await handleFirebaseError(error, opts);
   }
 }
 
@@ -129,7 +172,7 @@ export async function fuiSendPasswordResetEmail(
   try {
     await sendPasswordResetEmail(auth, email);
   } catch (error) {
-    handleFirebaseError(error, opts?.translations, opts?.language);
+    return (await handleFirebaseError(error, opts)) as never;
   }
 }
 
@@ -156,7 +199,7 @@ export async function fuiSendSignInLinkToEmail(
     await sendSignInLinkToEmail(auth, email, actionCodeSettings);
     window.localStorage.setItem('emailForSignIn', email);
   } catch (error) {
-    handleFirebaseError(error, opts?.translations, opts?.language);
+    return (await handleFirebaseError(error, opts)) as never;
   }
 }
 
@@ -172,6 +215,7 @@ export async function fuiSignInWithEmailLink(
     language?: string;
     translations?: TranslationsConfig;
     enableAutoUpgradeAnonymous?: boolean;
+    enableHandleExistingCredential?: boolean;
   }
 ): Promise<UserCredential> {
   try {
@@ -182,14 +226,14 @@ export async function fuiSignInWithEmailLink(
     if (currentUser?.isAnonymous && isAnonymousUpgrade && opts?.enableAutoUpgradeAnonymous) {
       const result = await linkWithCredential(currentUser, credential);
       window.localStorage.removeItem('emailLinkAnonymousUpgrade');
-      return result;
+      return handlePendingCredential(result);
     }
 
     const result = await signInWithCredential(auth, credential);
     window.localStorage.removeItem('emailLinkAnonymousUpgrade');
-    return result;
+    return handlePendingCredential(result);
   } catch (error) {
-    handleFirebaseError(error, opts?.translations, opts?.language);
+    return await handleFirebaseError(error, opts);
   }
 }
 
@@ -201,9 +245,10 @@ export async function fuiSignInAnonymously(
   }
 ): Promise<UserCredential> {
   try {
-    return await signInAnonymously(auth);
+    const result = await signInAnonymously(auth);
+    return handlePendingCredential(result);
   } catch (error) {
-    handleFirebaseError(error, opts?.translations, opts?.language);
+    return await handleFirebaseError(error, opts);
   }
 }
 
@@ -214,6 +259,7 @@ export async function fuiSignInWithOAuth(
     language?: string;
     translations?: TranslationsConfig;
     enableAutoUpgradeAnonymous?: boolean;
+    enableHandleExistingCredential?: boolean;
   }
 ): Promise<void> {
   try {
@@ -225,7 +271,7 @@ export async function fuiSignInWithOAuth(
       await signInWithRedirect(auth, provider);
     }
   } catch (error) {
-    handleFirebaseError(error, opts?.translations, opts?.language);
+    return (await handleFirebaseError(error, opts)) as never;
   }
 }
 
@@ -236,6 +282,7 @@ export async function fuiCompleteEmailLinkSignIn(
     language?: string;
     translations?: TranslationsConfig;
     enableAutoUpgradeAnonymous?: boolean;
+    enableHandleExistingCredential?: boolean;
   }
 ): Promise<UserCredential | null> {
   try {
@@ -248,8 +295,8 @@ export async function fuiCompleteEmailLinkSignIn(
 
     const result = await fuiSignInWithEmailLink(auth, email, currentUrl, opts);
     window.localStorage.removeItem('emailForSignIn');
-    return result;
+    return handlePendingCredential(result);
   } catch (error) {
-    handleFirebaseError(error, opts?.translations, opts?.language);
+    return await handleFirebaseError(error, opts);
   }
 }

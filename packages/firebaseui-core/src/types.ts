@@ -25,6 +25,7 @@ export type TranslationStrings = {
     invalidVerificationCode?: string;
     unknownError?: string;
     popupClosed?: string;
+    accountExistsWithDifferentCredential?: string;
   };
   messages?: {
     passwordResetEmailSent?: string;
@@ -73,6 +74,7 @@ export interface FUIConfig {
   language?: string;
   enableAutoAnonymousLogin?: boolean;
   enableAutoUpgradeAnonymous?: boolean;
+  enableHandleExistingCredential?: boolean;
   translations?: Partial<Record<string, Partial<TranslationStrings>>>;
   tosUrl?: string;
   privacyPolicyUrl?: string;
