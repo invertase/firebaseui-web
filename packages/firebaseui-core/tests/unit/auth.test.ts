@@ -1,3 +1,4 @@
+/// <reference lib="dom" />
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   Auth,
@@ -26,8 +27,8 @@ import {
   fuiSignInAnonymously,
   fuiSignInWithOAuth,
   fuiCompleteEmailLinkSignIn,
-} from './auth';
-import { FirebaseUIError } from './errors';
+} from '../../src/auth';
+import { FirebaseUIError } from '../../src/errors';
 
 // Mock all Firebase Auth functions
 vi.mock('firebase/auth', async () => {
@@ -66,14 +67,10 @@ describe('Firebase UI Auth', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // Create a fresh mock auth instance for each test
     mockAuth = { currentUser: null } as Auth;
-    // Reset localStorage
     window.localStorage.clear();
-    // Mock EmailAuthProvider
     (EmailAuthProvider.credential as any).mockReturnValue(mockCredential);
     (EmailAuthProvider.credentialWithLink as any).mockReturnValue(mockCredential);
-    // Mock PhoneAuthProvider
     (PhoneAuthProvider.credential as any).mockReturnValue(mockCredential);
   });
 
@@ -106,6 +103,34 @@ describe('Firebase UI Auth', () => {
       await expect(fuiSignInWithEmailAndPassword(mockAuth, 'test@test.com', 'password')).rejects.toBeInstanceOf(
         FirebaseUIError
       );
+    });
+
+    it('should handle network errors', async () => {
+      const networkError = { name: 'FirebaseError', code: 'auth/network-request-failed' };
+      (signInWithCredential as any).mockRejectedValue(networkError);
+
+      await expect(fuiSignInWithEmailAndPassword(mockAuth, 'test@test.com', 'password')).rejects.toThrow();
+    });
+
+    it('should handle invalid email format', async () => {
+      const invalidEmailError = { name: 'FirebaseError', code: 'auth/invalid-email' };
+      (signInWithCredential as any).mockRejectedValue(invalidEmailError);
+
+      await expect(fuiSignInWithEmailAndPassword(mockAuth, 'invalid-email', 'password')).rejects.toThrow();
+    });
+
+    it('should handle too many requests error', async () => {
+      const tooManyRequestsError = { name: 'FirebaseError', code: 'auth/too-many-requests' };
+      (signInWithCredential as any).mockRejectedValue(tooManyRequestsError);
+
+      await expect(fuiSignInWithEmailAndPassword(mockAuth, 'test@test.com', 'password')).rejects.toThrow();
+    });
+
+    it('should handle user disabled error', async () => {
+      const userDisabledError = { name: 'FirebaseError', code: 'auth/user-disabled' };
+      (signInWithCredential as any).mockRejectedValue(userDisabledError);
+
+      await expect(fuiSignInWithEmailAndPassword(mockAuth, 'test@test.com', 'password')).rejects.toThrow();
     });
   });
 
@@ -238,6 +263,56 @@ describe('Firebase UI Auth', () => {
 
       expect(signInAnonymously).toHaveBeenCalledWith(mockAuth);
       expect(result).toBe(mockUserCredential);
+    });
+
+    it('should handle operation not allowed error', async () => {
+      const operationNotAllowedError = { name: 'FirebaseError', code: 'auth/operation-not-allowed' };
+      (signInAnonymously as any).mockRejectedValue(operationNotAllowedError);
+
+      await expect(fuiSignInAnonymously(mockAuth)).rejects.toThrow();
+    });
+
+    it('should handle admin restricted operation error', async () => {
+      const adminRestrictedError = { name: 'FirebaseError', code: 'auth/admin-restricted-operation' };
+      (signInAnonymously as any).mockRejectedValue(adminRestrictedError);
+
+      await expect(fuiSignInAnonymously(mockAuth)).rejects.toThrow();
+    });
+  });
+
+  describe('Anonymous User Upgrade', () => {
+    it('should handle upgrade with existing email', async () => {
+      mockAuth = { currentUser: { isAnonymous: true } } as Auth;
+      const emailExistsError = { name: 'FirebaseError', code: 'auth/email-already-in-use' };
+      (linkWithCredential as any).mockRejectedValue(emailExistsError);
+
+      await expect(
+        fuiCreateUserWithEmailAndPassword(mockAuth, 'existing@test.com', 'password', {
+          enableAutoUpgradeAnonymous: true,
+        })
+      ).rejects.toThrow();
+    });
+
+    it('should handle upgrade of non-anonymous user', async () => {
+      mockAuth = { currentUser: { isAnonymous: false } } as Auth;
+
+      const result = await fuiCreateUserWithEmailAndPassword(mockAuth, 'test@test.com', 'password', {
+        enableAutoUpgradeAnonymous: true,
+      });
+
+      expect(createUserWithEmailAndPassword).toHaveBeenCalled();
+      expect(linkWithCredential).not.toHaveBeenCalled();
+    });
+
+    it('should handle null user during upgrade', async () => {
+      mockAuth = { currentUser: null } as Auth;
+
+      const result = await fuiCreateUserWithEmailAndPassword(mockAuth, 'test@test.com', 'password', {
+        enableAutoUpgradeAnonymous: true,
+      });
+
+      expect(createUserWithEmailAndPassword).toHaveBeenCalled();
+      expect(linkWithCredential).not.toHaveBeenCalled();
     });
   });
 

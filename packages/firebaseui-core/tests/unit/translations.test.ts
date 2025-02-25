@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getTranslation, type TranslationsConfig } from './translations';
+import { getTranslation, type TranslationsConfig } from '../../src/translations';
 
 describe('getTranslation', () => {
   it('should return default English translation when no custom translations provided', () => {
@@ -68,7 +68,6 @@ describe('getTranslation', () => {
     const customTranslations: TranslationsConfig = {
       en: {
         errors: {
-          // Only override one error message
           userNotFound: 'Custom not found message',
         },
       },
