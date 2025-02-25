@@ -87,7 +87,7 @@ export async function fuiSignInWithEmailAndPassword(
     const result = await signInWithCredential(auth, credential);
     return handlePendingCredential(result);
   } catch (error) {
-    return await handleFirebaseError(error, opts);
+    return handleFirebaseError(error, opts);
   }
 }
 
@@ -114,7 +114,7 @@ export async function fuiCreateUserWithEmailAndPassword(
     const result = await createUserWithEmailAndPassword(auth, email, password);
     return handlePendingCredential(result);
   } catch (error) {
-    return await handleFirebaseError(error, opts);
+    return handleFirebaseError(error, opts);
   }
 }
 
@@ -157,7 +157,7 @@ export async function fuiConfirmPhoneNumber(
     const result = await signInWithCredential(auth, credential);
     return handlePendingCredential(result);
   } catch (error) {
-    return await handleFirebaseError(error, opts);
+    return handleFirebaseError(error, opts);
   }
 }
 
@@ -233,7 +233,7 @@ export async function fuiSignInWithEmailLink(
     window.localStorage.removeItem('emailLinkAnonymousUpgrade');
     return handlePendingCredential(result);
   } catch (error) {
-    return await handleFirebaseError(error, opts);
+    return handleFirebaseError(error, opts);
   }
 }
 
@@ -248,7 +248,7 @@ export async function fuiSignInAnonymously(
     const result = await signInAnonymously(auth);
     return handlePendingCredential(result);
   } catch (error) {
-    return await handleFirebaseError(error, opts);
+    return handleFirebaseError(error, opts);
   }
 }
 
@@ -297,6 +297,6 @@ export async function fuiCompleteEmailLinkSignIn(
     window.localStorage.removeItem('emailForSignIn');
     return handlePendingCredential(result);
   } catch (error) {
-    return await handleFirebaseError(error, opts);
+    return handleFirebaseError(error, opts);
   }
 }
