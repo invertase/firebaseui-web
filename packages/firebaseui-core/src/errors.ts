@@ -13,3 +13,11 @@ export class FirebaseUIError extends Error {
     this.code = errorCode;
   }
 }
+
+export function handleFirebaseError(error: any, translations?: TranslationsConfig, language?: string): never {
+  // TODO: Debug why instanceof FirebaseError is not working
+  if (error?.name === 'FirebaseError') {
+    throw new FirebaseUIError(error, translations, language);
+  }
+  throw new FirebaseUIError({ code: 'unknown' }, translations, language);
+}
