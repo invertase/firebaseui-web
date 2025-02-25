@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { initializeUI, $config, getTranslations } from '../../src/config';
 import { fuiSignInAnonymously } from '../../src/auth';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import type { FirebaseApp } from 'firebase/app';
 import type { FUIConfig } from '../../src/types';
 import { map } from 'nanostores';

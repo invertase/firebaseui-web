@@ -5,7 +5,6 @@ import { GoogleAuthProvider } from 'firebase/auth';
 import {
   fuiSignInWithEmailAndPassword,
   fuiCreateUserWithEmailAndPassword,
-  fuiSignInWithEmailLink,
   fuiSendSignInLinkToEmail,
   fuiSignInAnonymously,
   fuiSendPasswordResetEmail,
