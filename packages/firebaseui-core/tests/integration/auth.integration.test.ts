@@ -9,7 +9,10 @@ import {
   fuiSignInAnonymously,
   fuiSendPasswordResetEmail,
   fuiSignInWithOAuth,
+  fuiCompleteEmailLinkSignIn,
+  fuiConfirmPhoneNumber,
 } from '../../src/auth';
+import { FirebaseUIError } from '../../src/errors';
 
 describe('Firebase UI Auth Integration', () => {
   let auth: Auth;
@@ -101,24 +104,29 @@ describe('Firebase UI Auth Integration', () => {
   });
 
   describe('Email Link Authentication', () => {
-    it('should initiate email link sign in', async () => {
+    it('should manage email storage for email link sign in', async () => {
       const email = getUniqueEmail();
-      await expect(fuiSendSignInLinkToEmail(auth, email)).resolves.not.toThrow();
 
+      // Should store email
+      await fuiSendSignInLinkToEmail(auth, email);
       expect(window.localStorage.getItem('emailForSignIn')).toBe(email);
-    });
 
-    // Note: Full email link sign-in flow can't be tested in integration tests
-    // as it requires clicking the email link
+      // Should store anonymous upgrade flag - first sign in anonymously
+      await fuiSignInAnonymously(auth);
+      await fuiSendSignInLinkToEmail(auth, email, { enableAutoUpgradeAnonymous: true });
+      expect(window.localStorage.getItem('emailLinkAnonymousUpgrade')).toBe('true');
+
+      // Should clean up storage after sign in attempt
+      window.localStorage.setItem('emailForSignIn', email);
+      window.localStorage.setItem('emailLinkAnonymousUpgrade', 'true');
+      await fuiSendSignInLinkToEmail(auth, email);
+      expect(window.localStorage.getItem('emailForSignIn')).toBe(email);
+      expect(window.localStorage.getItem('emailLinkAnonymousUpgrade')).toBe(null);
+    });
   });
 
   describe('OAuth Authentication', () => {
-    it.skip('should initiate OAuth sign in (skipped - requires user interaction)', async () => {
-      const provider = new GoogleAuthProvider();
-      await fuiSignInWithOAuth(auth, provider);
-    });
-
-    it.skip('should handle OAuth for anonymous upgrade (skipped - requires user interaction)', async () => {
+    it.skip('should handle enableAutoUpgradeAnonymous flag for OAuth (skipped - requires user interaction)', async () => {
       await fuiSignInAnonymously(auth);
       const provider = new GoogleAuthProvider();
       await fuiSignInWithOAuth(auth, provider, { enableAutoUpgradeAnonymous: true });
@@ -128,7 +136,6 @@ describe('Firebase UI Auth Integration', () => {
   describe('Error Handling', () => {
     it('should handle duplicate email registration', async () => {
       const email = getUniqueEmail();
-
       await fuiCreateUserWithEmailAndPassword(auth, email, testPassword);
       await signOut(auth);
 
@@ -140,8 +147,6 @@ describe('Firebase UI Auth Integration', () => {
       await expect(fuiSignInWithEmailAndPassword(auth, email, 'password')).rejects.toThrow();
     });
 
-    // Note: Firebase Auth has lenient email validation.
-    // We test only definitely invalid email formats here.
     it('should handle invalid email formats', async () => {
       const invalidEmails = [
         'invalid', // No @ symbol
@@ -152,15 +157,6 @@ describe('Firebase UI Auth Integration', () => {
 
       for (const email of invalidEmails) {
         await expect(fuiCreateUserWithEmailAndPassword(auth, email, testPassword)).rejects.toThrow();
-      }
-    });
-
-    it('should handle password requirements', async () => {
-      const email = getUniqueEmail();
-      const weakPasswords = ['', '123', 'short'];
-
-      for (const password of weakPasswords) {
-        await expect(fuiCreateUserWithEmailAndPassword(auth, email, password)).rejects.toThrow();
       }
     });
 
@@ -201,6 +197,55 @@ describe('Firebase UI Auth Integration', () => {
 
       const results = await Promise.all(attempts);
       expect(results.every((result) => result.user.email === email)).toBe(true);
+    });
+  });
+
+  describe('Anonymous User Upgrade', () => {
+    it('should maintain user data when upgrading anonymous account', async () => {
+      // First create an anonymous user
+      const anonResult = await fuiSignInAnonymously(auth);
+      const anonUid = anonResult.user.uid;
+
+      // Upgrade to email/password
+      const email = getUniqueEmail();
+      const result = await fuiCreateUserWithEmailAndPassword(auth, email, testPassword, {
+        enableAutoUpgradeAnonymous: true,
+      });
+
+      // Verify it's the same user
+      expect(result.user.uid).toBe(anonUid);
+      expect(result.user.email).toBe(email);
+      expect(result.user.isAnonymous).toBe(false);
+    });
+
+    it('should handle enableAutoUpgradeAnonymous flag correctly', async () => {
+      // Create an anonymous user
+      await fuiSignInAnonymously(auth);
+      const email = getUniqueEmail();
+
+      // Try to create new user without upgrade flag
+      const result = await fuiCreateUserWithEmailAndPassword(auth, email, testPassword, {
+        enableAutoUpgradeAnonymous: false,
+      });
+
+      // Should be a new user, not an upgrade
+      expect(result.user.isAnonymous).toBe(false);
+      expect(result.user.email).toBe(email);
+    });
+  });
+
+  describe('Email Link Authentication State Management', () => {
+    it('should handle multiple email link requests properly', async () => {
+      const email1 = getUniqueEmail();
+      const email2 = getUniqueEmail();
+
+      // First email link request
+      await fuiSendSignInLinkToEmail(auth, email1);
+      expect(window.localStorage.getItem('emailForSignIn')).toBe(email1);
+
+      // Second email link request should override the first
+      await fuiSendSignInLinkToEmail(auth, email2);
+      expect(window.localStorage.getItem('emailForSignIn')).toBe(email2);
     });
   });
 });

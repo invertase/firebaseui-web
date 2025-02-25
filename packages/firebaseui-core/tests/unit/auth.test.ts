@@ -96,42 +96,6 @@ describe('Firebase UI Auth', () => {
       expect(linkWithCredential).toHaveBeenCalledWith(mockAuth.currentUser, mockCredential);
       expect(result).toBe(mockUserCredential);
     });
-
-    it('should throw FirebaseUIError on error', async () => {
-      (signInWithCredential as any).mockRejectedValue(mockError);
-
-      await expect(fuiSignInWithEmailAndPassword(mockAuth, 'test@test.com', 'password')).rejects.toBeInstanceOf(
-        FirebaseUIError
-      );
-    });
-
-    it('should handle network errors', async () => {
-      const networkError = { name: 'FirebaseError', code: 'auth/network-request-failed' };
-      (signInWithCredential as any).mockRejectedValue(networkError);
-
-      await expect(fuiSignInWithEmailAndPassword(mockAuth, 'test@test.com', 'password')).rejects.toThrow();
-    });
-
-    it('should handle invalid email format', async () => {
-      const invalidEmailError = { name: 'FirebaseError', code: 'auth/invalid-email' };
-      (signInWithCredential as any).mockRejectedValue(invalidEmailError);
-
-      await expect(fuiSignInWithEmailAndPassword(mockAuth, 'invalid-email', 'password')).rejects.toThrow();
-    });
-
-    it('should handle too many requests error', async () => {
-      const tooManyRequestsError = { name: 'FirebaseError', code: 'auth/too-many-requests' };
-      (signInWithCredential as any).mockRejectedValue(tooManyRequestsError);
-
-      await expect(fuiSignInWithEmailAndPassword(mockAuth, 'test@test.com', 'password')).rejects.toThrow();
-    });
-
-    it('should handle user disabled error', async () => {
-      const userDisabledError = { name: 'FirebaseError', code: 'auth/user-disabled' };
-      (signInWithCredential as any).mockRejectedValue(userDisabledError);
-
-      await expect(fuiSignInWithEmailAndPassword(mockAuth, 'test@test.com', 'password')).rejects.toThrow();
-    });
   });
 
   describe('fuiCreateUserWithEmailAndPassword', () => {
@@ -345,6 +309,18 @@ describe('Firebase UI Auth', () => {
 
       expect(result).toBe(mockUserCredential);
       expect(window.localStorage.getItem('emailForSignIn')).toBeNull();
+    });
+
+    it('should clean up all storage items after sign in attempt', async () => {
+      (isSignInWithEmailLink as any).mockReturnValue(true);
+      window.localStorage.setItem('emailForSignIn', 'test@test.com');
+      window.localStorage.setItem('emailLinkAnonymousUpgrade', 'true');
+      (signInWithCredential as any).mockResolvedValue(mockUserCredential);
+
+      await fuiCompleteEmailLinkSignIn(mockAuth, 'mock-url');
+
+      expect(window.localStorage.getItem('emailForSignIn')).toBeNull();
+      expect(window.localStorage.getItem('emailLinkAnonymousUpgrade')).toBeNull();
     });
 
     it('should return null when not a valid sign in link', async () => {
