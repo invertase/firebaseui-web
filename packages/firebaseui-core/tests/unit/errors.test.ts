@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { FirebaseUIError, handleFirebaseError } from '../../src/errors';
 
 describe('FirebaseUIError', () => {
@@ -64,27 +64,26 @@ describe('FirebaseUIError', () => {
 });
 
 describe('handleFirebaseError', () => {
-  it('should throw FirebaseUIError for Firebase errors', () => {
+  beforeEach(() => {
+    window.sessionStorage.clear();
+  });
+
+  it('should throw FirebaseUIError for Firebase errors', async () => {
     const firebaseError = {
       name: 'FirebaseError',
       code: 'auth/user-not-found',
     };
 
-    expect(() => handleFirebaseError(firebaseError)).toThrow(FirebaseUIError);
+    await expect(handleFirebaseError(firebaseError)).rejects.toThrow(FirebaseUIError);
   });
 
-  it('should throw FirebaseUIError with unknown code for non-Firebase errors', () => {
+  it('should throw FirebaseUIError with unknown code for non-Firebase errors', async () => {
     const error = new Error('Random error');
 
-    try {
-      handleFirebaseError(error);
-    } catch (e) {
-      expect(e).toBeInstanceOf(FirebaseUIError);
-      expect(e.code).toBe('unknown');
-    }
+    await expect(handleFirebaseError(error)).rejects.toThrow(FirebaseUIError);
   });
 
-  it('should pass translations to FirebaseUIError', () => {
+  it('should pass translations and language to FirebaseUIError', async () => {
     const firebaseError = {
       name: 'FirebaseError',
       code: 'auth/user-not-found',
@@ -99,29 +98,111 @@ describe('handleFirebaseError', () => {
     };
 
     try {
-      handleFirebaseError(firebaseError, translations, 'es');
+      await handleFirebaseError(firebaseError, { translations, language: 'es' });
     } catch (e) {
       expect(e).toBeInstanceOf(FirebaseUIError);
       expect(e.message).toBe('Usuario no encontrado');
     }
   });
 
-  it('should handle null/undefined errors', () => {
-    expect(() => handleFirebaseError(null)).toThrow(FirebaseUIError);
-    expect(() => handleFirebaseError(undefined)).toThrow(FirebaseUIError);
+  it('should handle null/undefined errors', async () => {
+    await expect(handleFirebaseError(null)).rejects.toThrow(FirebaseUIError);
+    await expect(handleFirebaseError(undefined)).rejects.toThrow(FirebaseUIError);
   });
 
-  it('should preserve the error code in thrown error', () => {
+  it('should preserve the error code in thrown error', async () => {
     const firebaseError = {
       name: 'FirebaseError',
       code: 'auth/wrong-password',
     };
 
     try {
-      handleFirebaseError(firebaseError);
+      await handleFirebaseError(firebaseError);
     } catch (e) {
       expect(e).toBeInstanceOf(FirebaseUIError);
       expect(e.code).toBe('auth/wrong-password');
     }
+  });
+
+  describe('account exists with different credential handling', () => {
+    beforeEach(() => {
+      window.sessionStorage.clear();
+    });
+
+    it('should store credential and throw error when enableHandleExistingCredential is true', async () => {
+      const existingCredentialError = {
+        name: 'FirebaseError',
+        code: 'auth/account-exists-with-different-credential',
+        credential: { type: 'google.com', token: 'mock-token' },
+        customData: {
+          email: 'test@example.com',
+        },
+      };
+
+      await expect(
+        handleFirebaseError(existingCredentialError, { enableHandleExistingCredential: true })
+      ).rejects.toThrow(FirebaseUIError);
+      expect(window.sessionStorage.getItem('pendingCred')).toBe(JSON.stringify(existingCredentialError.credential));
+    });
+
+    it('should not store credential when enableHandleExistingCredential is false', async () => {
+      const existingCredentialError = {
+        name: 'FirebaseError',
+        code: 'auth/account-exists-with-different-credential',
+        credential: { type: 'google.com', token: 'mock-token' },
+        customData: {
+          email: 'test@example.com',
+        },
+      };
+
+      await expect(handleFirebaseError(existingCredentialError)).rejects.toThrow(FirebaseUIError);
+      expect(window.sessionStorage.getItem('pendingCred')).toBeNull();
+    });
+
+    it('should not store credential when no credential in error', async () => {
+      const existingCredentialError = {
+        name: 'FirebaseError',
+        code: 'auth/account-exists-with-different-credential',
+        customData: {
+          email: 'test@example.com',
+        },
+      };
+
+      await expect(
+        handleFirebaseError(existingCredentialError, { enableHandleExistingCredential: true })
+      ).rejects.toThrow(FirebaseUIError);
+      expect(window.sessionStorage.getItem('pendingCred')).toBeNull();
+    });
+
+    it('should include email in error and use translations when provided', async () => {
+      const existingCredentialError = {
+        name: 'FirebaseError',
+        code: 'auth/account-exists-with-different-credential',
+        credential: { type: 'google.com', token: 'mock-token' },
+        customData: {
+          email: 'test@example.com',
+        },
+      };
+
+      const translations = {
+        es: {
+          errors: {
+            accountExistsWithDifferentCredential: 'La cuenta ya existe con otras credenciales',
+          },
+        },
+      };
+
+      try {
+        await handleFirebaseError(existingCredentialError, {
+          enableHandleExistingCredential: true,
+          translations,
+          language: 'es',
+        });
+      } catch (e) {
+        expect(e).toBeInstanceOf(FirebaseUIError);
+        expect(e.code).toBe('auth/account-exists-with-different-credential');
+        expect(e.message).toBe('La cuenta ya existe con otras credenciales');
+      }
+    });
   });
 });

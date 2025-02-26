@@ -266,9 +266,11 @@ export async function fuiCompleteEmailLinkSignIn(
     if (!email) return null;
 
     const result = await fuiSignInWithEmailLink(auth, email, currentUrl, opts);
-    window.localStorage.removeItem('emailForSignIn');
     return handlePendingCredential(result);
   } catch (error) {
     return handleFirebaseError(error, opts);
+  } finally {
+    window.localStorage.removeItem('emailForSignIn');
+    window.localStorage.removeItem('emailLinkAnonymousUpgrade');
   }
 }
