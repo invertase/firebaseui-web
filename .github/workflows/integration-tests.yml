@@ -1,0 +1,61 @@
+name: Integration Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Setup Java for Firebase Emulator
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Firebase Tools
+        run: npm install -g firebase-tools
+
+      - name: Create Firebase config
+        run: |
+          cat > firebase.json << EOF
+          {
+            "emulators": {
+              "auth": {
+                "port": 9099
+              },
+              "ui": {
+                "enabled": false
+              }
+            }
+          }
+          EOF
+
+      - name: Start Firebase Emulator and Run Integration Tests
+        run: |
+          firebase emulators:start &
+          sleep 10
+          pnpm --filter @firebase-ui/core test:integration
