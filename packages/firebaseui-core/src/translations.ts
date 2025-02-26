@@ -26,6 +26,7 @@ export const ERROR_CODE_MAP: Record<string, ErrorKey> = {
   'auth/requires-recent-login': 'requiresRecentLogin',
   'auth/provider-already-linked': 'providerAlreadyLinked',
   'auth/invalid-verification-code': 'invalidVerificationCode',
+  'auth/account-exists-with-different-credential': 'accountExistsWithDifferentCredential',
 };
 
 type TranslationCategory = keyof Required<TranslationStrings>;
@@ -82,6 +83,8 @@ export const defaultTranslations: Record<'en', TranslationStrings> = {
       invalidVerificationCode: 'Invalid verification code. Please try again',
       unknownError: 'An unexpected error occurred',
       popupClosed: 'The sign-in popup was closed. Please try again.',
+      accountExistsWithDifferentCredential:
+        'An account already exists with this email. Please sign in with the original provider.',
     },
     messages: {
       passwordResetEmailSent: 'Password reset email sent successfully',

@@ -31,6 +31,7 @@ describe('Config', () => {
       const config: FUIConfig = {
         app: mockApp,
         enableAutoAnonymousLogin: false,
+        enableHandleExistingCredential: false,
       };
       const store = initializeUI(config);
       expect(store.get()).toEqual(config);
@@ -46,6 +47,7 @@ describe('Config', () => {
       const config: FUIConfig = {
         app: mockApp,
         enableAutoAnonymousLogin: false,
+        enableHandleExistingCredential: true,
       };
       const store = initializeUI(config, 'custom');
       expect(store.get()).toEqual(config);
@@ -61,6 +63,7 @@ describe('Config', () => {
       const config: FUIConfig = {
         app: mockApp,
         enableAutoAnonymousLogin: true,
+        enableHandleExistingCredential: false,
       };
       initializeUI(config);
       expect(onAuthStateChanged).toHaveBeenCalled();
@@ -78,9 +81,26 @@ describe('Config', () => {
       const config: FUIConfig = {
         app: mockApp,
         enableAutoAnonymousLogin: false,
+        enableHandleExistingCredential: true,
       };
       initializeUI(config);
       expect(onAuthStateChanged).not.toHaveBeenCalled();
+    });
+
+    it('should handle both auto features being enabled', () => {
+      const mockApp = {
+        name: 'test',
+        options: {},
+        automaticDataCollectionEnabled: false,
+      } as FirebaseApp;
+      const config: FUIConfig = {
+        app: mockApp,
+        enableAutoAnonymousLogin: true,
+        enableHandleExistingCredential: true,
+      };
+      const store = initializeUI(config);
+      expect(store.get()).toEqual(config);
+      expect(onAuthStateChanged).toHaveBeenCalled();
     });
   });
 

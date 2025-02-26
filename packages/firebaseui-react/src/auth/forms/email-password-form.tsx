@@ -25,7 +25,11 @@ export function EmailPasswordForm({
 }: EmailPasswordFormProps) {
   const auth = useAuth();
   const translations = useTranslations();
-  const { language, enableAutoUpgradeAnonymous } = useConfig();
+  const {
+    language,
+    enableAutoUpgradeAnonymous,
+    enableHandleExistingCredential,
+  } = useConfig();
   const [formError, setFormError] = useState<string | null>(null);
 
   // TODO: Do we need to memoize this?
@@ -50,6 +54,7 @@ export function EmailPasswordForm({
           translations,
           language,
           enableAutoUpgradeAnonymous,
+          enableHandleExistingCredential,
         });
       } catch (error) {
         if (error instanceof FirebaseUIError) {

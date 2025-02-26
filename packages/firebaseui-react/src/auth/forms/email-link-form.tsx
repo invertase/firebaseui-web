@@ -16,7 +16,11 @@ import { TermsAndPrivacy } from "../../components/terms-and-privacy";
 
 export function EmailLinkForm() {
   const auth = useAuth();
-  const { language, enableAutoUpgradeAnonymous } = useConfig();
+  const {
+    language,
+    enableAutoUpgradeAnonymous,
+    enableHandleExistingCredential,
+  } = useConfig();
   const translations = useTranslations();
   const [formError, setFormError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
@@ -65,6 +69,7 @@ export function EmailLinkForm() {
           translations,
           language,
           enableAutoUpgradeAnonymous,
+          enableHandleExistingCredential,
         });
       } catch (error) {
         if (error instanceof FirebaseUIError) {
@@ -74,7 +79,13 @@ export function EmailLinkForm() {
     };
 
     void completeSignIn();
-  }, [auth, translations, language, enableAutoUpgradeAnonymous]);
+  }, [
+    auth,
+    translations,
+    language,
+    enableAutoUpgradeAnonymous,
+    enableHandleExistingCredential,
+  ]);
 
   if (emailSent) {
     // TODO: Improve this UI

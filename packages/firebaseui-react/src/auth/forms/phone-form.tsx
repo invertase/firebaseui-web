@@ -298,7 +298,12 @@ export interface PhoneFormProps {
 
 export function PhoneForm({ resendDelay = 30 }: PhoneFormProps) {
   const auth = useAuth();
-  const { language, recaptchaMode } = useConfig();
+  const {
+    language,
+    recaptchaMode,
+    enableAutoUpgradeAnonymous,
+    enableHandleExistingCredential,
+  } = useConfig();
   const translations = useTranslations();
   const [formError, setFormError] = useState<string | null>(null);
   const [confirmationResult, setConfirmationResult] =
@@ -423,6 +428,8 @@ export function PhoneForm({ resendDelay = 30 }: PhoneFormProps) {
       await fuiConfirmPhoneNumber(confirmationResult, code, {
         translations,
         language,
+        enableAutoUpgradeAnonymous,
+        enableHandleExistingCredential,
       });
     } catch (error) {
       if (error instanceof FirebaseUIError) {

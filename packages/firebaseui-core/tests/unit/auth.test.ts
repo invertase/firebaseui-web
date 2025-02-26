@@ -28,7 +28,6 @@ import {
   fuiSignInWithOAuth,
   fuiCompleteEmailLinkSignIn,
 } from '../../src/auth';
-import { FirebaseUIError } from '../../src/errors';
 
 // Mock all Firebase Auth functions
 vi.mock('firebase/auth', async () => {
@@ -69,6 +68,7 @@ describe('Firebase UI Auth', () => {
     vi.clearAllMocks();
     mockAuth = { currentUser: null } as Auth;
     window.localStorage.clear();
+    window.sessionStorage.clear();
     (EmailAuthProvider.credential as any).mockReturnValue(mockCredential);
     (EmailAuthProvider.credentialWithLink as any).mockReturnValue(mockCredential);
     (PhoneAuthProvider.credential as any).mockReturnValue(mockCredential);
@@ -337,6 +337,86 @@ describe('Firebase UI Auth', () => {
       const result = await fuiCompleteEmailLinkSignIn(mockAuth, 'mock-url');
 
       expect(result).toBeNull();
+    });
+
+    it('should clean up storage even when sign in fails', async () => {
+      window.localStorage.setItem('emailForSignIn', 'test@test.com');
+      window.localStorage.setItem('emailLinkAnonymousUpgrade', 'true');
+
+      (isSignInWithEmailLink as any).mockReturnValue(true);
+      (signInWithCredential as any).mockRejectedValue(new Error('Sign in failed'));
+
+      await expect(fuiCompleteEmailLinkSignIn(mockAuth, 'mock-url')).rejects.toThrow();
+
+      expect(window.localStorage.getItem('emailForSignIn')).toBeNull();
+      expect(window.localStorage.getItem('emailLinkAnonymousUpgrade')).toBeNull();
+    });
+  });
+
+  describe('Pending Credential Handling', () => {
+    it('should handle pending credential during email sign in', async () => {
+      const storedCred = { type: 'google.com', token: 'stored-token' };
+      window.sessionStorage.setItem('pendingCred', JSON.stringify(storedCred));
+      (signInWithCredential as any).mockResolvedValue(mockUserCredential);
+      (linkWithCredential as any).mockResolvedValue({ ...mockUserCredential, user: { uid: 'linked-uid' } });
+
+      const result = await fuiSignInWithEmailAndPassword(mockAuth, 'test@test.com', 'password');
+
+      expect(linkWithCredential).toHaveBeenCalledWith(mockUserCredential.user, storedCred);
+      expect(window.sessionStorage.getItem('pendingCred')).toBeNull();
+      expect(result.user.uid).toBe('linked-uid');
+    });
+
+    it('should handle invalid pending credential gracefully', async () => {
+      window.sessionStorage.setItem('pendingCred', 'invalid-json');
+      (signInWithCredential as any).mockResolvedValue(mockUserCredential);
+
+      const result = await fuiSignInWithEmailAndPassword(mockAuth, 'test@test.com', 'password');
+
+      expect(result).toBe(mockUserCredential);
+      expect(window.sessionStorage.getItem('pendingCred')).toBeNull();
+    });
+
+    it('should handle linking failure gracefully', async () => {
+      const storedCred = { type: 'google.com', token: 'stored-token' };
+      window.sessionStorage.setItem('pendingCred', JSON.stringify(storedCred));
+      (signInWithCredential as any).mockResolvedValue(mockUserCredential);
+      (linkWithCredential as any).mockRejectedValue(new Error('Linking failed'));
+
+      const result = await fuiSignInWithEmailAndPassword(mockAuth, 'test@test.com', 'password');
+
+      expect(result).toBe(mockUserCredential);
+      expect(window.sessionStorage.getItem('pendingCred')).toBeNull();
+    });
+  });
+
+  describe('Storage Management', () => {
+    it('should clean up all storage items after successful email link sign in', async () => {
+      window.localStorage.setItem('emailForSignIn', 'test@test.com');
+      window.localStorage.setItem('emailLinkAnonymousUpgrade', 'true');
+      window.sessionStorage.setItem('pendingCred', JSON.stringify(mockCredential));
+
+      (isSignInWithEmailLink as any).mockReturnValue(true);
+      (signInWithCredential as any).mockResolvedValue(mockUserCredential);
+
+      await fuiCompleteEmailLinkSignIn(mockAuth, 'mock-url');
+
+      expect(window.localStorage.getItem('emailForSignIn')).toBeNull();
+      expect(window.localStorage.getItem('emailLinkAnonymousUpgrade')).toBeNull();
+      expect(window.sessionStorage.getItem('pendingCred')).toBeNull();
+    });
+
+    it('should clean up storage even when sign in fails', async () => {
+      window.localStorage.setItem('emailForSignIn', 'test@test.com');
+      window.localStorage.setItem('emailLinkAnonymousUpgrade', 'true');
+
+      (isSignInWithEmailLink as any).mockReturnValue(true);
+      (signInWithCredential as any).mockRejectedValue(new Error('Sign in failed'));
+
+      await expect(fuiCompleteEmailLinkSignIn(mockAuth, 'mock-url')).rejects.toThrow();
+
+      expect(window.localStorage.getItem('emailForSignIn')).toBeNull();
+      expect(window.localStorage.getItem('emailLinkAnonymousUpgrade')).toBeNull();
     });
   });
 });
