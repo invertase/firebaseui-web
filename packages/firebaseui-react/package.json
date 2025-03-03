@@ -22,7 +22,14 @@
     "dev": "tsup --watch",
     "lint": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.ts\"",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "test": "vitest run tests/unit",
+    "test:watch": "vitest tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:integration:watch": "vitest tests/integration",
+    "test:e2e": "vitest run tests/e2e",
+    "test:e2e:watch": "vitest tests/e2e",
+    "test:all": "vitest run"
   },
   "peerDependencies": {
     "@firebase-ui/core": "workspace:*",
@@ -40,11 +47,18 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.3",
+    "@testing-library/react": "^16.2.0",
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^22.13.8",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^26.0.0",
+    "tsup": "^8.3.6",
     "typescript": "~5.6.2",
     "vite": "^6.0.5",
-    "tsup": "^8.3.6"
+    "vitest": "^3.0.7",
+    "vitest-tsconfig-paths": "^3.4.1"
   }
 }
