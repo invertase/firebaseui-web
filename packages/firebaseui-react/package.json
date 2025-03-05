@@ -23,13 +23,9 @@
     "lint": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.ts\"",
     "clean": "rimraf dist",
-    "test": "vitest run tests/unit",
-    "test:watch": "vitest tests/unit",
-    "test:integration": "vitest run tests/integration",
-    "test:integration:watch": "vitest tests/integration",
-    "test:e2e": "vitest run tests/e2e",
-    "test:e2e:watch": "vitest tests/e2e",
-    "test:all": "vitest run"
+    "test:unit": "vitest run tests/unit",
+    "test:unit:watch": "vitest tests/unit",
+    "test": "vitest run"
   },
   "peerDependencies": {
     "@firebase-ui/core": "workspace:*",

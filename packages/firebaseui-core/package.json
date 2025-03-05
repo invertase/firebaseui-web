@@ -23,11 +23,11 @@
     "lint": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "clean": "rimraf dist",
-    "test": "vitest run tests/unit",
-    "test:watch": "vitest tests/unit",
+    "test:unit": "vitest run tests/unit",
+    "test:unit:watch": "vitest tests/unit",
     "test:integration": "vitest run tests/integration",
     "test:integration:watch": "vitest tests/integration",
-    "test:all": "vitest run"
+    "test": "vitest run"
   },
   "keywords": [
     "firebase",

@@ -1,4 +1,4 @@
-name: Integration Tests
+name: Core Integration Tests
 
 on:
   push:
