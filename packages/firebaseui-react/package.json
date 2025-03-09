@@ -23,9 +23,10 @@
     "lint": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.ts\"",
     "clean": "rimraf dist",
-    "test:unit": "vitest run tests/unit",
-    "test:unit:watch": "vitest tests/unit",
-    "test": "vitest run"
+    "test:unit": "TEST_TYPE=unit vitest run tests/unit",
+    "test:unit:watch": "TEST_TYPE=unit vitest tests/unit",
+    "test:integration": "TEST_TYPE=integration vitest run tests/integration",
+    "test:integration:watch": "TEST_TYPE=integration vitest tests/integration"
   },
   "peerDependencies": {
     "@firebase-ui/core": "workspace:*",
@@ -54,7 +55,7 @@
     "tsup": "^8.3.6",
     "typescript": "~5.6.2",
     "vite": "^6.0.5",
-    "vitest": "^3.0.7",
+    "vitest": "^3.0.8",
     "vitest-tsconfig-paths": "^3.4.1"
   }
 }

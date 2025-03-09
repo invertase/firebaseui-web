@@ -1,63 +1,37 @@
-import { vi } from "vitest";
+/**
+ * This is the automatic module mock for @firebase-ui/core
+ * It re-exports the mock implementations from utils/mocks.ts to avoid duplication
+ */
+import {
+  FirebaseUIError,
+  TranslationStrings,
+  mockCountryData,
+  createCoreMocks,
+} from "../../utils/mocks";
 
-// Define TranslationStrings type to match core package
-export type TranslationStrings = Record<string, string>;
+// Create a plain object with all the mocks
+const coreMocks = createCoreMocks();
 
-// Implement FirebaseUIError with the same interface as the real implementation
-export class FirebaseUIError extends Error {
-  code: string;
-  constructor(
-    error: any,
-    _translations?: Partial<Record<string, Partial<TranslationStrings>>>,
-    _language?: string
-  ) {
-    // Extract error code from the error object
-    const errorCode =
-      typeof error === "string" ? error : error?.code || "unknown";
+// Export types
+export type { TranslationStrings };
 
-    // For simplicity in tests, we'll use a direct message if provided as a string
-    // or extract from translations if provided
-    let errorMessage = `Error: ${errorCode}`;
+// Export the error class
+export { FirebaseUIError };
 
-    if (
-      typeof error === "string" &&
-      arguments.length > 1 &&
-      typeof arguments[1] === "string"
-    ) {
-      // Handle case where first arg is code and second is message (for test convenience)
-      errorMessage = arguments[1];
-    }
+// Export other values
+export const countryData = mockCountryData;
 
-    super(errorMessage);
-    this.name = "FirebaseUIError";
-    this.code = errorCode;
-  }
-}
-
-// Authentication functions
-export const fuiSignInWithEmailAndPassword = vi.fn();
-export const fuiSignInWithEmailLink = vi.fn();
-export const fuiSignInWithPhone = vi.fn();
-export const fuiSignInWithOAuth = vi.fn();
-export const fuiResetPassword = vi.fn();
-export const fuiCreateUserWithEmailAndPassword = vi.fn();
-
-// Country data for phone authentication
-export const countryData = [
-  { code: "US", name: "United States", dialCode: "+1", emoji: "🇺🇸" },
-  { code: "GB", name: "United Kingdom", dialCode: "+44", emoji: "🇬🇧" },
-  { code: "DE", name: "Germany", dialCode: "+49", emoji: "🇩🇪" },
-  { code: "FR", name: "France", dialCode: "+33", emoji: "🇫🇷" },
-  { code: "JP", name: "Japan", dialCode: "+81", emoji: "🇯🇵" },
-];
-
-// Translation helpers
-export const getTranslation = vi.fn((section, key) => `${section}.${key}`);
-export const populateTranslation = vi.fn((text, data) => {
-  if (!data) return text;
-  let result = text;
-  Object.entries(data).forEach(([key, value]) => {
-    result = result.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), value);
-  });
-  return result;
-});
+// Export mock functions directly from coreMocks
+export const fuiSignInWithEmailAndPassword =
+  coreMocks.fuiSignInWithEmailAndPassword;
+export const fuiSignInWithEmailLink = coreMocks.fuiSignInWithEmailLink;
+export const fuiSendSignInLinkToEmail = coreMocks.fuiSendSignInLinkToEmail;
+export const fuiCompleteEmailLinkSignIn = coreMocks.fuiCompleteEmailLinkSignIn;
+export const fuiSignInWithPhone = coreMocks.fuiSignInWithPhone;
+export const fuiSignInWithOAuth = coreMocks.fuiSignInWithOAuth;
+export const fuiResetPassword = coreMocks.fuiResetPassword;
+export const fuiSendPasswordResetEmail = coreMocks.fuiSendPasswordResetEmail;
+export const fuiCreateUserWithEmailAndPassword =
+  coreMocks.fuiCreateUserWithEmailAndPassword;
+export const getTranslation = coreMocks.getTranslation;
+export const populateTranslation = coreMocks.populateTranslation;

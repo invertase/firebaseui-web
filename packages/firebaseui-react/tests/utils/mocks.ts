@@ -1,18 +1,43 @@
 import { vi } from "vitest";
+import { render, type RenderOptions } from "@testing-library/react";
+import React from "react";
 
 // Mock types
 export type TranslationStrings = Record<string, string>;
 
-// Mock class for FirebaseUIError
-export class MockFirebaseUIError extends Error {
+// Standard Firebase UI Error implementation for mocks
+export class FirebaseUIError extends Error {
   code: string;
-  constructor(code: string, message: string | any) {
-    const errorMessage =
-      typeof message === "string" ? message : `Error: ${code}`;
+  constructor(
+    error: any,
+    _translations?: Partial<Record<string, Partial<TranslationStrings>>>,
+    _language?: string
+  ) {
+    // Extract error code from the error object
+    const errorCode =
+      typeof error === "string" ? error : error?.code || "unknown";
+
+    // For simplicity in tests, we'll use a direct message if provided as a string
+    // or extract from translations if provided
+    let errorMessage = `Error: ${errorCode}`;
+
+    if (
+      typeof error === "string" &&
+      arguments.length > 1 &&
+      typeof arguments[1] === "string"
+    ) {
+      // Handle case where first arg is code and second is message (for test convenience)
+      errorMessage = arguments[1];
+    }
+
     super(errorMessage);
-    this.code = code;
+    this.name = "FirebaseUIError";
+    this.code = errorCode;
   }
 }
+
+// Backward compatibility for existing tests using MockFirebaseUIError
+export const MockFirebaseUIError = FirebaseUIError;
 
 // Common mock data
 export const mockCountryData = [
@@ -28,24 +53,22 @@ export const createMockTranslations = () => {
   return vi.fn((section: string, key: string) => `${section}.${key}`);
 };
 
-export const createMockSignInWithOAuth = () => {
-  return vi.fn().mockResolvedValue(undefined);
-};
-
 /**
- * Set up mocks for @firebase-ui/core in a test file
- * This should be called in beforeEach or at the top of a test file
+ * Creates comprehensive mock implementations for Firebase UI core functions
+ * This allows tests to selectively mock only what they need
  */
-export function setupFirebaseUICoresMocks() {
-  // Create the mock functions
-  const mockGetTranslation = createMockTranslations();
-  const mockFuiSignInWithOAuth = createMockSignInWithOAuth();
-
-  // Set up the mock for the module
-  vi.mock("@firebase-ui/core", () => ({
-    FirebaseUIError: MockFirebaseUIError,
-    fuiSignInWithOAuth: mockFuiSignInWithOAuth,
-    getTranslation: mockGetTranslation,
+export const createCoreMocks = () => {
+  return {
+    fuiSignInWithEmailAndPassword: vi.fn(),
+    fuiSignInWithEmailLink: vi.fn(),
+    fuiSendSignInLinkToEmail: vi.fn(),
+    fuiCompleteEmailLinkSignIn: vi.fn(),
+    fuiSignInWithPhone: vi.fn(),
+    fuiSignInWithOAuth: vi.fn().mockResolvedValue(undefined),
+    fuiResetPassword: vi.fn(),
+    fuiSendPasswordResetEmail: vi.fn(),
+    fuiCreateUserWithEmailAndPassword: vi.fn(),
+    getTranslation: createMockTranslations(),
     countryData: mockCountryData,
     populateTranslation: vi.fn((text, data) => {
       if (!data) return text;
@@ -55,10 +78,39 @@ export function setupFirebaseUICoresMocks() {
       });
       return result;
     }),
-  }));
-
-  return {
-    mockGetTranslation,
-    mockFuiSignInWithOAuth,
+    FirebaseUIError,
   };
+};
+
+/**
+ * Set up mocks for @firebase-ui/core in a test file
+ * This should be called in beforeEach or at the top of a test file
+ *
+ * @example
+ * ```
+ * import { setupFirebaseUICoresMocks } from '../utils/mocks';
+ *
+ * // At the top of your test file
+ * const mocks = setupFirebaseUICoresMocks();
+ *
+ * // Now use the mock in your tests
+ * mocks.fuiSignInWithOAuth.mockResolvedValueOnce({ user: {...} });
+ * ```
+ */
+export function setupFirebaseUICoresMocks() {
+  // Create and return the mock functions
+  return createCoreMocks();
+}
+
+/**
+ * Custom render function that includes providers if needed
+ * Use this for tests that need to render components with context providers
+ */
+export function renderWithProviders(
+  ui: React.ReactElement,
+  options?: Omit<RenderOptions, "wrapper"> & {
+    wrapper?: React.ComponentType<{ children: React.ReactNode }>;
+  }
+) {
+  return render(ui, options);
 }
