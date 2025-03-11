@@ -53,11 +53,3 @@ export const countryData = [
 
 // Translation helpers
 export const getTranslation = vi.fn((section, key) => `${section}.${key}`);
-export const populateTranslation = vi.fn((text, data) => {
-  if (!data) return text;
-  let result = text;
-  Object.entries(data).forEach(([key, value]) => {
-    result = result.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), value);
-  });
-  return result;
-});

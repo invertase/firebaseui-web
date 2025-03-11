@@ -1,4 +1,11 @@
 packages:
-  - 'packages/*'
-  - 'packages/angular/projects/*'
-  - 'examples/*'
+  - packages/*
+  - packages/angular/projects/*
+  - examples/*
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - esbuild
+  - lmdb
+  - msgpackr-extract
+  - protobufjs
+  - sharp
