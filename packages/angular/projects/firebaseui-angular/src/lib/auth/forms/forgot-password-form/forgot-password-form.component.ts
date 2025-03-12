@@ -1,20 +1,24 @@
 import { Component, inject, Input } from '@angular/core';
-import { ButtonComponent } from '../../../components/button/button.component';
-import { FirebaseUi } from '../../../provider';
 import { CommonModule } from '@angular/common';
 import { injectForm, TanStackField } from '@tanstack/angular-form';
-import { createEmailFormSchema, EmailFormSchema, FirebaseUIError, fuiCreateUserWithEmailAndPassword } from '@firebase-ui/core';
-import { map } from 'rxjs/operators';
+import { FirebaseUi } from '../../../provider';
 import { Auth } from '@angular/fire/auth';
+import { map } from 'rxjs/operators';
+import { ButtonComponent } from '../../../components/button/button.component';
 import { TermsAndPrivacyComponent } from '../../../components/terms-and-privacy/terms-and-privacy.component';
+import { createForgotPasswordFormSchema, FirebaseUIError, ForgotPasswordFormSchema, fuiSendPasswordResetEmail } from '@firebase-ui/core';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'fui-register-form',
+  selector: 'fui-forgot-password-form',
+  standalone: true,
   imports: [CommonModule, TanStackField, ButtonComponent, TermsAndPrivacyComponent],
   template: `
-    <form (submit)="handleSubmit($event)" class="fui-form">
+    <div *ngIf="emailSent" class="fui-form__success">
+      {{ checkEmailForResetMessage | async }}
+    </div>
+    <form *ngIf="!emailSent" (submit)="handleSubmit($event)" class="fui-form">
       <fieldset>
         <ng-container
           [tanstackField]="form"
@@ -43,40 +47,12 @@ import { Router } from '@angular/router';
           </label>
         </ng-container>
       </fieldset>
-      <fieldset>
-        <ng-container
-          [tanstackField]="form"
-          name="password"
-          #password="field"
-        >
-          <label [for]="password.api.name">
-            <span>{{ passwordLabel | async }}</span>
-            <input
-              type="password"
-              [id]="password.api.name"
-              [name]="password.api.name"
-              [value]="password.api.state.value"
-              (blur)="password.api.handleBlur()"
-              (input)="password.api.handleChange($any($event).target.value)"
-              [attr.aria-invalid]="!!password.api.state.meta.errors.length"
-            />
-            <span 
-              role="alert" 
-              aria-live="polite" 
-              class="fui-form__error" 
-              *ngIf="!!password.api.state.meta.errors.length"
-            >
-              {{ password.api.state.meta.errors.join(', ') }}
-            </span>
-          </label>
-        </ng-container>
-      </fieldset>
 
       <fui-terms-and-privacy></fui-terms-and-privacy>
 
       <fieldset>
         <fui-button type="submit">
-          {{ createAccountLabel | async }}
+          {{ resetPasswordLabel | async }}
         </fui-button>
         <div class="fui-form__error" *ngIf="formError">{{ formError }}</div>
       </fieldset>
@@ -87,46 +63,44 @@ import { Router } from '@angular/router';
           (click)="navigateTo(signInRoute)"
           class="fui-form__action"
         >
-          {{ haveAccountLabel | async }} {{ signInLabel | async }} &rarr;
+          {{ backToSignInLabel | async }} &rarr;
         </button>
       </div>
     </form>
   `
 })
-export class RegisterFormComponent {
+export class ForgotPasswordFormComponent {
   private ui = inject(FirebaseUi);
   private auth = inject(Auth);
   private router = inject(Router);
   private schema = this.ui.config().pipe(
-    map(config => createEmailFormSchema(config.translations))
+    map(config => createForgotPasswordFormSchema(config?.translations))
   );
 
-  @Input() showBackToSignIn = false;
   @Input({ required: true }) signInRoute!: string;
+  showBackToSignIn = true;
 
   formError: string | null = null;
+  emailSent = false;
 
-  form = injectForm<EmailFormSchema>({
+  form = injectForm<ForgotPasswordFormSchema>({
     defaultValues: {
-      email: '',
-      password: ''
+      email: ''
     },
     onSubmit: async ({ value }) => {
       this.formError = null;
       try {
-        // Using firstValueFrom to get config
         const config = await firstValueFrom(this.ui.config());
         
-        await fuiCreateUserWithEmailAndPassword(
+        await fuiSendPasswordResetEmail(
           this.auth, 
           value.email, 
-          value.password, 
           {
             translations: config?.translations,
-            language: config?.language,
-            enableAutoUpgradeAnonymous: config?.enableAutoUpgradeAnonymous
+            language: config?.language
           }
         );
+        this.emailSent = true;
       } catch (error) {
         if (error instanceof FirebaseUIError) {
           this.formError = error.message;
@@ -140,7 +114,6 @@ export class RegisterFormComponent {
   });
 
   constructor() {
-    // Subscribe to schema changes and update form validators
     this.schema.subscribe(schema => {
       this.form.update({
         validators: {
@@ -151,12 +124,10 @@ export class RegisterFormComponent {
     });
   }
 
-
-
   handleSubmit(event: SubmitEvent) {
-    event.preventDefault()
-    event.stopPropagation()
-    this.form.handleSubmit()
+    event.preventDefault();
+    event.stopPropagation();
+    this.form.handleSubmit();
   }
 
   navigateTo(route: string) {
@@ -167,19 +138,15 @@ export class RegisterFormComponent {
     return this.ui.translation('labels', 'emailAddress');
   }
 
-  get passwordLabel() {
-    return this.ui.translation('labels', 'password');
+  get resetPasswordLabel() {
+    return this.ui.translation('labels', 'resetPassword');
   }
 
-  get createAccountLabel() {
-    return this.ui.translation('labels', 'createAccount');
+  get backToSignInLabel() {
+    return this.ui.translation('labels', 'backToSignIn');
   }
 
-  get haveAccountLabel() {
-    return this.ui.translation('prompts', 'haveAccount');
-  }
-
-  get signInLabel() {
-    return this.ui.translation('labels', 'signIn');
+  get checkEmailForResetMessage() {
+    return this.ui.translation('messages', 'checkEmailForReset');
   }
 }

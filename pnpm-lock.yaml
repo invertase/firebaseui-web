@@ -272,6 +272,9 @@ importers:
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
+      zod:
+        specifier: ^3.24.1
+        version: 3.24.2
 
   packages/firebaseui-core:
     dependencies:
