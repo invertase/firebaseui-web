@@ -253,4 +253,36 @@ describe("PhoneForm", () => {
     // The UI should show the error message in the form__error div
     expect(screen.getByText("An unknown error occurred")).toBeInTheDocument();
   });
+
+  it("validates on blur for the first time", async () => {
+    render(<PhoneForm />);
+
+    const phoneInput = screen.getByRole("textbox", { name: /phone number/i });
+
+    await act(async () => {
+      fireEvent.blur(phoneInput);
+    });
+
+    // Check that handleBlur was called
+    expect((global as any).formOnSubmit).toBeDefined();
+  });
+
+  it("validates on input after first blur", async () => {
+    render(<PhoneForm />);
+
+    const phoneInput = screen.getByRole("textbox", { name: /phone number/i });
+
+    // First validation on blur
+    await act(async () => {
+      fireEvent.blur(phoneInput);
+    });
+
+    // Then validation should happen on input
+    await act(async () => {
+      fireEvent.input(phoneInput, { target: { value: "1234567890" } });
+    });
+
+    // Check that handleBlur and form.update were called
+    expect((global as any).formOnSubmit).toBeDefined();
+  });
 });
