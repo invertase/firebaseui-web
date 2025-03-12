@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardComponent, CardHeaderComponent, CardTitleComponent, CardSubtitleComponent } from '../../../components/card/card.component';
 import { FirebaseUi } from '../../../provider';
@@ -23,6 +23,7 @@ import { ForgotPasswordFormComponent } from '../../forms/forgot-password-form/fo
           <fui-card-subtitle>{{ subtitleText | async }}</fui-card-subtitle>
         </fui-card-header>
         <fui-forgot-password-form 
+          [signInRoute]="signInRoute"
           (onBackToSignInClick)="onBackToSignInClick.emit()"
         ></fui-forgot-password-form>
       </fui-card>
@@ -32,6 +33,7 @@ import { ForgotPasswordFormComponent } from '../../forms/forgot-password-form/fo
 export class PasswordResetScreenComponent {
   private ui = inject(FirebaseUi);
   
+  @Input() signInRoute: string = '';
   @Output() onBackToSignInClick = new EventEmitter<void>();
 
   get titleText() {

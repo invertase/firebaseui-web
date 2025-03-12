@@ -5,7 +5,9 @@ import { Component, Directive, ElementRef, Input } from '@angular/core';
   template: `
     <button
       class="fui-button"
-      [type]="type">
+      [class.fui-button--secondary]="variant === 'secondary'"
+      [type]="type"
+      [disabled]="disabled">
       <ng-content></ng-content>
     </button>
   `,
@@ -13,4 +15,6 @@ import { Component, Directive, ElementRef, Input } from '@angular/core';
 })
 export class ButtonComponent {
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
+  @Input() disabled: boolean = false;
+  @Input() variant: 'primary' | 'secondary' = 'primary';
 }

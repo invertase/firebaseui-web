@@ -1,8 +1,9 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { injectForm, TanStackField } from '@tanstack/angular-form';
 import { FirebaseUi } from '../../../provider';
 import { Auth } from '@angular/fire/auth';
+import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { ButtonComponent } from '../../../components/button/button.component';
 import { TermsAndPrivacyComponent } from '../../../components/terms-and-privacy/terms-and-privacy.component';
@@ -16,6 +17,16 @@ import { firstValueFrom } from 'rxjs';
   template: `
     <div *ngIf="emailSent" class="fui-form">
       {{ emailSentMessage | async }}
+      
+      <div class="flex justify-center items-center mt-4" *ngIf="signInRoute">
+        <button
+          type="button"
+          (click)="navigateTo(signInRoute)"
+          class="fui-form__action"
+        >
+          {{ backToSignInLabel | async }} &rarr;
+        </button>
+      </div>
     </div>
     <form *ngIf="!emailSent" (submit)="handleSubmit($event)" class="fui-form">
       <fieldset>
@@ -55,15 +66,28 @@ import { firstValueFrom } from 'rxjs';
         </fui-button>
         <div class="fui-form__error" *ngIf="formError">{{ formError }}</div>
       </fieldset>
+      
+      <div class="flex justify-center items-center" *ngIf="signInRoute">
+        <button
+          type="button"
+          (click)="navigateTo(signInRoute)"
+          class="fui-form__action"
+        >
+          {{ backToSignInLabel | async }} &rarr;
+        </button>
+      </div>
     </form>
   `
 })
 export class EmailLinkFormComponent implements OnInit {
   private ui = inject(FirebaseUi);
+  private router = inject(Router);
   private auth = inject(Auth);
   private schema = this.ui.config().pipe(
     map(config => createEmailLinkFormSchema(config?.translations))
   );
+
+  @Input() signInRoute: string = '';
 
   formError: string | null = null;
   emailSent = false;
@@ -148,6 +172,14 @@ export class EmailLinkFormComponent implements OnInit {
 
   get sendSignInLinkLabel() {
     return this.ui.translation('labels', 'sendSignInLink');
+  }
+
+  navigateTo(route: string) {
+    this.router.navigateByUrl(route);
+  }
+
+  get backToSignInLabel() {
+    return this.ui.translation('labels', 'signIn');
   }
 
   get emailSentMessage() {

@@ -29,6 +29,7 @@ import {
   fuiSignInWithPhoneNumber,
 } from '@firebase-ui/core';
 import { interval, Subscription, firstValueFrom } from 'rxjs';
+import { Router } from '@angular/router';
 import { takeWhile } from 'rxjs/operators';
 import { z } from 'zod';
 
@@ -261,15 +262,13 @@ export class PhoneNumberFormComponent implements OnInit, OnDestroy {
 })
 export class VerificationFormComponent implements OnInit, OnDestroy {
   private ui = inject(FirebaseUi);
-  private schema = this.ui
-    .config()
-    .pipe(
-      map((config) =>
-        createPhoneFormSchema(config?.translations).pick({
-          verificationCode: true,
-        })
-      )
-    );
+  private schema = this.ui.config().pipe(
+    map((config) =>
+      createPhoneFormSchema(config?.translations).pick({
+        verificationCode: true,
+      })
+    )
+  );
 
   @Input() onSubmit!: (code: string) => Promise<void>;
   @Input() onResend!: () => Promise<void>;
@@ -342,6 +341,16 @@ export class VerificationFormComponent implements OnInit, OnDestroy {
           [canResend]="canResend"
           [timeLeft]="timeLeft"
         ></fui-verification-form>
+        
+        <div class="flex justify-center items-center mt-4" *ngIf="signInRoute">
+          <button
+            type="button"
+            (click)="navigateTo(signInRoute)"
+            class="fui-form__action"
+          >
+            {{ backToSignInLabel | async }} &rarr;
+          </button>
+        </div>
       </ng-container>
       <ng-template #phoneNumberForm>
         <fui-phone-number-form
@@ -349,6 +358,16 @@ export class VerificationFormComponent implements OnInit, OnDestroy {
           [formError]="formError"
           [showTerms]="true"
         ></fui-phone-number-form>
+        
+        <div class="flex justify-center items-center mt-4" *ngIf="signInRoute">
+          <button
+            type="button"
+            (click)="navigateTo(signInRoute)"
+            class="fui-form__action"
+          >
+            {{ backToSignInLabel | async }} &rarr;
+          </button>
+        </div>
       </ng-template>
     </div>
   `,
@@ -356,8 +375,10 @@ export class VerificationFormComponent implements OnInit, OnDestroy {
 export class PhoneFormComponent implements OnInit, OnDestroy {
   private ui = inject(FirebaseUi);
   private auth = inject(Auth);
+  private router = inject(Router);
 
   @Input() resendDelay = 30;
+  @Input() signInRoute: string = '';
 
   formError: string | null = null;
   confirmationResult: ConfirmationResult | null = null;
@@ -404,7 +425,9 @@ export class PhoneFormComponent implements OnInit, OnDestroy {
         return;
       }
       console.error(error);
-      this.formError = await firstValueFrom(this.ui.translation('errors', 'unknownError'));
+      this.formError = await firstValueFrom(
+        this.ui.translation('errors', 'unknownError')
+      );
     }
   }
 
@@ -485,8 +508,18 @@ export class PhoneFormComponent implements OnInit, OnDestroy {
         return;
       }
       console.error(error);
-      this.formError = await firstValueFrom(this.ui.translation('errors', 'unknownError'));
+      this.formError = await firstValueFrom(
+        this.ui.translation('errors', 'unknownError')
+      );
     }
+  }
+
+  navigateTo(route: string) {
+    this.router.navigateByUrl(route);
+  }
+
+  get backToSignInLabel() {
+    return this.ui.translation('labels', 'signIn');
   }
 
   startTimer() {

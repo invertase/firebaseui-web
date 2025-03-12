@@ -1,4 +1,4 @@
-import { Component, ContentChildren, EventEmitter, inject, Output, QueryList } from '@angular/core';
+import { Component, ContentChildren, EventEmitter, inject, Input, Output, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardComponent, CardHeaderComponent, CardTitleComponent, CardSubtitleComponent } from '../../../components/card/card.component';
 import { FirebaseUi } from '../../../provider';
@@ -25,6 +25,8 @@ import { DividerComponent } from '../../../components/divider/divider.component'
           <fui-card-subtitle>{{ subtitleText | async }}</fui-card-subtitle>
         </fui-card-header>
         <fui-email-password-form 
+          [forgotPasswordRoute]="forgotPasswordRoute"
+          [registerRoute]="registerRoute"
           (onForgotPasswordClick)="onForgotPasswordClick.emit()" 
           (onRegisterClick)="onRegisterClick.emit()"
         ></fui-email-password-form>
@@ -41,6 +43,9 @@ import { DividerComponent } from '../../../components/divider/divider.component'
 })
 export class SignInAuthScreenComponent {
   private ui = inject(FirebaseUi);
+  
+  @Input() forgotPasswordRoute: string = '';
+  @Input() registerRoute: string = '';
   
   @Output() onForgotPasswordClick = new EventEmitter<void>();
   @Output() onRegisterClick = new EventEmitter<void>();

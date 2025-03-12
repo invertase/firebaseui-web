@@ -24,7 +24,10 @@ import { DividerComponent } from '../../../components/divider/divider.component'
           <fui-card-title>{{ titleText | async }}</fui-card-title>
           <fui-card-subtitle>{{ subtitleText | async }}</fui-card-subtitle>
         </fui-card-header>
-        <fui-phone-form [resendDelay]="resendDelay"></fui-phone-form>
+        <fui-phone-form
+          [resendDelay]="resendDelay"
+          [signInRoute]="signInRoute"
+        ></fui-phone-form>
         
         <ng-container *ngIf="hasContent">
           <fui-divider>{{ dividerOrLabel | async }}</fui-divider>
@@ -40,6 +43,7 @@ export class PhoneAuthScreenComponent {
   private ui = inject(FirebaseUi);
   
   @Input() resendDelay = 30;
+  @Input() signInRoute: string = '';
   @ContentChildren('*') content!: QueryList<any>;
 
   get hasContent(): boolean {

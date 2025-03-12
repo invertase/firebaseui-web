@@ -1,4 +1,4 @@
-import { Component, ContentChildren, inject, QueryList } from '@angular/core';
+import { Component, ContentChildren, inject, Input, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardComponent, CardHeaderComponent, CardTitleComponent, CardSubtitleComponent } from '../../../components/card/card.component';
 import { FirebaseUi } from '../../../provider';
@@ -24,7 +24,7 @@ import { DividerComponent } from '../../../components/divider/divider.component'
           <fui-card-title>{{ titleText | async }}</fui-card-title>
           <fui-card-subtitle>{{ subtitleText | async }}</fui-card-subtitle>
         </fui-card-header>
-        <fui-email-link-form></fui-email-link-form>
+        <fui-email-link-form [signInRoute]="signInRoute"></fui-email-link-form>
         
         <ng-container *ngIf="hasContent">
           <fui-divider>{{ dividerOrLabel | async }}</fui-divider>
@@ -38,6 +38,8 @@ import { DividerComponent } from '../../../components/divider/divider.component'
 })
 export class EmailLinkAuthScreenComponent {
   private ui = inject(FirebaseUi);
+
+  @Input() signInRoute: string = '';
   @ContentChildren('*') content!: QueryList<any>;
 
   get hasContent(): boolean {

@@ -1,4 +1,4 @@
-import { Component, ContentChildren, EventEmitter, inject, Output, QueryList } from '@angular/core';
+import { Component, ContentChildren, EventEmitter, inject, Input, Output, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardComponent, CardHeaderComponent, CardTitleComponent, CardSubtitleComponent } from '../../../components/card/card.component';
 
@@ -25,7 +25,11 @@ import { DividerComponent } from '../../../components/divider/divider.component'
           <fui-card-title>{{ titleText | async }}</fui-card-title>
           <fui-card-subtitle>{{ subtitleText | async }}</fui-card-subtitle>
         </fui-card-header>
-        <fui-register-form [showBackToSignIn]="true" (onBackToSignInClick)="onBackToSignInClick.emit()"></fui-register-form>
+        <fui-register-form
+          [showBackToSignIn]="true"
+          [signInRoute]="signInRoute"
+          (onBackToSignInClick)="onBackToSignInClick.emit()"
+        ></fui-register-form>
         
         <ng-container *ngIf="hasContent">
           <fui-divider>{{ dividerOrLabel | async }}</fui-divider>
@@ -40,6 +44,7 @@ import { DividerComponent } from '../../../components/divider/divider.component'
 export class SignUpAuthScreenComponent {
   private ui = inject(FirebaseUi);
 
+  @Input() signInRoute: string = '';
   @Output() onBackToSignInClick = new EventEmitter<void>();
   @ContentChildren('*') content!: QueryList<any>;
 
