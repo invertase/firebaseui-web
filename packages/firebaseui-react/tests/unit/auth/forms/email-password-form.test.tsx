@@ -183,9 +183,6 @@ describe("EmailPasswordForm", () => {
               password: "password123",
             },
           })
-          .catch(() => {
-            // Catch the error here to prevent test from failing
-          });
       }
     });
 

@@ -34,4 +34,3 @@ export const fuiSendPasswordResetEmail = coreMocks.fuiSendPasswordResetEmail;
 export const fuiCreateUserWithEmailAndPassword =
   coreMocks.fuiCreateUserWithEmailAndPassword;
 export const getTranslation = coreMocks.getTranslation;
-export const populateTranslation = coreMocks.populateTranslation;

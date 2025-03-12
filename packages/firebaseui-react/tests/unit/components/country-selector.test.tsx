@@ -59,6 +59,11 @@ describe("CountrySelector Component", () => {
       // Check if onChange was called with the new country
       expect(mockOnChange).toHaveBeenCalledTimes(1);
       expect(mockOnChange).toHaveBeenCalledWith(newCountry);
+    } else {
+      // Fail the test if no different country is found
+      expect.fail(
+        "No different country found in countryData. Test cannot proceed."
+      );
     }
   });
 
@@ -81,6 +86,9 @@ describe("CountrySelector Component", () => {
       expect(usOption?.textContent).toBe(
         `${usCountry.dialCode} (${usCountry.name})`
       );
+    } else {
+      // Fail the test if US country is not found
+      expect.fail("US country not found in countryData. Test cannot proceed.");
     }
   });
 });

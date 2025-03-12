@@ -70,14 +70,6 @@ export const createCoreMocks = () => {
     fuiCreateUserWithEmailAndPassword: vi.fn(),
     getTranslation: createMockTranslations(),
     countryData: mockCountryData,
-    populateTranslation: vi.fn((text, data) => {
-      if (!data) return text;
-      let result = text;
-      Object.entries(data).forEach(([key, value]) => {
-        result = result.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), value);
-      });
-      return result;
-    }),
     FirebaseUIError,
   };
 };
