@@ -15,28 +15,27 @@ export default defineConfig({
     setupFiles: ["./tests/setup-test.ts"],
     // Mock modules
     mockReset: false,
-    // Different test modes
-    environmentMatchGlobs: [
-      // Use jsdom for unit and integration tests
-      ["tests/unit/**", "jsdom"],
-      ["tests/integration/**", "jsdom"],
-      // Use node for e2e tests if they don't need a browser
-      ["tests/e2e/**", "node"],
-    ],
     // Use tsconfig.test.json for TypeScript
     typecheck: {
       enabled: true,
       tsconfig: "./tsconfig.test.json",
       include: ["tests/**/*.{ts,tsx}"],
     },
+    // Increase test timeout for Firebase operations
+    testTimeout: 15000,
   },
   resolve: {
     alias: {
       "~": resolve(__dirname, "./src"),
-      "@firebase-ui/core": resolve(
-        __dirname,
-        "./tests/__mocks__/@firebase-ui/core.ts"
-      ),
+      // Only apply mocks for unit tests, not for integration tests
+      ...(process.env.TEST_TYPE === "unit" || !process.env.TEST_TYPE
+        ? {
+            "@firebase-ui/core": resolve(
+              __dirname,
+              "./tests/__mocks__/@firebase-ui/core.ts"
+            ),
+          }
+        : {}),
     },
   },
 });

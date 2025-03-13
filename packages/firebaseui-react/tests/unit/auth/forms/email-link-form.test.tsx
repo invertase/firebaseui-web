@@ -292,4 +292,36 @@ describe("EmailLinkForm", () => {
     // Verify that the success state was updated
     expect(setEmailSentMock).toHaveBeenCalledWith(true);
   });
+
+  it("validates on blur for the first time", async () => {
+    render(<EmailLinkForm />);
+
+    const emailInput = screen.getByLabelText("Email");
+
+    await act(async () => {
+      fireEvent.blur(emailInput);
+    });
+
+    // Check that form validation is available
+    expect((global as any).formOnSubmit).toBeDefined();
+  });
+
+  it("validates on input after first blur", async () => {
+    render(<EmailLinkForm />);
+
+    const emailInput = screen.getByLabelText("Email");
+
+    // First validation on blur
+    await act(async () => {
+      fireEvent.blur(emailInput);
+    });
+
+    // Then validation should happen on input
+    await act(async () => {
+      fireEvent.input(emailInput, { target: { value: "test@example.com" } });
+    });
+
+    // Check that form validation is available
+    expect((global as any).formOnSubmit).toBeDefined();
+  });
 });

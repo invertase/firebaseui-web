@@ -40,6 +40,7 @@ function PhoneNumberForm({
   const [selectedCountry, setSelectedCountry] = useState<CountryData>(
     countryData[0]
   );
+  const [firstValidationOccured, setFirstValidationOccured] = useState(false);
 
   const phoneFormSchema = useMemo(
     () =>
@@ -104,8 +105,17 @@ function PhoneNumberForm({
                     name={field.name}
                     type="tel"
                     value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={() => {
+                      setFirstValidationOccured(true);
+                      field.handleBlur();
+                    }}
+                    onInput={(e) => {
+                      field.handleChange((e.target as HTMLInputElement).value);
+                      if (firstValidationOccured) {
+                        field.handleBlur();
+                        phoneForm.update();
+                      }
+                    }}
                     className="fui-phone-input__number-input"
                   />
                 </div>
@@ -195,6 +205,7 @@ function VerificationForm({
 }: VerificationFormProps) {
   const { language } = useConfig();
   const translations = useTranslations();
+  const [firstValidationOccured, setFirstValidationOccured] = useState(false);
 
   const verificationFormSchema = useMemo(
     () =>
@@ -249,8 +260,17 @@ function VerificationForm({
                   name={field.name}
                   type="text"
                   value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={() => {
+                    setFirstValidationOccured(true);
+                    field.handleBlur();
+                  }}
+                  onInput={(e) => {
+                    field.handleChange((e.target as HTMLInputElement).value);
+                    if (firstValidationOccured) {
+                      field.handleBlur();
+                      verificationForm.update();
+                    }
+                  }}
                 />
                 <FieldInfo field={field} />
               </label>

@@ -31,4 +31,4 @@ jobs:
         run: pnpm install
 
       - name: Run unit tests
-        run: pnpm --filter @firebase-ui/react test
+        run: pnpm --filter @firebase-ui/react test:unit

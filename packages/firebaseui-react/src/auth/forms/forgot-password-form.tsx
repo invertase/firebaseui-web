@@ -26,6 +26,7 @@ export function ForgotPasswordForm({
   const { language } = useConfig();
   const [formError, setFormError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
+  const [firstValidationOccured, setFirstValidationOccured] = useState(false);
   const forgotPasswordFormSchema = useMemo(
     () => createForgotPasswordFormSchema(translations),
     [translations]
@@ -106,8 +107,17 @@ export function ForgotPasswordForm({
                   name={field.name}
                   type="email"
                   value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={() => {
+                    setFirstValidationOccured(true);
+                    field.handleBlur();
+                  }}
+                  onInput={(e) => {
+                    field.handleChange((e.target as HTMLInputElement).value);
+                    if (firstValidationOccured) {
+                      field.handleBlur();
+                      form.update();
+                    }
+                  }}
                 />
                 <FieldInfo field={field} />
               </label>

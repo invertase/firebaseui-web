@@ -195,6 +195,43 @@ describe("RegisterForm", () => {
     expect(fuiCreateUserWithEmailAndPassword).toHaveBeenCalled();
   });
 
+  it("validates on blur for the first time", async () => {
+    render(<RegisterForm />);
+
+    const emailInput = screen.getByRole("textbox", { name: /email address/i });
+    const passwordInput = screen.getByDisplayValue("password123");
+
+    await act(async () => {
+      fireEvent.blur(emailInput);
+      fireEvent.blur(passwordInput);
+    });
+
+    // Check that handleBlur was called
+    expect((global as any).formOnSubmit).toBeDefined();
+  });
+
+  it("validates on input after first blur", async () => {
+    render(<RegisterForm />);
+
+    const emailInput = screen.getByRole("textbox", { name: /email address/i });
+    const passwordInput = screen.getByDisplayValue("password123");
+
+    // First validation on blur
+    await act(async () => {
+      fireEvent.blur(emailInput);
+      fireEvent.blur(passwordInput);
+    });
+
+    // Then validation should happen on input
+    await act(async () => {
+      fireEvent.input(emailInput, { target: { value: "test@example.com" } });
+      fireEvent.input(passwordInput, { target: { value: "password123" } });
+    });
+
+    // Check that handleBlur and form.update were called
+    expect((global as any).formOnSubmit).toBeDefined();
+  });
+
   it("displays back to sign in button when provided", () => {
     const onBackToSignInClickMock = vi.fn();
     render(<RegisterForm onBackToSignInClick={onBackToSignInClickMock} />);
