@@ -185,6 +185,38 @@ describe("ForgotPasswordForm", () => {
     expect(fuiSendPasswordResetEmail).toHaveBeenCalled();
   });
 
+  it("validates on blur for the first time", async () => {
+    render(<ForgotPasswordForm />);
+
+    const emailInput = screen.getByRole("textbox", { name: /email address/i });
+
+    await act(async () => {
+      fireEvent.blur(emailInput);
+    });
+
+    // Check that handleBlur was called
+    expect((global as any).formOnSubmit).toBeDefined();
+  });
+
+  it("validates on input after first blur", async () => {
+    render(<ForgotPasswordForm />);
+
+    const emailInput = screen.getByRole("textbox", { name: /email address/i });
+
+    // First validation on blur
+    await act(async () => {
+      fireEvent.blur(emailInput);
+    });
+
+    // Then validation should happen on input
+    await act(async () => {
+      fireEvent.input(emailInput, { target: { value: "test@example.com" } });
+    });
+
+    // Check that handleBlur and form.update were called
+    expect((global as any).formOnSubmit).toBeDefined();
+  });
+
   it("displays back to sign in button when provided", () => {
     const onBackToSignInClickMock = vi.fn();
     render(

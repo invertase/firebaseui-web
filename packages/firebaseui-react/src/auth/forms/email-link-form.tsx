@@ -24,6 +24,7 @@ export function EmailLinkForm() {
   const translations = useTranslations();
   const [formError, setFormError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
+  const [firstValidationOccured, setFirstValidationOccured] = useState(false);
 
   const emailLinkFormSchema = useMemo(
     () => createEmailLinkFormSchema(translations),
@@ -128,8 +129,17 @@ export function EmailLinkForm() {
                   name={field.name}
                   type="email"
                   value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={() => {
+                    setFirstValidationOccured(true);
+                    field.handleBlur();
+                  }}
+                  onInput={(e) => {
+                    field.handleChange((e.target as HTMLInputElement).value);
+                    if (firstValidationOccured) {
+                      field.handleBlur();
+                      form.update();
+                    }
+                  }}
                 />
                 <FieldInfo field={field} />
               </label>
