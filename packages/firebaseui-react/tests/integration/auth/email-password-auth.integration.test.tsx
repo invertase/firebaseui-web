@@ -35,21 +35,35 @@ describe("Email Password Authentication Integration", () => {
     try {
       await createUserWithEmailAndPassword(auth, testEmail, testPassword);
     } catch (error) {
-      console.error("Error setting up test user:", error);
+      throw new Error(`Failed to set up test user: ${error instanceof Error ? error.message : String(error)}`);
     }
   });
 
   // Clean up after tests
   afterAll(async () => {
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        testEmail,
-        testPassword
-      );
-      await deleteUser(userCredential.user);
+      // First check if the user is already signed in
+      if (auth.currentUser && auth.currentUser.email === testEmail) {
+        await deleteUser(auth.currentUser);
+      } else {
+        // Try to sign in first
+        try {
+          const userCredential = await signInWithEmailAndPassword(
+            auth,
+            testEmail,
+            testPassword
+          );
+          await deleteUser(userCredential.user);
+        } catch (error) {
+          // If user not found, that's fine - it means it's already been deleted or never created
+          const firebaseError = error as { code?: string };
+          if (firebaseError.code !== 'auth/user-not-found') {
+            throw new Error(`Error signing in during cleanup: ${error instanceof Error ? error.message : String(error)}`)
+          }
+        }
+      }
     } catch (error) {
-      console.error("Error cleaning up test user:", error);
+      throw new Error(`Error in cleanup process: ${error instanceof Error ? error.message : String(error)}`);
     }
   });
 
