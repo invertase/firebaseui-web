@@ -24,7 +24,6 @@ import { ForgotPasswordFormComponent } from '../../forms/forgot-password-form/fo
         </fui-card-header>
         <fui-forgot-password-form 
           [signInRoute]="signInRoute"
-          (onBackToSignInClick)="onBackToSignInClick.emit()"
         ></fui-forgot-password-form>
       </fui-card>
     </div>
@@ -34,7 +33,6 @@ export class PasswordResetScreenComponent {
   private ui = inject(FirebaseUi);
   
   @Input() signInRoute: string = '';
-  @Output() onBackToSignInClick = new EventEmitter<void>();
 
   get titleText() {
     return this.ui.translation('labels', 'resetPassword');

@@ -2,21 +2,21 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { Auth, User, authState } from '@angular/fire/auth';
-import { EmailLinkAuthScreenComponent } from '@firebase-ui/angular';
+import { PhoneAuthScreenComponent } from '@firebase-ui/angular';
 
 @Component({
-  selector: 'app-email-link',
+  selector: 'app-phone-screen',
   standalone: true,
-  imports: [CommonModule, RouterModule, EmailLinkAuthScreenComponent],
+  imports: [CommonModule, RouterModule, PhoneAuthScreenComponent],
   template: `
-    <fui-email-link-auth-screen></fui-email-link-auth-screen>
+    <fui-phone-auth-screen [resendDelay]="2"></fui-phone-auth-screen>
   `,
-  styles: [],
+  styles: []
 })
-export class EmailLinkComponent implements OnInit {
+export class PhoneScreenComponent implements OnInit {
   private auth = inject(Auth);
   private router = inject(Router);
-
+  
   ngOnInit() {
     // Check if user is already authenticated and redirect to home page
     authState(this.auth).subscribe((user: User | null) => {

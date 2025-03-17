@@ -1,13 +1,27 @@
-import { Provider, EnvironmentProviders, makeEnvironmentProviders, InjectionToken, Injectable, inject } from '@angular/core';
+import {
+  Provider,
+  EnvironmentProviders,
+  makeEnvironmentProviders,
+  InjectionToken,
+  Injectable,
+  inject,
+} from '@angular/core';
 import { NanostoresService, NANOSTORES } from '@nanostores/angular';
-import { FUIConfig, getTranslation, initializeUI, TranslationStrings } from '@firebase-ui/core';
+import {
+  FUIConfig,
+  getTranslation,
+  initializeUI,
+  TranslationStrings,
+} from '@firebase-ui/core';
 import { map } from 'rxjs/operators';
 
 type Store = ReturnType<typeof initializeUI>;
 
 const FIREBASE_UI_STORE = new InjectionToken<Store>('firebaseui.store');
 
-export function provideFirebaseUI(uiFactory: () => Store): EnvironmentProviders {
+export function provideFirebaseUI(
+  uiFactory: () => Store
+): EnvironmentProviders {
   const providers: Provider[] = [
     // TODO: This should depend on the FirebaseAuth provider via deps,
     // see https://github.com/angular/angularfire/blob/35e0a9859299010488852b1826e4083abe56528f/src/firestore/firestore.module.ts#L76
@@ -34,7 +48,7 @@ export class FirebaseUi {
     key: keyof Required<TranslationStrings>[T]
   ) {
     return this.config().pipe(
-      map(config => getTranslation(category, key, config.translations))
+      map((config) => getTranslation(category, key, config.translations))
     );
   }
 }

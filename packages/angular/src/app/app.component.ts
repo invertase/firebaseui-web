@@ -1,12 +1,18 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { HeaderComponent } from './components/header';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
-  templateUrl: './app.component.html',
+  imports: [CommonModule, RouterOutlet, HeaderComponent],
+  template: `
+    <app-header></app-header>
+    <div class="app-container">
+      <router-outlet></router-outlet>
+    </div>
+  `,
   styles: [`
     .app-container {
       max-width: 1200px;

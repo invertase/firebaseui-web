@@ -1,4 +1,4 @@
-import { Component, ContentChildren, EventEmitter, inject, Input, Output, QueryList } from '@angular/core';
+import { Component, ContentChildren, EventEmitter, inject, Input, Output, QueryList, AfterContentInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardComponent, CardHeaderComponent, CardTitleComponent, CardSubtitleComponent } from '../../../components/card/card.component';
 import { FirebaseUi } from '../../../provider';
@@ -27,13 +27,11 @@ import { DividerComponent } from '../../../components/divider/divider.component'
         <fui-email-password-form 
           [forgotPasswordRoute]="forgotPasswordRoute"
           [registerRoute]="registerRoute"
-          (onForgotPasswordClick)="onForgotPasswordClick.emit()" 
-          (onRegisterClick)="onRegisterClick.emit()"
         ></fui-email-password-form>
         
         <ng-container *ngIf="hasContent">
           <fui-divider>{{ dividerOrLabel | async }}</fui-divider>
-          <div class="space-y-4">
+          <div class="space-y-4 mt-6" #contentContainer>
             <ng-content></ng-content>
           </div>
         </ng-container>
@@ -41,18 +39,16 @@ import { DividerComponent } from '../../../components/divider/divider.component'
     </div>
   `
 })
-export class SignInAuthScreenComponent {
+export class SignInAuthScreenComponent implements AfterContentInit {
   private ui = inject(FirebaseUi);
   
   @Input() forgotPasswordRoute: string = '';
   @Input() registerRoute: string = '';
-  
-  @Output() onForgotPasswordClick = new EventEmitter<void>();
-  @Output() onRegisterClick = new EventEmitter<void>();
-  @ContentChildren('*') content!: QueryList<any>;
+  @ViewChild('contentContainer') contentContainer!: ElementRef;
+  private _hasProjectedContent = false;
 
   get hasContent(): boolean {
-    return this.content && this.content.length > 0;
+    return this._hasProjectedContent;
   }
 
   get titleText() {
@@ -65,5 +61,25 @@ export class SignInAuthScreenComponent {
 
   get dividerOrLabel() {
     return this.ui.translation('messages', 'dividerOr');
+  }
+
+  ngAfterContentInit() {
+    // Set to true initially to ensure the container is rendered
+    this._hasProjectedContent = true;
+    
+    // We need to use setTimeout to check after the view is rendered
+    setTimeout(() => {
+      // Check if there's any actual content in the container
+      if (this.contentContainer && this.contentContainer.nativeElement) {
+        const container = this.contentContainer.nativeElement;
+        // Only consider it to have content if there are child nodes that aren't just whitespace
+        this._hasProjectedContent = Array.from(container.childNodes as NodeListOf<Node>).some((node: Node) => {
+          return node.nodeType === Node.ELEMENT_NODE || 
+                (node.nodeType === Node.TEXT_NODE && node.textContent && node.textContent.trim() !== '');
+        });
+      } else {
+        this._hasProjectedContent = false;
+      }
+    });
   }
 }

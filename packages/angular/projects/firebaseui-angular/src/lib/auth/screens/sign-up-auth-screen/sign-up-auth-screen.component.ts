@@ -1,4 +1,4 @@
-import { Component, ContentChildren, EventEmitter, inject, Input, Output, QueryList } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, QueryList, AfterContentInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardComponent, CardHeaderComponent, CardTitleComponent, CardSubtitleComponent } from '../../../components/card/card.component';
 
@@ -26,14 +26,12 @@ import { DividerComponent } from '../../../components/divider/divider.component'
           <fui-card-subtitle>{{ subtitleText | async }}</fui-card-subtitle>
         </fui-card-header>
         <fui-register-form
-          [showBackToSignIn]="true"
           [signInRoute]="signInRoute"
-          (onBackToSignInClick)="onBackToSignInClick.emit()"
         ></fui-register-form>
         
         <ng-container *ngIf="hasContent">
           <fui-divider>{{ dividerOrLabel | async }}</fui-divider>
-          <div class="space-y-4">
+          <div class="space-y-4 mt-6" #contentContainer>
             <ng-content></ng-content>
           </div>
         </ng-container>
@@ -41,15 +39,15 @@ import { DividerComponent } from '../../../components/divider/divider.component'
     </div>
   `
 })
-export class SignUpAuthScreenComponent {
+export class SignUpAuthScreenComponent implements AfterContentInit {
   private ui = inject(FirebaseUi);
 
   @Input() signInRoute: string = '';
-  @Output() onBackToSignInClick = new EventEmitter<void>();
-  @ContentChildren('*') content!: QueryList<any>;
+  @ViewChild('contentContainer') contentContainer!: ElementRef;
+  private _hasProjectedContent = false;
 
   get hasContent(): boolean {
-    return this.content && this.content.length > 0;
+    return this._hasProjectedContent;
   }
 
   get titleText() {
@@ -62,5 +60,25 @@ export class SignUpAuthScreenComponent {
 
   get dividerOrLabel() {
     return this.ui.translation('messages', 'dividerOr');
+  }
+
+  ngAfterContentInit() {
+    // Set to true initially to ensure the container is rendered
+    this._hasProjectedContent = true;
+    
+    // We need to use setTimeout to check after the view is rendered
+    setTimeout(() => {
+      // Check if there's any actual content in the container
+      if (this.contentContainer && this.contentContainer.nativeElement) {
+        const container = this.contentContainer.nativeElement;
+        // Only consider it to have content if there are child nodes that aren't just whitespace
+        this._hasProjectedContent = Array.from(container.childNodes as NodeListOf<Node>).some((node: Node) => {
+          return node.nodeType === Node.ELEMENT_NODE || 
+                (node.nodeType === Node.TEXT_NODE && node.textContent && node.textContent.trim() !== '');
+        });
+      } else {
+        this._hasProjectedContent = false;
+      }
+    });
   }
 }

@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="fui-divider">
+    <div class="fui-divider my-6">
       <div class="fui-divider__line"></div>
       <div class="fui-divider__text" *ngIf="hasContent">
         <ng-content></ng-content>

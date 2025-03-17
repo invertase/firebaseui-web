@@ -1,30 +1,30 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { SignUpAuthScreenComponent } from '@firebase-ui/angular';
+import { Auth, User, authState } from '@angular/fire/auth';
+import { SignUpAuthScreenComponent, GoogleSignInButtonComponent } from '@firebase-ui/angular';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, RouterModule, SignUpAuthScreenComponent],
+  imports: [CommonModule, RouterModule, SignUpAuthScreenComponent, GoogleSignInButtonComponent],
   template: `
-    <fui-sign-up-auth-screen
-      [signInRoute]="'/auth/sign-in'"
-      (onBackToSignInClick)="navigateTo('/auth/sign-in')"
-    ></fui-sign-up-auth-screen>
+    <fui-sign-up-auth-screen signInRoute="/sign-in">
+      <fui-google-sign-in-button></fui-google-sign-in-button>
+    </fui-sign-up-auth-screen>
   `,
-  styles: [`
-    :host {
-      display: flex;
-      justify-content: center;
-      padding: 2rem;
-    }
-  `]
+  styles: []
 })
-export class RegisterComponent {
-  constructor(private router: Router) {}
+export class RegisterComponent implements OnInit {
+  private auth = inject(Auth);
+  private router = inject(Router);
   
-  navigateTo(route: string): void {
-    this.router.navigateByUrl(route);
+  ngOnInit() {
+    // Check if user is already authenticated and redirect to home page
+    authState(this.auth).subscribe((user: User | null) => {
+      if (user) {
+        this.router.navigate(['/']);
+      }
+    });
   }
 }

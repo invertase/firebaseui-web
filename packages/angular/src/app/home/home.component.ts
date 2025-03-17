@@ -11,17 +11,15 @@ import { Observable } from 'rxjs';
   template: `
     <div class="p-8">
       <h1 class="text-3xl font-bold mb-6">Firebase UI Demo</h1>
-      
-      <div class="mb-6" *ngIf="user$ | async as user">
-        <div>Welcome: {{ user.email || user.phoneNumber }}</div>
+      <div class="mb-6">
+        <div *ngIf="user$ | async as user">Welcome: {{user.email || user.phoneNumber}}</div>
       </div>
-      
       <div>
         <h2 class="text-2xl font-bold mb-4">Auth Screens</h2>
         <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <li>
             <a
-              routerLink="/auth/sign-in"
+              routerLink="/screens/sign-in-auth-screen"
               class="text-blue-500 hover:underline"
             >
               Sign In Auth Screen
@@ -29,23 +27,23 @@ import { Observable } from 'rxjs';
           </li>
           <li>
             <a
-              routerLink="/auth/register"
+              routerLink="/screens/sign-in-auth-screen-w-handlers"
               class="text-blue-500 hover:underline"
             >
-              Sign Up Auth Screen
+              Sign In Auth Screen with Handlers
             </a>
           </li>
           <li>
             <a
-              routerLink="/auth/forgot-password"
+              routerLink="/screens/sign-in-auth-screen-w-oauth"
               class="text-blue-500 hover:underline"
             >
-              Password Reset Screen
+              Sign In Auth Screen with OAuth
             </a>
           </li>
           <li>
             <a
-              routerLink="/auth/email-link"
+              routerLink="/screens/email-link-auth-screen"
               class="text-blue-500 hover:underline"
             >
               Email Link Auth Screen
@@ -53,80 +51,65 @@ import { Observable } from 'rxjs';
           </li>
           <li>
             <a
-              routerLink="/auth/phone"
+              routerLink="/screens/email-link-auth-screen-w-oauth"
+              class="text-blue-500 hover:underline"
+            >
+              Email Link Auth Screen with OAuth
+            </a>
+          </li>
+          <li>
+            <a
+              routerLink="/screens/phone-auth-screen"
               class="text-blue-500 hover:underline"
             >
               Phone Auth Screen
+            </a>
+          </li>
+          <li>
+            <a
+              routerLink="/screens/phone-auth-screen-w-oauth"
+              class="text-blue-500 hover:underline"
+            >
+              Phone Auth Screen with OAuth
+            </a>
+          </li>
+          <li>
+            <a
+              routerLink="/screens/sign-up-auth-screen"
+              class="text-blue-500 hover:underline"
+            >
+              Sign Up Auth Screen
+            </a>
+          </li>
+          <li>
+            <a
+              routerLink="/screens/sign-up-auth-screen-w-oauth"
+              class="text-blue-500 hover:underline"
+            >
+              Sign Up Auth Screen with OAuth
+            </a>
+          </li>
+          <li>
+            <a
+              routerLink="/screens/oauth-screen"
+              class="text-blue-500 hover:underline"
+            >
+              OAuth Screen
+            </a>
+          </li>
+          <li>
+            <a
+              routerLink="/screens/password-reset-screen"
+              class="text-blue-500 hover:underline"
+            >
+              Password Reset Screen
             </a>
           </li>
         </ul>
       </div>
     </div>
   `,
-  styles: [`
-    :host {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-    
-    .p-8 {
-      padding: 2rem;
-    }
-    
-    .text-3xl {
-      font-size: 1.875rem;
-      line-height: 2.25rem;
-    }
-    
-    .text-2xl {
-      font-size: 1.5rem;
-      line-height: 2rem;
-    }
-    
-    .font-bold {
-      font-weight: 700;
-    }
-    
-    .mb-6 {
-      margin-bottom: 1.5rem;
-    }
-    
-    .mb-4 {
-      margin-bottom: 1rem;
-    }
-    
-    .grid {
-      display: grid;
-    }
-    
-    .grid-cols-1 {
-      grid-template-columns: repeat(1, minmax(0, 1fr));
-    }
-    
-    .gap-4 {
-      gap: 1rem;
-    }
-    
-    .text-blue-500 {
-      color: #3b82f6;
-    }
-    
-    .hover\:underline:hover {
-      text-decoration: underline;
-    }
-    
-    @media (min-width: 640px) {
-      .sm\:grid-cols-2 {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-    
-    @media (min-width: 768px) {
-      .md\:grid-cols-3 {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
-  
-  `]
+  styles: []
 })
 export class HomeComponent {
   private auth = inject(Auth);

@@ -8,7 +8,7 @@ import { map } from 'rxjs/operators';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="text-text-muted text-xs text-start" *ngIf="shouldShow | async">
+    <div class="text-text-muted text-xs text-start my-6" *ngIf="shouldShow | async">
       <ng-container *ngFor="let part of parts | async; let i = index">
         <a 
           *ngIf="part.type === 'tos' && (tosUrl | async)"

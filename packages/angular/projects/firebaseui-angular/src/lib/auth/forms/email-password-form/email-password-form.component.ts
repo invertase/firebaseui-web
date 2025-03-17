@@ -93,7 +93,7 @@ import { Router } from '@angular/router';
         <div class="fui-form__error" *ngIf="formError">{{ formError }}</div>
       </fieldset>
 
-      <div class="flex justify-center items-center">
+      <div class="flex justify-center items-center" *ngIf="registerRoute">
         <button
           type="button"
           (click)="navigateTo(registerRoute)"

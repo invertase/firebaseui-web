@@ -18,15 +18,7 @@ import { firstValueFrom } from 'rxjs';
     <div *ngIf="emailSent" class="fui-form">
       {{ emailSentMessage | async }}
       
-      <div class="flex justify-center items-center mt-4" *ngIf="signInRoute">
-        <button
-          type="button"
-          (click)="navigateTo(signInRoute)"
-          class="fui-form__action"
-        >
-          {{ backToSignInLabel | async }} &rarr;
-        </button>
-      </div>
+
     </div>
     <form *ngIf="!emailSent" (submit)="handleSubmit($event)" class="fui-form">
       <fieldset>
@@ -67,15 +59,7 @@ import { firstValueFrom } from 'rxjs';
         <div class="fui-form__error" *ngIf="formError">{{ formError }}</div>
       </fieldset>
       
-      <div class="flex justify-center items-center" *ngIf="signInRoute">
-        <button
-          type="button"
-          (click)="navigateTo(signInRoute)"
-          class="fui-form__action"
-        >
-          {{ backToSignInLabel | async }} &rarr;
-        </button>
-      </div>
+
     </form>
   `
 })
@@ -87,7 +71,7 @@ export class EmailLinkFormComponent implements OnInit {
     map(config => createEmailLinkFormSchema(config?.translations))
   );
 
-  @Input() signInRoute: string = '';
+
 
   formError: string | null = null;
   emailSent = false;
@@ -174,13 +158,9 @@ export class EmailLinkFormComponent implements OnInit {
     return this.ui.translation('labels', 'sendSignInLink');
   }
 
-  navigateTo(route: string) {
-    this.router.navigateByUrl(route);
-  }
 
-  get backToSignInLabel() {
-    return this.ui.translation('labels', 'signIn');
-  }
+
+
 
   get emailSentMessage() {
     return this.ui.translation('messages', 'signInLinkSent');

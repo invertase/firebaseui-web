@@ -1,64 +1,47 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { SignInAuthScreenComponent } from '@firebase-ui/angular';
+import { Auth, User, authState } from '@angular/fire/auth';
+import {
+  SignInAuthScreenComponent,
+  GoogleSignInButtonComponent,
+} from '@firebase-ui/angular';
 
 @Component({
   selector: 'app-sign-in',
   standalone: true,
-  imports: [CommonModule, RouterModule, SignInAuthScreenComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    SignInAuthScreenComponent,
+    GoogleSignInButtonComponent,
+  ],
   template: `
     <fui-sign-in-auth-screen
-      [forgotPasswordRoute]="'/auth/forgot-password'"
-      [registerRoute]="'/auth/register'"
-      (onForgotPasswordClick)="navigateTo('/auth/forgot-password')"
-      (onRegisterClick)="navigateTo('/auth/register')"
+      forgotPasswordRoute="/forgot-password"
+      registerRoute="/register"
     >
+      <fui-google-sign-in-button></fui-google-sign-in-button>
       <div>
-        <a routerLink="/auth/email-link" class="text-blue-500 hover:underline">Sign in with email link</a>
+        <a routerLink="/sign-in/phone">Sign in with phone number</a>
       </div>
       <div>
-        <a routerLink="/auth/phone" class="text-blue-500 hover:underline">Sign in with phone number</a>
+        <a routerLink="/sign-in/email">Sign in with email link</a>
       </div>
     </fui-sign-in-auth-screen>
   `,
-  styles: [
-    `
-      :host {
-        display: flex;
-        justify-content: center;
-        padding: 2rem;
-      }
-      
-      .text-blue-500 {
-        color: #3b82f6;
-      }
-      
-      .hover\:underline:hover {
-        text-decoration: underline;
-      }
-      }
-
-      .back-link {
-        margin-top: 1.5rem;
-        text-align: center;
-      }
-
-      a {
-        color: #3b82f6;
-        text-decoration: none;
-      }
-
-      a:hover {
-        text-decoration: underline;
-      }
-    `,
-  ],
+  styles: [],
 })
-export class SignInComponent {
-  constructor(private router: Router) {}
+export class SignInComponent implements OnInit {
+  private auth = inject(Auth);
+  private router = inject(Router);
   
-  navigateTo(route: string): void {
-    this.router.navigateByUrl(route);
+  ngOnInit() {
+    // Check if user is already authenticated and redirect to home page
+    authState(this.auth).subscribe((user: User | null) => {
+      if (user) {
+        this.router.navigate(['/']);
+      }
+    });
   }
 }

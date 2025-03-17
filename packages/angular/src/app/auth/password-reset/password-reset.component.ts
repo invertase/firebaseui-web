@@ -2,18 +2,20 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { Auth, User, authState } from '@angular/fire/auth';
-import { EmailLinkAuthScreenComponent } from '@firebase-ui/angular';
+import { PasswordResetScreenComponent } from '@firebase-ui/angular';
 
 @Component({
-  selector: 'app-email-link',
+  selector: 'app-password-reset',
   standalone: true,
-  imports: [CommonModule, RouterModule, EmailLinkAuthScreenComponent],
+  imports: [CommonModule, RouterModule, PasswordResetScreenComponent],
   template: `
-    <fui-email-link-auth-screen></fui-email-link-auth-screen>
+    <fui-password-reset-screen
+      [signInRoute]="'/sign-in'"
+    ></fui-password-reset-screen>
   `,
   styles: [],
 })
-export class EmailLinkComponent implements OnInit {
+export class PasswordResetComponent implements OnInit {
   private auth = inject(Auth);
   private router = inject(Router);
 

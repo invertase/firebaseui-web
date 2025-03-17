@@ -5,18 +5,18 @@ import { Auth, User, authState } from '@angular/fire/auth';
 import { EmailLinkAuthScreenComponent } from '@firebase-ui/angular';
 
 @Component({
-  selector: 'app-email-link',
+  selector: 'app-email-link-screen',
   standalone: true,
   imports: [CommonModule, RouterModule, EmailLinkAuthScreenComponent],
   template: `
     <fui-email-link-auth-screen></fui-email-link-auth-screen>
   `,
-  styles: [],
+  styles: []
 })
-export class EmailLinkComponent implements OnInit {
+export class EmailLinkScreenComponent implements OnInit {
   private auth = inject(Auth);
   private router = inject(Router);
-
+  
   ngOnInit() {
     // Check if user is already authenticated and redirect to home page
     authState(this.auth).subscribe((user: User | null) => {

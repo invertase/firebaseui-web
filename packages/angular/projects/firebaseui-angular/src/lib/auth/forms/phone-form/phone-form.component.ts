@@ -257,11 +257,14 @@ export class PhoneNumberFormComponent implements OnInit, OnDestroy {
         </fui-button>
         <div class="fui-form__error" *ngIf="formError">{{ formError }}</div>
       </fieldset>
+
+      <!-- Back to sign in button removed to match React implementation -->
     </form>
   `,
 })
 export class VerificationFormComponent implements OnInit, OnDestroy {
   private ui = inject(FirebaseUi);
+  private router = inject(Router);
   private schema = this.ui.config().pipe(
     map((config) =>
       createPhoneFormSchema(config?.translations).pick({
@@ -341,16 +344,6 @@ export class VerificationFormComponent implements OnInit, OnDestroy {
           [canResend]="canResend"
           [timeLeft]="timeLeft"
         ></fui-verification-form>
-        
-        <div class="flex justify-center items-center mt-4" *ngIf="signInRoute">
-          <button
-            type="button"
-            (click)="navigateTo(signInRoute)"
-            class="fui-form__action"
-          >
-            {{ backToSignInLabel | async }} &rarr;
-          </button>
-        </div>
       </ng-container>
       <ng-template #phoneNumberForm>
         <fui-phone-number-form
@@ -358,16 +351,6 @@ export class VerificationFormComponent implements OnInit, OnDestroy {
           [formError]="formError"
           [showTerms]="true"
         ></fui-phone-number-form>
-        
-        <div class="flex justify-center items-center mt-4" *ngIf="signInRoute">
-          <button
-            type="button"
-            (click)="navigateTo(signInRoute)"
-            class="fui-form__action"
-          >
-            {{ backToSignInLabel | async }} &rarr;
-          </button>
-        </div>
       </ng-template>
     </div>
   `,
@@ -378,7 +361,6 @@ export class PhoneFormComponent implements OnInit, OnDestroy {
   private router = inject(Router);
 
   @Input() resendDelay = 30;
-  @Input() signInRoute: string = '';
 
   formError: string | null = null;
   confirmationResult: ConfirmationResult | null = null;
@@ -512,14 +494,6 @@ export class PhoneFormComponent implements OnInit, OnDestroy {
         this.ui.translation('errors', 'unknownError')
       );
     }
-  }
-
-  navigateTo(route: string) {
-    this.router.navigateByUrl(route);
-  }
-
-  get backToSignInLabel() {
-    return this.ui.translation('labels', 'signIn');
   }
 
   startTimer() {

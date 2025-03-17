@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { Auth, User, authState } from '@angular/fire/auth';
 import { PasswordResetScreenComponent } from '@firebase-ui/angular';
 
 @Component({
@@ -8,23 +9,20 @@ import { PasswordResetScreenComponent } from '@firebase-ui/angular';
   standalone: true,
   imports: [CommonModule, RouterModule, PasswordResetScreenComponent],
   template: `
-    <fui-password-reset-screen
-      [signInRoute]="'/auth/sign-in'"
-      (onBackToSignInClick)="navigateTo('/auth/sign-in')"
-    ></fui-password-reset-screen>
+    <fui-password-reset-screen signInRoute="/sign-in"></fui-password-reset-screen>
   `,
-  styles: [`
-    :host {
-      display: flex;
-      justify-content: center;
-      padding: 2rem;
-    }
-  `]
+  styles: []
 })
-export class ForgotPasswordComponent {
-  constructor(private router: Router) {}
+export class ForgotPasswordComponent implements OnInit {
+  private auth = inject(Auth);
+  private router = inject(Router);
   
-  navigateTo(route: string): void {
-    this.router.navigateByUrl(route);
+  ngOnInit() {
+    // Check if user is already authenticated and redirect to home page
+    authState(this.auth).subscribe((user: User | null) => {
+      if (user) {
+        this.router.navigate(['/']);
+      }
+    });
   }
 }

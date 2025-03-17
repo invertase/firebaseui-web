@@ -12,6 +12,7 @@ import { GoogleAuthProvider } from '@angular/fire/auth';
     <fui-oauth-button [provider]="googleProvider">
       <svg
         class="fui-provider__icon"
+        style="width: 20px; height: 20px;"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 48 48"
       >
