@@ -116,7 +116,7 @@ export class EmailLinkFormComponent implements OnInit {
     }
   }
 
-  handleSubmit(event: SubmitEvent) {
+  async handleSubmit(event: SubmitEvent) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -126,7 +126,7 @@ export class EmailLinkFormComponent implements OnInit {
       return;
     }
 
-    this.sendSignInLink(email);
+    await this.sendSignInLink(email);
   }
 
   async sendSignInLink(email: string) {

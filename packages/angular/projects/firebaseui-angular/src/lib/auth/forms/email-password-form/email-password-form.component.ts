@@ -145,7 +145,7 @@ export class EmailPasswordFormComponent implements OnInit {
     }
   }
 
-  handleSubmit(event: SubmitEvent) {
+  async handleSubmit(event: SubmitEvent) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -156,7 +156,7 @@ export class EmailPasswordFormComponent implements OnInit {
       return;
     }
 
-    this.validateAndSignIn(email, password);
+    await this.validateAndSignIn(email, password);
   }
 
   async validateAndSignIn(email: string, password: string) {

@@ -132,7 +132,7 @@ export class RegisterFormComponent implements OnInit {
     }
   }
 
-  handleSubmit(event: SubmitEvent) {
+  async handleSubmit(event: SubmitEvent) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -143,7 +143,7 @@ export class RegisterFormComponent implements OnInit {
       return;
     }
 
-    this.registerUser(email, password);
+    await this.registerUser(email, password);
   }
 
   async registerUser(email: string, password: string) {

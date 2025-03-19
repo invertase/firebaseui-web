@@ -113,7 +113,7 @@ export class ForgotPasswordFormComponent implements OnInit {
     }
   }
 
-  handleSubmit(event: SubmitEvent) {
+  async handleSubmit(event: SubmitEvent) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -123,7 +123,7 @@ export class ForgotPasswordFormComponent implements OnInit {
       return;
     }
 
-    this.resetPassword(email);
+    await this.resetPassword(email);
   }
 
   async resetPassword(email: string) {

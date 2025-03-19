@@ -159,7 +159,7 @@ export class PhoneNumberFormComponent implements OnInit, OnDestroy {
     this.recaptchaVerifier = verifier;
   }
 
-  handleSubmit(event: SubmitEvent) {
+  async handleSubmit(event: SubmitEvent) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -342,7 +342,7 @@ export class VerificationFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {}
 
-  handleSubmit(event: SubmitEvent) {
+  async handleSubmit(event: SubmitEvent) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -352,7 +352,7 @@ export class VerificationFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.verifyCode(code);
+    await this.verifyCode(code);
   }
 
   async verifyCode(code: string) {
