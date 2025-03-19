@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { ButtonComponent } from '../../../components/button/button.component';
 import { FirebaseUi } from '../../../provider';
 import { CommonModule } from '@angular/common';
@@ -9,7 +9,6 @@ import {
   FirebaseUIError,
   fuiCreateUserWithEmailAndPassword,
 } from '@firebase-ui/core';
-import { map } from 'rxjs/operators';
 import { Auth } from '@angular/fire/auth';
 import { TermsAndPrivacyComponent } from '../../../components/terms-and-privacy/terms-and-privacy.component';
 import { firstValueFrom } from 'rxjs';
@@ -94,71 +93,102 @@ import { Router } from '@angular/router';
       </div>
     </form>
   `,
+  standalone: true,
 })
-export class RegisterFormComponent {
+export class RegisterFormComponent implements OnInit {
   private ui = inject(FirebaseUi);
   private auth = inject(Auth);
   private router = inject(Router);
-  private schema = this.ui
-    .config()
-    .pipe(map((config) => createEmailFormSchema(config.translations)));
 
   @Input({ required: true }) signInRoute!: string;
 
   formError: string | null = null;
+  private formSchema: any;
+  private config: any;
 
   form = injectForm<EmailFormSchema>({
     defaultValues: {
       email: '',
       password: '',
     },
-    onSubmit: async ({ value }) => {
-      console.log('value', value);
-      this.formError = null;
-      try {
-        // Using firstValueFrom to get config
-        const config = await firstValueFrom(this.ui.config());
-
-        await fuiCreateUserWithEmailAndPassword(
-          this.auth,
-          value.email,
-          value.password,
-          {
-            translations: config?.translations,
-            language: config?.language,
-            enableAutoUpgradeAnonymous: config?.enableAutoUpgradeAnonymous,
-          }
-        );
-      } catch (error) {
-        if (error instanceof FirebaseUIError) {
-          this.formError = error.message;
-          return;
-        }
-
-        console.error(error);
-        this.formError = await firstValueFrom(
-          this.ui.translation('errors', 'unknownError')
-        );
-      }
-    },
   });
 
-  constructor() {
-    // Subscribe to schema changes and update form validators
-    this.schema.subscribe((schema) => {
+  async ngOnInit() {
+    try {
+      this.config = await firstValueFrom(this.ui.config());
+
+      this.formSchema = createEmailFormSchema(this.config?.translations);
+
       this.form.update({
         validators: {
-          onSubmit: schema,
-          onBlur: schema,
+          onSubmit: this.formSchema,
+          onBlur: this.formSchema,
         },
       });
-    });
+    } catch (error) {
+      this.formError = await firstValueFrom(
+        this.ui.translation('errors', 'unknownError')
+      );
+    }
   }
 
   handleSubmit(event: SubmitEvent) {
     event.preventDefault();
     event.stopPropagation();
-    this.form.handleSubmit();
+
+    const email = this.form.state.values.email;
+    const password = this.form.state.values.password;
+
+    if (!email || !password) {
+      return;
+    }
+
+    this.registerUser(email, password);
+  }
+
+  async registerUser(email: string, password: string) {
+    this.formError = null;
+
+    try {
+      const validationResult = this.formSchema.safeParse({
+        email,
+        password,
+      });
+
+      if (!validationResult.success) {
+        const validationErrors = validationResult.error.format();
+
+        if (validationErrors.email?._errors?.length) {
+          this.formError = validationErrors.email._errors[0];
+          return;
+        }
+
+        if (validationErrors.password?._errors?.length) {
+          this.formError = validationErrors.password._errors[0];
+          return;
+        }
+
+        this.formError = await firstValueFrom(
+          this.ui.translation('errors', 'unknownError')
+        );
+        return;
+      }
+
+      await fuiCreateUserWithEmailAndPassword(this.auth, email, password, {
+        translations: this.config?.translations,
+        language: this.config?.language,
+        enableAutoUpgradeAnonymous: this.config?.enableAutoUpgradeAnonymous,
+      });
+    } catch (error) {
+      if (error instanceof FirebaseUIError) {
+        this.formError = error.message;
+        return;
+      }
+
+      this.formError = await firstValueFrom(
+        this.ui.translation('errors', 'unknownError')
+      );
+    }
   }
 
   navigateTo(route: string) {

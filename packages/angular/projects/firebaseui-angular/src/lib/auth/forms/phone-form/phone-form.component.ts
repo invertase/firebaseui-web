@@ -102,13 +102,6 @@ import { z } from 'zod';
 export class PhoneNumberFormComponent implements OnInit, OnDestroy {
   private ui = inject(FirebaseUi);
   private auth = inject(Auth);
-  private schema = this.ui
-    .config()
-    .pipe(
-      map((config) =>
-        createPhoneFormSchema(config?.translations).pick({ phoneNumber: true })
-      )
-    );
 
   @Input() onSubmit!: (phoneNumber: string) => Promise<void>;
   @Input() formError: string | null = null;
@@ -118,31 +111,34 @@ export class PhoneNumberFormComponent implements OnInit, OnDestroy {
 
   recaptchaVerifier: RecaptchaVerifier | null = null;
   selectedCountry: CountryData = countryData[0];
+  private formSchema: any;
+  private config: any;
 
   form = injectForm<z.infer<z.ZodObject<{ phoneNumber: z.ZodString }>>>({
     defaultValues: {
       phoneNumber: '',
     },
-    onSubmit: async ({ value }) => {
-      const formattedNumber = formatPhoneNumberWithCountry(
-        value.phoneNumber,
-        this.selectedCountry.dialCode
-      );
-      await this.onSubmit(formattedNumber);
-    },
   });
 
-  ngOnInit() {
-    this.schema.subscribe((schema) => {
+  async ngOnInit() {
+    try {
+      this.config = await firstValueFrom(this.ui.config());
+
+      this.formSchema = createPhoneFormSchema(this.config?.translations).pick({
+        phoneNumber: true,
+      });
+
       this.form.update({
         validators: {
-          onSubmit: schema,
-          onBlur: schema,
+          onSubmit: this.formSchema,
+          onBlur: this.formSchema,
         },
       });
-    });
 
-    this.initRecaptcha();
+      await this.initRecaptcha();
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   ngOnDestroy() {
@@ -153,12 +149,11 @@ export class PhoneNumberFormComponent implements OnInit, OnDestroy {
   }
 
   async initRecaptcha() {
-    const config = await firstValueFrom(this.ui.config());
     const verifier = new RecaptchaVerifier(
       this.auth,
       this.recaptchaContainer.nativeElement,
       {
-        size: config?.recaptchaMode ?? 'normal',
+        size: this.config?.recaptchaMode ?? 'normal',
       }
     );
     this.recaptchaVerifier = verifier;
@@ -167,7 +162,47 @@ export class PhoneNumberFormComponent implements OnInit, OnDestroy {
   handleSubmit(event: SubmitEvent) {
     event.preventDefault();
     event.stopPropagation();
-    this.form.handleSubmit();
+
+    const phoneNumber = this.form.state.values.phoneNumber;
+
+    if (!phoneNumber) {
+      return;
+    }
+
+    this.submitPhoneNumber(phoneNumber);
+  }
+
+  async submitPhoneNumber(phoneNumber: string) {
+    try {
+      // Validate phoneNumber
+      const validationResult = this.formSchema.safeParse({
+        phoneNumber,
+      });
+
+      if (!validationResult.success) {
+        const validationErrors = validationResult.error.format();
+
+        if (validationErrors.phoneNumber?._errors?.length) {
+          // We can't set formError directly since it's an input, so we need to call the parent
+          await this.onSubmit(
+            'VALIDATION_ERROR:' + validationErrors.phoneNumber._errors[0]
+          );
+          return;
+        }
+
+        await this.onSubmit('VALIDATION_ERROR:Invalid phone number');
+        return;
+      }
+
+      // Format number and submit
+      const formattedNumber = formatPhoneNumberWithCountry(
+        phoneNumber,
+        this.selectedCountry.dialCode
+      );
+      await this.onSubmit(formattedNumber);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   handleCountryChange(country: CountryData) {
@@ -265,13 +300,6 @@ export class PhoneNumberFormComponent implements OnInit, OnDestroy {
 export class VerificationFormComponent implements OnInit, OnDestroy {
   private ui = inject(FirebaseUi);
   private router = inject(Router);
-  private schema = this.ui.config().pipe(
-    map((config) =>
-      createPhoneFormSchema(config?.translations).pick({
-        verificationCode: true,
-      })
-    )
-  );
 
   @Input() onSubmit!: (code: string) => Promise<void>;
   @Input() onResend!: () => Promise<void>;
@@ -283,24 +311,33 @@ export class VerificationFormComponent implements OnInit, OnDestroy {
   @ViewChild('recaptchaContainer', { static: true })
   recaptchaContainer!: ElementRef<HTMLDivElement>;
 
+  private formSchema: any;
+  private config: any;
+
   form = injectForm<z.infer<z.ZodObject<{ verificationCode: z.ZodString }>>>({
     defaultValues: {
       verificationCode: '',
     },
-    onSubmit: async ({ value }) => {
-      await this.onSubmit(value.verificationCode);
-    },
   });
 
-  ngOnInit() {
-    this.schema.subscribe((schema) => {
+  async ngOnInit() {
+    try {
+      this.config = await firstValueFrom(this.ui.config());
+
+      // Create schema once
+      this.formSchema = createPhoneFormSchema(this.config?.translations).pick({
+        verificationCode: true,
+      });
+
       this.form.update({
         validators: {
-          onSubmit: schema,
-          onBlur: schema,
+          onSubmit: this.formSchema,
+          onBlur: this.formSchema,
         },
       });
-    });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   ngOnDestroy() {}
@@ -308,7 +345,40 @@ export class VerificationFormComponent implements OnInit, OnDestroy {
   handleSubmit(event: SubmitEvent) {
     event.preventDefault();
     event.stopPropagation();
-    this.form.handleSubmit();
+
+    const code = this.form.state.values.verificationCode;
+
+    if (!code) {
+      return;
+    }
+
+    this.verifyCode(code);
+  }
+
+  async verifyCode(code: string) {
+    try {
+      const validationResult = this.formSchema.safeParse({
+        verificationCode: code,
+      });
+
+      if (!validationResult.success) {
+        const validationErrors = validationResult.error.format();
+
+        if (validationErrors.verificationCode?._errors?.length) {
+          await this.onSubmit(
+            'VALIDATION_ERROR:' + validationErrors.verificationCode._errors[0]
+          );
+          return;
+        }
+
+        await this.onSubmit('VALIDATION_ERROR:Invalid verification code');
+        return;
+      }
+
+      await this.onSubmit(code);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   get verificationCodeLabel() {
@@ -358,7 +428,7 @@ export class VerificationFormComponent implements OnInit, OnDestroy {
 export class PhoneFormComponent implements OnInit, OnDestroy {
   private ui = inject(FirebaseUi);
   private auth = inject(Auth);
-  private router = inject(Router);
+  private config: any;
 
   @Input() resendDelay = 30;
 
@@ -371,7 +441,13 @@ export class PhoneFormComponent implements OnInit, OnDestroy {
   canResend = false;
   timerSubscription: Subscription | null = null;
 
-  ngOnInit() {}
+  async ngOnInit() {
+    try {
+      this.config = await firstValueFrom(this.ui.config());
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   ngOnDestroy() {
     if (this.timerSubscription) {
@@ -381,20 +457,24 @@ export class PhoneFormComponent implements OnInit, OnDestroy {
 
   async handlePhoneSubmit(number: string): Promise<void> {
     this.formError = null;
+
+    if (number.startsWith('VALIDATION_ERROR:')) {
+      this.formError = number.substring('VALIDATION_ERROR:'.length);
+      return;
+    }
+
     try {
       if (!this.recaptchaVerifier) {
         throw new Error('ReCAPTCHA not initialized');
       }
-
-      const config = await firstValueFrom(this.ui.config());
 
       const result = await fuiSignInWithPhoneNumber(
         this.auth,
         number,
         this.recaptchaVerifier,
         {
-          translations: config?.translations,
-          language: config?.language,
+          translations: this.config?.translations,
+          language: this.config?.language,
         }
       );
 
@@ -426,8 +506,6 @@ export class PhoneFormComponent implements OnInit, OnDestroy {
         this.recaptchaVerifier.clear();
       }
 
-      const config = await firstValueFrom(this.ui.config());
-
       // We need to get the recaptcha container from the verification form
       // This is a bit hacky, but it works for now
       const recaptchaContainer = document.querySelector(
@@ -438,7 +516,7 @@ export class PhoneFormComponent implements OnInit, OnDestroy {
       }
 
       const verifier = new RecaptchaVerifier(this.auth, recaptchaContainer, {
-        size: config?.recaptchaMode ?? 'normal',
+        size: this.config?.recaptchaMode ?? 'normal',
       });
       this.recaptchaVerifier = verifier;
 
@@ -447,8 +525,8 @@ export class PhoneFormComponent implements OnInit, OnDestroy {
         this.phoneNumber,
         verifier,
         {
-          translations: config?.translations,
-          language: config?.language,
+          translations: this.config?.translations,
+          language: this.config?.language,
         }
       );
 
@@ -469,6 +547,11 @@ export class PhoneFormComponent implements OnInit, OnDestroy {
   }
 
   async handleVerificationSubmit(code: string): Promise<void> {
+    if (code.startsWith('VALIDATION_ERROR:')) {
+      this.formError = code.substring('VALIDATION_ERROR:'.length);
+      return;
+    }
+
     if (!this.confirmationResult) {
       throw new Error('Confirmation result not initialized');
     }
@@ -476,13 +559,12 @@ export class PhoneFormComponent implements OnInit, OnDestroy {
     this.formError = null;
 
     try {
-      const config = await firstValueFrom(this.ui.config());
-
       await fuiConfirmPhoneNumber(this.confirmationResult, code, {
-        translations: config?.translations,
-        language: config?.language,
-        enableAutoUpgradeAnonymous: config?.enableAutoUpgradeAnonymous,
-        enableHandleExistingCredential: config?.enableHandleExistingCredential,
+        translations: this.config?.translations,
+        language: this.config?.language,
+        enableAutoUpgradeAnonymous: this.config?.enableAutoUpgradeAnonymous,
+        enableHandleExistingCredential:
+          this.config?.enableHandleExistingCredential,
       });
     } catch (error) {
       if (error instanceof FirebaseUIError) {

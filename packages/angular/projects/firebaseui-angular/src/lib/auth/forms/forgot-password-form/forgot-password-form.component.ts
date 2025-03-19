@@ -1,9 +1,8 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { injectForm, TanStackField } from '@tanstack/angular-form';
 import { FirebaseUi } from '../../../provider';
 import { Auth } from '@angular/fire/auth';
-import { map } from 'rxjs/operators';
 import { ButtonComponent } from '../../../components/button/button.component';
 import { TermsAndPrivacyComponent } from '../../../components/terms-and-privacy/terms-and-privacy.component';
 import {
@@ -75,64 +74,98 @@ import { Router } from '@angular/router';
     </form>
   `,
 })
-export class ForgotPasswordFormComponent {
+export class ForgotPasswordFormComponent implements OnInit {
   private ui = inject(FirebaseUi);
   private auth = inject(Auth);
   private router = inject(Router);
-  private schema = this.ui
-    .config()
-    .pipe(
-      map((config) => createForgotPasswordFormSchema(config?.translations))
-    );
 
   @Input({ required: true }) signInRoute!: string;
 
   formError: string | null = null;
   emailSent = false;
+  private formSchema: any;
+  private config: any;
 
   form = injectForm<ForgotPasswordFormSchema>({
     defaultValues: {
       email: '',
     },
-    onSubmit: async ({ value }) => {
-      this.formError = null;
-      try {
-        const config = await firstValueFrom(this.ui.config());
-
-        await fuiSendPasswordResetEmail(this.auth, value.email, {
-          translations: config?.translations,
-          language: config?.language,
-        });
-        this.emailSent = true;
-      } catch (error) {
-        if (error instanceof FirebaseUIError) {
-          this.formError = error.message;
-          return;
-        }
-
-        console.error(error);
-        this.formError = await firstValueFrom(
-          this.ui.translation('errors', 'unknownError')
-        );
-      }
-    },
+    // Removed onSubmit callback
   });
 
-  constructor() {
-    this.schema.subscribe((schema) => {
+  async ngOnInit() {
+    try {
+      this.config = await firstValueFrom(this.ui.config());
+
+      this.formSchema = createForgotPasswordFormSchema(
+        this.config?.translations
+      );
+
       this.form.update({
         validators: {
-          onSubmit: schema,
-          onBlur: schema,
+          onSubmit: this.formSchema,
+          onBlur: this.formSchema,
         },
       });
-    });
+    } catch (error) {
+      this.formError = await firstValueFrom(
+        this.ui.translation('errors', 'unknownError')
+      );
+    }
   }
 
   handleSubmit(event: SubmitEvent) {
     event.preventDefault();
     event.stopPropagation();
-    this.form.handleSubmit();
+
+    const email = this.form.state.values.email;
+
+    if (!email) {
+      return;
+    }
+
+    this.resetPassword(email);
+  }
+
+  async resetPassword(email: string) {
+    this.formError = null;
+
+    try {
+      const validationResult = this.formSchema.safeParse({
+        email,
+      });
+
+      if (!validationResult.success) {
+        const validationErrors = validationResult.error.format();
+
+        if (validationErrors.email?._errors?.length) {
+          this.formError = validationErrors.email._errors[0];
+          return;
+        }
+
+        this.formError = await firstValueFrom(
+          this.ui.translation('errors', 'unknownError')
+        );
+        return;
+      }
+
+      // Send password reset email
+      await fuiSendPasswordResetEmail(this.auth, email, {
+        translations: this.config?.translations,
+        language: this.config?.language,
+      });
+
+      this.emailSent = true;
+    } catch (error) {
+      if (error instanceof FirebaseUIError) {
+        this.formError = error.message;
+        return;
+      }
+
+      this.formError = await firstValueFrom(
+        this.ui.translation('errors', 'unknownError')
+      );
+    }
   }
 
   navigateTo(route: string) {

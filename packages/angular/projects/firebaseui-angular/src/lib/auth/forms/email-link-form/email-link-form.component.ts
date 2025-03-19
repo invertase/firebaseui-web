@@ -4,29 +4,32 @@ import { injectForm, TanStackField } from '@tanstack/angular-form';
 import { FirebaseUi } from '../../../provider';
 import { Auth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
-import { map } from 'rxjs/operators';
 import { ButtonComponent } from '../../../components/button/button.component';
 import { TermsAndPrivacyComponent } from '../../../components/terms-and-privacy/terms-and-privacy.component';
-import { createEmailLinkFormSchema, FirebaseUIError, fuiCompleteEmailLinkSignIn, fuiSendSignInLinkToEmail } from '@firebase-ui/core';
+import {
+  createEmailLinkFormSchema,
+  FirebaseUIError,
+  fuiCompleteEmailLinkSignIn,
+  fuiSendSignInLinkToEmail,
+} from '@firebase-ui/core';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'fui-email-link-form',
   standalone: true,
-  imports: [CommonModule, TanStackField, ButtonComponent, TermsAndPrivacyComponent],
+  imports: [
+    CommonModule,
+    TanStackField,
+    ButtonComponent,
+    TermsAndPrivacyComponent,
+  ],
   template: `
     <div *ngIf="emailSent" class="fui-form">
       {{ emailSentMessage | async }}
-      
-
     </div>
     <form *ngIf="!emailSent" (submit)="handleSubmit($event)" class="fui-form">
       <fieldset>
-        <ng-container
-          [tanstackField]="form"
-          name="email"
-          #email="field"
-        >
+        <ng-container [tanstackField]="form" name="email" #email="field">
           <label [for]="email.api.name">
             <span>{{ emailLabel | async }}</span>
             <input
@@ -38,10 +41,10 @@ import { firstValueFrom } from 'rxjs';
               (input)="email.api.handleChange($any($event).target.value)"
               [attr.aria-invalid]="!!email.api.state.meta.errors.length"
             />
-            <span 
-              role="alert" 
-              aria-live="polite" 
-              class="fui-form__error" 
+            <span
+              role="alert"
+              aria-live="polite"
+              class="fui-form__error"
               *ngIf="!!email.api.state.meta.errors.length"
             >
               {{ email.api.state.meta.errors.join(', ') }}
@@ -58,85 +61,54 @@ import { firstValueFrom } from 'rxjs';
         </fui-button>
         <div class="fui-form__error" *ngIf="formError">{{ formError }}</div>
       </fieldset>
-      
-
     </form>
-  `
+  `,
 })
 export class EmailLinkFormComponent implements OnInit {
   private ui = inject(FirebaseUi);
-  private router = inject(Router);
   private auth = inject(Auth);
-  private schema = this.ui.config().pipe(
-    map(config => createEmailLinkFormSchema(config?.translations))
-  );
-
-
 
   formError: string | null = null;
   emailSent = false;
+  private formSchema: any;
+  private config: any;
 
   form = injectForm({
     defaultValues: {
-      email: ''
+      email: '',
     },
-    onSubmit: async ({ value }) => {
-      this.formError = null;
-      try {
-        const config = await firstValueFrom(this.ui.config());
-        
-        await fuiSendSignInLinkToEmail(
-          this.auth, 
-          value.email, 
-          {
-            translations: config?.translations,
-            language: config?.language,
-            enableAutoUpgradeAnonymous: config?.enableAutoUpgradeAnonymous
-          }
-        );
-        this.emailSent = true;
-      } catch (error) {
-        if (error instanceof FirebaseUIError) {
-          this.formError = error.message;
-          return;
-        }
-
-        console.error(error);
-        this.formError = await firstValueFrom(this.ui.translation('errors', 'unknownError'));
-      }
-    }
   });
 
-  constructor() {
-    this.schema.subscribe(schema => {
+  async ngOnInit() {
+    try {
+      this.config = await firstValueFrom(this.ui.config());
+
+      this.formSchema = createEmailLinkFormSchema(this.config?.translations);
+
       this.form.update({
         validators: {
-          onSubmit: schema,
-          onBlur: schema
-        }
+          onSubmit: this.formSchema,
+          onBlur: this.formSchema,
+        },
       });
-    });
-  }
 
-  ngOnInit() {
-    // Handle email link sign-in if URL contains the link
-    this.completeSignIn();
+      this.completeSignIn();
+    } catch (error) {
+      this.formError = await firstValueFrom(
+        this.ui.translation('errors', 'unknownError')
+      );
+    }
   }
 
   private async completeSignIn() {
     try {
-      const config = await firstValueFrom(this.ui.config());
-      
-      await fuiCompleteEmailLinkSignIn(
-        this.auth, 
-        window.location.href, 
-        {
-          translations: config?.translations,
-          language: config?.language,
-          enableAutoUpgradeAnonymous: config?.enableAutoUpgradeAnonymous,
-          enableHandleExistingCredential: config?.enableHandleExistingCredential
-        }
-      );
+      await fuiCompleteEmailLinkSignIn(this.auth, window.location.href, {
+        translations: this.config?.translations,
+        language: this.config?.language,
+        enableAutoUpgradeAnonymous: this.config?.enableAutoUpgradeAnonymous,
+        enableHandleExistingCredential:
+          this.config?.enableHandleExistingCredential,
+      });
     } catch (error) {
       if (error instanceof FirebaseUIError) {
         this.formError = error.message;
@@ -147,7 +119,55 @@ export class EmailLinkFormComponent implements OnInit {
   handleSubmit(event: SubmitEvent) {
     event.preventDefault();
     event.stopPropagation();
-    this.form.handleSubmit();
+
+    const email = this.form.state.values.email;
+
+    if (!email) {
+      return;
+    }
+
+    this.sendSignInLink(email);
+  }
+
+  async sendSignInLink(email: string) {
+    this.formError = null;
+
+    try {
+      const validationResult = this.formSchema.safeParse({
+        email,
+      });
+
+      if (!validationResult.success) {
+        const validationErrors = validationResult.error.format();
+
+        if (validationErrors.email?._errors?.length) {
+          this.formError = validationErrors.email._errors[0];
+          return;
+        }
+
+        this.formError = await firstValueFrom(
+          this.ui.translation('errors', 'unknownError')
+        );
+        return;
+      }
+
+      await fuiSendSignInLinkToEmail(this.auth, email, {
+        translations: this.config?.translations,
+        language: this.config?.language,
+        enableAutoUpgradeAnonymous: this.config?.enableAutoUpgradeAnonymous,
+      });
+
+      this.emailSent = true;
+    } catch (error) {
+      if (error instanceof FirebaseUIError) {
+        this.formError = error.message;
+        return;
+      }
+
+      this.formError = await firstValueFrom(
+        this.ui.translation('errors', 'unknownError')
+      );
+    }
   }
 
   get emailLabel() {
@@ -157,10 +177,6 @@ export class EmailLinkFormComponent implements OnInit {
   get sendSignInLinkLabel() {
     return this.ui.translation('labels', 'sendSignInLink');
   }
-
-
-
-
 
   get emailSentMessage() {
     return this.ui.translation('messages', 'signInLinkSent');
