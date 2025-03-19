@@ -267,8 +267,8 @@ importers:
         specifier: ^0.0.4
         version: 0.0.4(@angular/common@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(nanostores@0.11.3)
       '@tanstack/angular-form':
-        specifier: ^0.42.0
-        version: 0.42.0(@angular/common@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))
+        specifier: ^1.1.0
+        version: 1.1.0(@angular/common@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
@@ -2868,6 +2868,11 @@ packages:
     peerDependencies:
       '@angular/core': '>=19.0.0'
 
+  '@tanstack/angular-form@1.1.0':
+    resolution: {integrity: sha512-APf/lRqXf0Smn36MK4nOh8Pwso2Yoh9pa2MWd5mG8DGGM9q7PtIPQ2bj3/7ul3gQ3o307WDCQCIozQ2vXna0hw==}
+    peerDependencies:
+      '@angular/core': '>=19.0.0'
+
   '@tanstack/angular-store@0.7.0':
     resolution: {integrity: sha512-Ybl3fCZpfubPDQPbhhvpLGHFx2FRwQHv5bi5tluOtlkTZw3gVxuF+rMxVHfvm3CTI418W7VwiRfPz8//8Gxvkw==}
     peerDependencies:
@@ -2879,6 +2884,9 @@ packages:
 
   '@tanstack/form-core@0.42.0':
     resolution: {integrity: sha512-NL2tDWK/40zPsbGWwPMPPuXy0STQ0NxzUCfkAKWnW7MuL5N6wVT7VQc5U45M1RruyGUWrRmS2XdKEeYR6H4FrA==}
+
+  '@tanstack/form-core@1.1.0':
+    resolution: {integrity: sha512-RfRv+grnTzQhG6UyjhA+t9zyx0mSjaowyVzuo2qb4NR2Pc73zoNA5WKEAUhjwONlXrLSSs0h9LE0vJDbk8kYrQ==}
 
   '@tanstack/react-form@0.41.4':
     resolution: {integrity: sha512-uIfIDZJNqR1dLW03TNByK/woyKd2jfXIrEBq6DPJbqupqyfYXTDo5TMd/7koTYLO4dgTM5wd+2v3uBX3M2bRaA==}
@@ -9587,6 +9595,15 @@ snapshots:
     transitivePeerDependencies:
       - '@angular/common'
 
+  '@tanstack/angular-form@1.1.0(@angular/common@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))':
+    dependencies:
+      '@angular/core': 19.1.6(rxjs@7.8.1)(zone.js@0.15.0)
+      '@tanstack/angular-store': 0.7.0(@angular/common@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))
+      '@tanstack/form-core': 1.1.0
+      tslib: 2.8.1
+    transitivePeerDependencies:
+      - '@angular/common'
+
   '@tanstack/angular-store@0.7.0(@angular/common@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))':
     dependencies:
       '@angular/common': 19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)
@@ -9599,6 +9616,10 @@ snapshots:
       '@tanstack/store': 0.7.0
 
   '@tanstack/form-core@0.42.0':
+    dependencies:
+      '@tanstack/store': 0.7.0
+
+  '@tanstack/form-core@1.1.0':
     dependencies:
       '@tanstack/store': 0.7.0
 

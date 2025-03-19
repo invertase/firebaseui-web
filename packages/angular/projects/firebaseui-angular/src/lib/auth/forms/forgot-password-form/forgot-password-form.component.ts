@@ -86,11 +86,10 @@ export class ForgotPasswordFormComponent implements OnInit {
   private formSchema: any;
   private config: any;
 
-  form = injectForm<ForgotPasswordFormSchema>({
+  form = injectForm({
     defaultValues: {
       email: '',
     },
-    // Removed onSubmit callback
   });
 
   async ngOnInit() {

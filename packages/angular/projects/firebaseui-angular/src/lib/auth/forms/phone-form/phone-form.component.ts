@@ -114,7 +114,7 @@ export class PhoneNumberFormComponent implements OnInit, OnDestroy {
   private formSchema: any;
   private config: any;
 
-  form = injectForm<z.infer<z.ZodObject<{ phoneNumber: z.ZodString }>>>({
+  form = injectForm({
     defaultValues: {
       phoneNumber: '',
     },
@@ -314,7 +314,7 @@ export class VerificationFormComponent implements OnInit, OnDestroy {
   private formSchema: any;
   private config: any;
 
-  form = injectForm<z.infer<z.ZodObject<{ verificationCode: z.ZodString }>>>({
+  form = injectForm({
     defaultValues: {
       verificationCode: '',
     },

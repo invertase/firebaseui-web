@@ -116,7 +116,7 @@ export class EmailPasswordFormComponent implements OnInit {
   private formSchema: any;
   private config: any;
 
-  form = injectForm<EmailFormSchema>({
+  form = injectForm({
     defaultValues: {
       email: '',
       password: '',
