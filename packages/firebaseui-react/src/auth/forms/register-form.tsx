@@ -23,6 +23,7 @@ export function RegisterForm({
   const { language, enableAutoUpgradeAnonymous } = useConfig();
   const translations = useTranslations();
   const [formError, setFormError] = useState<string | null>(null);
+  const [firstValidationOccured, setFirstValidationOccured] = useState(false);
   const emailFormSchema = useMemo(
     () => createEmailFormSchema(translations),
     [translations]
@@ -96,8 +97,17 @@ export function RegisterForm({
                   name={field.name}
                   type="email"
                   value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={() => {
+                    setFirstValidationOccured(true);
+                    field.handleBlur();
+                  }}
+                  onInput={(e) => {
+                    field.handleChange((e.target as HTMLInputElement).value);
+                    if (firstValidationOccured) {
+                      field.handleBlur();
+                      form.update();
+                    }
+                  }}
                 />
                 <FieldInfo field={field} />
               </label>
@@ -124,8 +134,17 @@ export function RegisterForm({
                   name={field.name}
                   type="password"
                   value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={() => {
+                    setFirstValidationOccured(true);
+                    field.handleBlur();
+                  }}
+                  onInput={(e) => {
+                    field.handleChange((e.target as HTMLInputElement).value);
+                    if (firstValidationOccured) {
+                      field.handleBlur();
+                      form.update();
+                    }
+                  }}
                 />
                 <FieldInfo field={field} />
               </label>

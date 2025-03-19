@@ -1,4 +1,4 @@
-name: Unit Tests
+name: Core Unit Tests
 
 on:
   push:
@@ -31,4 +31,4 @@ jobs:
         run: pnpm install
 
       - name: Run unit tests
-        run: pnpm --filter @firebase-ui/core test
+        run: pnpm --filter @firebase-ui/core test:unit
