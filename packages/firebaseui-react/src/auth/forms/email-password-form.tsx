@@ -31,6 +31,7 @@ export function EmailPasswordForm({
     enableHandleExistingCredential,
   } = useConfig();
   const [formError, setFormError] = useState<string | null>(null);
+  const [firstValidationOccured, setFirstValidationOccured] = useState(false);
 
   // TODO: Do we need to memoize this?
   const emailFormSchema = useMemo(
@@ -102,8 +103,17 @@ export function EmailPasswordForm({
                   name={field.name}
                   type="email"
                   value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={() => {
+                    setFirstValidationOccured(true);
+                    field.handleBlur();
+                  }}
+                  onInput={(e) => {
+                    field.handleChange((e.target as HTMLInputElement).value);
+                    if (firstValidationOccured) {
+                      field.handleBlur();
+                      form.update();
+                    }
+                  }}
                 />
                 <FieldInfo field={field} />
               </label>
@@ -149,8 +159,17 @@ export function EmailPasswordForm({
                   name={field.name}
                   type="password"
                   value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={() => {
+                    setFirstValidationOccured(true);
+                    field.handleBlur();
+                  }}
+                  onInput={(e) => {
+                    field.handleChange((e.target as HTMLInputElement).value);
+                    if (firstValidationOccured) {
+                      field.handleBlur();
+                      form.update();
+                    }
+                  }}
                 />
                 <FieldInfo field={field} />
               </label>
