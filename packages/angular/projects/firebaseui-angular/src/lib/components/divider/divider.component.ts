@@ -1,4 +1,4 @@
-import { Component, Input, ElementRef } from '@angular/core';
+import { Component, Input, ElementRef, AfterContentInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -15,11 +15,28 @@ import { CommonModule } from '@angular/common';
     </div>
   `,
 })
-export class DividerComponent {
-  get hasContent(): boolean {
-    const element = this.elementRef.nativeElement;
-    return element.childNodes.length > 0;
+export class DividerComponent implements AfterContentInit {
+  hasContent = false;
+
+  @Input() text: string = '';
+
+  get textContent(): string {
+    return this.text;
   }
 
   constructor(private elementRef: ElementRef) {}
+
+  ngAfterContentInit() {
+    // Check if text input is provided
+    if (this.text) {
+      this.hasContent = true;
+      return;
+    }
+
+    // Otherwise check for projected content
+    const directContent = this.elementRef.nativeElement.textContent?.trim();
+    if (directContent) {
+      this.hasContent = true;
+    }
+  }
 }

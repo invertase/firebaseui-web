@@ -10,12 +10,12 @@ import { By } from '@angular/platform-browser';
 import { Router, provideRouter } from '@angular/router';
 import { TanStackField } from '@tanstack/angular-form';
 import { getFirebaseUITestProviders } from '../../../testing/test-helpers';
-import { RegisterFormComponent } from './register-form.component';
+import { EmailPasswordFormComponent } from './email-password-form.component';
 
 // Define window properties for testing
 declare global {
   interface Window {
-    fuiCreateUserWithEmailAndPassword: any;
+    fuiSignInWithEmailAndPassword: any;
     createEmailFormSchema: any;
   }
 }
@@ -23,7 +23,7 @@ declare global {
 // Mock Button component
 @Component({
   selector: 'fui-button',
-  template: `<button data-testid="submit-button">
+  template: `<button (click)="click.emit()" data-testid="submit-button">
     <ng-content></ng-content>
   </button>`,
   standalone: true,
@@ -40,11 +40,18 @@ class MockButtonComponent {
 })
 class MockTermsAndPrivacyComponent {}
 
-describe('RegisterFormComponent', () => {
-  let component: RegisterFormComponent;
-  let fixture: ComponentFixture<RegisterFormComponent>;
+describe('EmailPasswordFormComponent', () => {
+  let component: EmailPasswordFormComponent;
+  let fixture: ComponentFixture<EmailPasswordFormComponent>;
   let mockRouter: any;
-  let signUpSpy: jasmine.Spy;
+  let signInSpy: jasmine.Spy;
+
+  // Expected error messages from the actual implementation
+  const errorMessages = {
+    invalidEmail: 'Please enter a valid email address',
+    passwordTooShort: 'Password should be at least 8 characters',
+    unknownError: 'An unknown error occurred',
+  };
 
   // Mock schema returned by createEmailFormSchema
   const mockSchema = {
@@ -55,7 +62,7 @@ describe('RegisterFormComponent', () => {
           success: false,
           error: {
             format: () => ({
-              email: { _errors: ['Please enter a valid email address'] },
+              email: { _errors: [errorMessages.invalidEmail] },
             }),
           },
         };
@@ -66,9 +73,7 @@ describe('RegisterFormComponent', () => {
           success: false,
           error: {
             format: () => ({
-              password: {
-                _errors: ['Password should be at least 8 characters'],
-              },
+              password: { _errors: [errorMessages.passwordTooShort] },
             }),
           },
         };
@@ -84,13 +89,13 @@ describe('RegisterFormComponent', () => {
     };
 
     // Create spies for the global functions
-    signUpSpy = jasmine
-      .createSpy('fuiCreateUserWithEmailAndPassword')
+    signInSpy = jasmine
+      .createSpy('fuiSignInWithEmailAndPassword')
       .and.returnValue(Promise.resolve());
 
     // Define the function on the window object
-    Object.defineProperty(window, 'fuiCreateUserWithEmailAndPassword', {
-      value: signUpSpy,
+    Object.defineProperty(window, 'fuiSignInWithEmailAndPassword', {
+      value: signInSpy,
       writable: true,
       configurable: true,
     });
@@ -104,7 +109,7 @@ describe('RegisterFormComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         CommonModule,
-        RegisterFormComponent,
+        EmailPasswordFormComponent,
         TanStackField,
         MockButtonComponent,
         MockTermsAndPrivacyComponent,
@@ -116,19 +121,15 @@ describe('RegisterFormComponent', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(RegisterFormComponent);
+    fixture = TestBed.createComponent(EmailPasswordFormComponent);
     component = fixture.componentInstance;
 
     // Set required inputs
-    component.signInRoute = '/auth/sign-in';
+    component.forgotPasswordRoute = '/forgot-password';
+    component.registerRoute = '/register';
 
-    // Replace the registerUser method with a spy
-    spyOn(component, 'registerUser').and.callFake(async (_email, _password) => {
-      return Promise.resolve();
-    });
-
-    // Mock the form schema
-    component['formSchema'] = mockSchema;
+    // Mock the validateAndSignIn method without any TypeScript errors
+    component.validateAndSignIn = jasmine.createSpy('validateAndSignIn');
 
     fixture.detectChanges();
     await fixture.whenStable(); // Wait for async ngOnInit
@@ -171,35 +172,64 @@ describe('RegisterFormComponent', () => {
     component.handleSubmit(event as SubmitEvent);
     tick();
 
-    // Check if registerUser was called with correct values
-    expect(component.registerUser).toHaveBeenCalledWith(
+    // Check if validateAndSignIn was called with correct values
+    expect(component.validateAndSignIn).toHaveBeenCalledWith(
       'test@example.com',
       'password123'
     );
   }));
 
-  it('displays error message when registration fails', fakeAsync(() => {
+  it('displays error message when sign in fails', fakeAsync(() => {
     // Manually set the error
-    component.formError = 'Email already in use';
+    component.formError = 'Invalid credentials';
     fixture.detectChanges();
 
     // Check that the error message is displayed in the DOM
     const formErrorEl = fixture.debugElement.query(By.css('.fui-form__error'));
     expect(formErrorEl).toBeTruthy();
     expect(formErrorEl.nativeElement.textContent.trim()).toBe(
-      'Email already in use'
+      'Invalid credentials'
     );
   }));
 
-  it('navigates to sign in route when the link is clicked', () => {
-    // Find the sign in link
-    const signInLink = fixture.debugElement.query(By.css('.fui-form__action'));
-    expect(signInLink).toBeTruthy();
+  it('shows an error message for invalid input', () => {
+    // Manually set error message for testing
+    component.formError = errorMessages.invalidEmail;
+    fixture.detectChanges();
 
-    // Click the link
-    signInLink.nativeElement.click();
+    // Check for error display in the DOM
+    const formErrorEl = fixture.debugElement.query(By.css('.fui-form__error'));
+    expect(formErrorEl).toBeTruthy();
+    expect(formErrorEl.nativeElement.textContent.trim()).toBe(
+      errorMessages.invalidEmail
+    );
+  });
+
+  it('navigates to register route when that button is clicked', () => {
+    // Find the register button (second action button)
+    const registerButton = fixture.debugElement.queryAll(
+      By.css('.fui-form__action')
+    )[1];
+    expect(registerButton).toBeTruthy();
+
+    // Click the button
+    registerButton.nativeElement.click();
 
     // Check navigation was triggered
-    expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/auth/sign-in');
+    expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/register');
+  });
+
+  it('navigates to forgot password route when that button is clicked', () => {
+    // Find the forgot password button (first action button)
+    const forgotPasswordButton = fixture.debugElement.queryAll(
+      By.css('.fui-form__action')
+    )[0];
+    expect(forgotPasswordButton).toBeTruthy();
+
+    // Click the button
+    forgotPasswordButton.nativeElement.click();
+
+    // Check navigation was triggered
+    expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/forgot-password');
   });
 });

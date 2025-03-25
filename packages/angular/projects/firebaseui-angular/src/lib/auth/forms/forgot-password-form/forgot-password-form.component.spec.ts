@@ -10,13 +10,13 @@ import { By } from '@angular/platform-browser';
 import { Router, provideRouter } from '@angular/router';
 import { TanStackField } from '@tanstack/angular-form';
 import { getFirebaseUITestProviders } from '../../../testing/test-helpers';
-import { RegisterFormComponent } from './register-form.component';
+import { ForgotPasswordFormComponent } from './forgot-password-form.component';
 
 // Define window properties for testing
 declare global {
   interface Window {
-    fuiCreateUserWithEmailAndPassword: any;
-    createEmailFormSchema: any;
+    fuiSendPasswordResetEmail: any;
+    createForgotPasswordFormSchema: any;
   }
 }
 
@@ -40,13 +40,19 @@ class MockButtonComponent {
 })
 class MockTermsAndPrivacyComponent {}
 
-describe('RegisterFormComponent', () => {
-  let component: RegisterFormComponent;
-  let fixture: ComponentFixture<RegisterFormComponent>;
+describe('ForgotPasswordFormComponent', () => {
+  let component: ForgotPasswordFormComponent;
+  let fixture: ComponentFixture<ForgotPasswordFormComponent>;
   let mockRouter: any;
-  let signUpSpy: jasmine.Spy;
+  let sendResetEmailSpy: jasmine.Spy;
 
-  // Mock schema returned by createEmailFormSchema
+  // Expected error messages from the actual implementation
+  const errorMessages = {
+    invalidEmail: 'Please enter a valid email address',
+    unknownError: 'An unknown error occurred',
+  };
+
+  // Mock schema returned by createForgotPasswordFormSchema
   const mockSchema = {
     safeParse: (data: any) => {
       // Test email validation
@@ -55,20 +61,7 @@ describe('RegisterFormComponent', () => {
           success: false,
           error: {
             format: () => ({
-              email: { _errors: ['Please enter a valid email address'] },
-            }),
-          },
-        };
-      }
-      // Test password validation
-      if (data.password.length < 8) {
-        return {
-          success: false,
-          error: {
-            format: () => ({
-              password: {
-                _errors: ['Password should be at least 8 characters'],
-              },
+              email: { _errors: [errorMessages.invalidEmail] },
             }),
           },
         };
@@ -84,18 +77,18 @@ describe('RegisterFormComponent', () => {
     };
 
     // Create spies for the global functions
-    signUpSpy = jasmine
-      .createSpy('fuiCreateUserWithEmailAndPassword')
+    sendResetEmailSpy = jasmine
+      .createSpy('fuiSendPasswordResetEmail')
       .and.returnValue(Promise.resolve());
 
     // Define the function on the window object
-    Object.defineProperty(window, 'fuiCreateUserWithEmailAndPassword', {
-      value: signUpSpy,
+    Object.defineProperty(window, 'fuiSendPasswordResetEmail', {
+      value: sendResetEmailSpy,
       writable: true,
       configurable: true,
     });
 
-    Object.defineProperty(window, 'createEmailFormSchema', {
+    Object.defineProperty(window, 'createForgotPasswordFormSchema', {
       value: () => mockSchema,
       writable: true,
       configurable: true,
@@ -104,7 +97,7 @@ describe('RegisterFormComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         CommonModule,
-        RegisterFormComponent,
+        ForgotPasswordFormComponent,
         TanStackField,
         MockButtonComponent,
         MockTermsAndPrivacyComponent,
@@ -116,14 +109,14 @@ describe('RegisterFormComponent', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(RegisterFormComponent);
+    fixture = TestBed.createComponent(ForgotPasswordFormComponent);
     component = fixture.componentInstance;
 
     // Set required inputs
-    component.signInRoute = '/auth/sign-in';
+    component.signInRoute = '/signin';
 
-    // Replace the registerUser method with a spy
-    spyOn(component, 'registerUser').and.callFake(async (_email, _password) => {
+    // Replace the resetPassword method with a spy
+    spyOn(component, 'resetPassword').and.callFake(async (_email) => {
       return Promise.resolve();
     });
 
@@ -141,16 +134,12 @@ describe('RegisterFormComponent', () => {
     const emailInput = fixture.debugElement.query(
       By.css('input[type="email"]')
     );
-    const passwordInput = fixture.debugElement.query(
-      By.css('input[type="password"]')
-    );
     const termsAndPrivacy = fixture.debugElement.query(
       By.css('fui-terms-and-privacy')
     );
     const submitButton = fixture.debugElement.query(By.css('fui-button'));
 
     expect(emailInput).toBeTruthy();
-    expect(passwordInput).toBeTruthy();
     expect(termsAndPrivacy).toBeTruthy();
     expect(submitButton).toBeTruthy();
   });
@@ -158,7 +147,6 @@ describe('RegisterFormComponent', () => {
   it('submits the form when handleSubmit is called', fakeAsync(() => {
     // Set values directly on the form state
     component.form.state.values.email = 'test@example.com';
-    component.form.state.values.password = 'password123';
 
     // Create a submit event
     const event = new Event('submit');
@@ -171,28 +159,38 @@ describe('RegisterFormComponent', () => {
     component.handleSubmit(event as SubmitEvent);
     tick();
 
-    // Check if registerUser was called with correct values
-    expect(component.registerUser).toHaveBeenCalledWith(
-      'test@example.com',
-      'password123'
-    );
+    // Check if resetPassword was called with correct values
+    expect(component.resetPassword).toHaveBeenCalledWith('test@example.com');
   }));
 
-  it('displays error message when registration fails', fakeAsync(() => {
+  it('displays error message when reset fails', fakeAsync(() => {
     // Manually set the error
-    component.formError = 'Email already in use';
+    component.formError = 'Invalid email';
     fixture.detectChanges();
 
     // Check that the error message is displayed in the DOM
     const formErrorEl = fixture.debugElement.query(By.css('.fui-form__error'));
     expect(formErrorEl).toBeTruthy();
-    expect(formErrorEl.nativeElement.textContent.trim()).toBe(
-      'Email already in use'
-    );
+    expect(formErrorEl.nativeElement.textContent.trim()).toBe('Invalid email');
   }));
 
-  it('navigates to sign in route when the link is clicked', () => {
-    // Find the sign in link
+  it('shows success message when email is sent', () => {
+    // Set emailSent to true
+    component.emailSent = true;
+    fixture.detectChanges();
+
+    // Check for success message
+    const successMessage = fixture.debugElement.query(
+      By.css('.fui-form__success')
+    );
+    expect(successMessage).toBeTruthy();
+    expect(successMessage.nativeElement.textContent.trim()).toContain(
+      'Check your email'
+    );
+  });
+
+  it('navigates to sign in route when back button is clicked', () => {
+    // Find the sign in button
     const signInLink = fixture.debugElement.query(By.css('.fui-form__action'));
     expect(signInLink).toBeTruthy();
 
@@ -200,6 +198,6 @@ describe('RegisterFormComponent', () => {
     signInLink.nativeElement.click();
 
     // Check navigation was triggered
-    expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/auth/sign-in');
+    expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/signin');
   });
 });
