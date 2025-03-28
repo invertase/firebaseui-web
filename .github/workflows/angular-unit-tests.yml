@@ -32,6 +32,9 @@ jobs:
       - name: Build core package
         run: pnpm --filter @firebase-ui/core build
 
+      - name: Compile Angular in development mode first
+        run: pnpm --filter angular-example exec ng build firebaseui-angular --configuration=development
+
       - name: Run unit tests
         run: |
           pnpm --filter angular-example test:unit || test_exit_code=$?

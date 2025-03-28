@@ -38,6 +38,9 @@ jobs:
       - name: Build core package
         run: pnpm --filter @firebase-ui/core build
 
+      - name: Compile Angular in development mode first
+        run: pnpm --filter angular-example exec ng build firebaseui-angular --configuration=development
+
       - name: Install Firebase Tools
         run: npm install -g firebase-tools
 
