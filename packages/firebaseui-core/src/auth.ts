@@ -1,14 +1,12 @@
 import {
   getAuth,
   signInWithCredential,
-  createUserWithEmailAndPassword,
-  signInWithPhoneNumber,
-  sendPasswordResetEmail,
-  sendSignInLinkToEmail,
-  isSignInWithEmailLink,
-  signInAnonymously,
+  createUserWithEmailAndPassword as _createUserWithEmailAndPassword,
+  signInWithPhoneNumber as _signInWithPhoneNumber,
+  sendPasswordResetEmail as _sendPasswordResetEmail,
+  sendSignInLinkToEmail as _sendSignInLinkToEmail,
+  signInAnonymously as _signInAnonymously,
   linkWithCredential,
-  linkWithRedirect,
   EmailAuthProvider,
   PhoneAuthProvider,
   signInWithRedirect,
@@ -17,9 +15,12 @@ import {
   ConfirmationResult,
   RecaptchaVerifier,
   AuthProvider,
+  isSignInWithEmailLink as _isSignInWithEmailLink,
+  ActionCodeSettings,
 } from 'firebase/auth';
 import { handleFirebaseError } from './errors';
-import { type TranslationsConfig } from './translations';
+import { getBehavior, hasBehavior } from './behaviors';
+import { FirebaseUI } from './config';
 
 async function handlePendingCredential(user: UserCredential): Promise<UserCredential> {
   const pendingCredString = window.sessionStorage.getItem('pendingCred');
@@ -36,147 +37,127 @@ async function handlePendingCredential(user: UserCredential): Promise<UserCreden
   }
 }
 
-export async function fuiSignInWithEmailAndPassword(
-  auth: Auth,
+export async function signInWithEmailAndPassword(
+  ui: FirebaseUI,
   email: string,
-  password: string,
-  opts?: {
-    language?: string;
-    translations?: TranslationsConfig;
-    enableAutoUpgradeAnonymous?: boolean;
-    enableHandleExistingCredential?: boolean;
-  }
+  password: string
 ): Promise<UserCredential> {
   try {
-    const currentUser = auth.currentUser;
+    const auth = getAuth(ui.get().app);
     const credential = EmailAuthProvider.credential(email, password);
 
-    if (currentUser?.isAnonymous && opts?.enableAutoUpgradeAnonymous) {
-      const result = await linkWithCredential(currentUser, credential);
-      return handlePendingCredential(result);
+    if (hasBehavior(ui, 'autoUpgradeAnonymousCredential')) {
+      const result = await getBehavior(ui, 'autoUpgradeAnonymousCredential')(auth, credential);
+
+      if (result) {
+        return handlePendingCredential(result);
+      }
     }
 
     const result = await signInWithCredential(auth, credential);
     return handlePendingCredential(result);
   } catch (error) {
-    return handleFirebaseError(error, opts);
+    handleFirebaseError(error, ui);
   }
 }
 
-export async function fuiCreateUserWithEmailAndPassword(
-  auth: Auth,
+export async function createUserWithEmailAndPassword(
+  ui: FirebaseUI,
   email: string,
-  password: string,
-  opts?: {
-    language?: string;
-    translations?: TranslationsConfig;
-    enableAutoUpgradeAnonymous?: boolean;
-    enableHandleExistingCredential?: boolean;
-  }
+  password: string
 ): Promise<UserCredential> {
   try {
-    const currentUser = auth.currentUser;
+    const auth = getAuth(ui.get().app);
     const credential = EmailAuthProvider.credential(email, password);
 
-    if (currentUser?.isAnonymous && opts?.enableAutoUpgradeAnonymous) {
-      const result = await linkWithCredential(currentUser, credential);
-      return handlePendingCredential(result);
+    if (hasBehavior(ui, 'autoUpgradeAnonymousCredential')) {
+      const result = await getBehavior(ui, 'autoUpgradeAnonymousCredential')(auth, credential);
+
+      if (result) {
+        return handlePendingCredential(result);
+      }
     }
 
-    const result = await createUserWithEmailAndPassword(auth, email, password);
+    const result = await _createUserWithEmailAndPassword(auth, email, password);
     return handlePendingCredential(result);
   } catch (error) {
-    return handleFirebaseError(error, opts);
+    handleFirebaseError(error, ui);
   }
 }
 
-export async function fuiSignInWithPhoneNumber(
-  auth: Auth,
+export async function signInWithPhoneNumber(
+  ui: FirebaseUI,
   phoneNumber: string,
-  recaptchaVerifier: RecaptchaVerifier,
-  opts?: {
-    language?: string;
-    translations?: TranslationsConfig;
-  }
+  recaptchaVerifier: RecaptchaVerifier
 ): Promise<ConfirmationResult> {
   try {
-    return await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+    const auth = getAuth(ui.get().app);
+    return await _signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
   } catch (error) {
-    return (await handleFirebaseError(error, opts)) as never;
+    handleFirebaseError(error, ui);
   }
 }
 
-export async function fuiConfirmPhoneNumber(
+export async function confirmPhoneNumber(
+  ui: FirebaseUI,
   confirmationResult: ConfirmationResult,
-  verificationCode: string,
-  opts?: {
-    language?: string;
-    translations?: TranslationsConfig;
-    enableAutoUpgradeAnonymous?: boolean;
-    enableHandleExistingCredential?: boolean;
-  }
+  verificationCode: string
 ): Promise<UserCredential> {
   try {
-    const auth = getAuth();
+    const auth = getAuth(ui.get().app);
     const currentUser = auth.currentUser;
     const credential = PhoneAuthProvider.credential(confirmationResult.verificationId, verificationCode);
 
-    if (currentUser?.isAnonymous && opts?.enableAutoUpgradeAnonymous) {
-      const result = await linkWithCredential(currentUser, credential);
-      return handlePendingCredential(result);
+    if (currentUser?.isAnonymous && hasBehavior(ui, 'autoUpgradeAnonymousCredential')) {
+      const result = await getBehavior(ui, 'autoUpgradeAnonymousCredential')(auth, credential);
+
+      if (result) {
+        return handlePendingCredential(result);
+      }
     }
 
     const result = await signInWithCredential(auth, credential);
     return handlePendingCredential(result);
   } catch (error) {
-    return handleFirebaseError(error, opts);
+    handleFirebaseError(error, ui);
   }
 }
 
-export async function fuiSendPasswordResetEmail(
-  auth: Auth,
-  email: string,
-  opts?: {
-    language?: string;
-    translations?: TranslationsConfig;
-  }
-): Promise<void> {
+export async function sendPasswordResetEmail(ui: FirebaseUI, email: string): Promise<void> {
   try {
-    await sendPasswordResetEmail(auth, email);
+    const auth = getAuth(ui.get().app);
+    await _sendPasswordResetEmail(auth, email);
   } catch (error) {
-    return (await handleFirebaseError(error, opts)) as never;
+    handleFirebaseError(error, ui);
   }
 }
 
-export async function fuiSendSignInLinkToEmail(
-  auth: Auth,
+export async function sendSignInLinkToEmail(
+  ui: FirebaseUI,
   email: string,
-  opts?: {
-    language?: string;
-    translations?: TranslationsConfig;
-    enableAutoUpgradeAnonymous?: boolean;
-  }
 ): Promise<void> {
   try {
-    const currentUser = auth.currentUser;
+    const auth = getAuth(ui.get().app);
+
     const actionCodeSettings = {
       url: window.location.href,
+      // TODO(ehesp): Check this...
       handleCodeInApp: true,
-    };
-    if (currentUser?.isAnonymous && opts?.enableAutoUpgradeAnonymous) {
-      window.localStorage.setItem('emailLinkAnonymousUpgrade', 'true');
-    } else {
-      window.localStorage.removeItem('emailLinkAnonymousUpgrade');
-    }
-    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+    } satisfies ActionCodeSettings;
+
+    // TODO(ehesp): Is this needed here? Its only applicable when 
+    // actually signing them in, not sending the link.
+    // if (hasBehavior(ui, 'autoUpgradeAnonymousLink')) {
+    //   window.localStorage.setItem('emailLinkAnonymousUpgrade', 'true');
+    // } else {
+    //   window.localStorage.removeItem('emailLinkAnonymousUpgrade');
+    // }
+
+    await _sendSignInLinkToEmail(auth, email, actionCodeSettings);
     window.localStorage.setItem('emailForSignIn', email);
   } catch (error) {
     return (await handleFirebaseError(error, opts)) as never;
   }
-}
-
-export function fuiIsSignInWithEmailLink(auth: Auth, link: string): boolean {
-  return isSignInWithEmailLink(auth, link);
 }
 
 export async function fuiSignInWithEmailLink(
@@ -209,41 +190,29 @@ export async function fuiSignInWithEmailLink(
   }
 }
 
-export async function fuiSignInAnonymously(
-  auth: Auth,
-  opts?: {
-    language?: string;
-    translations?: TranslationsConfig;
-  }
-): Promise<UserCredential> {
+export async function signInAnonymously(ui: FirebaseUI): Promise<UserCredential> {
   try {
-    const result = await signInAnonymously(auth);
+    const auth = getAuth(ui.get().app);
+    const result = await _signInAnonymously(auth);
     return handlePendingCredential(result);
   } catch (error) {
-    return handleFirebaseError(error, opts);
+    handleFirebaseError(error, ui);
   }
 }
 
-export async function fuiSignInWithOAuth(
-  auth: Auth,
-  provider: AuthProvider,
-  opts?: {
-    language?: string;
-    translations?: TranslationsConfig;
-    enableAutoUpgradeAnonymous?: boolean;
-    enableHandleExistingCredential?: boolean;
-  }
-): Promise<void> {
+export async function signInWithOAuth(ui: FirebaseUI, provider: AuthProvider): Promise<void> {
   try {
-    const currentUser = auth.currentUser;
+    const auth = getAuth(ui.get().app);
 
-    if (currentUser?.isAnonymous && opts?.enableAutoUpgradeAnonymous) {
-      await linkWithRedirect(currentUser, provider);
-    } else {
-      await signInWithRedirect(auth, provider);
+    if (hasBehavior(ui, 'autoUpgradeAnonymousProvider')) {
+      await getBehavior(ui, 'autoUpgradeAnonymousProvider')(auth, provider);
+      // If we get to here, the user is not anonymous, otherwise they
+      // have been redirected to the provider's sign in page.
     }
+
+    await signInWithRedirect(auth, provider);
   } catch (error) {
-    return (await handleFirebaseError(error, opts)) as never;
+    handleFirebaseError(error, ui);
   }
 }
 
@@ -258,7 +227,7 @@ export async function fuiCompleteEmailLinkSignIn(
   }
 ): Promise<UserCredential | null> {
   try {
-    if (!fuiIsSignInWithEmailLink(auth, currentUrl)) {
+    if (!_isSignInWithEmailLink(auth, currentUrl)) {
       return null;
     }
 

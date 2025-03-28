@@ -1,6 +1,6 @@
 import { UserCredential } from 'firebase/auth';
 import { ERROR_CODE_MAP, getTranslation, type TranslationsConfig } from './translations';
-
+import { FirebaseUI } from './config';
 export class FirebaseUIError extends Error {
   code: string;
 
@@ -15,10 +15,11 @@ export class FirebaseUIError extends Error {
   }
 }
 
-export async function handleFirebaseError(
+export function handleFirebaseError(
   error: any,
-  opts?: { language?: string; translations?: TranslationsConfig; enableHandleExistingCredential?: boolean }
-): Promise<never | UserCredential> {
+  // opts?: { language?: string; translations?: TranslationsConfig; enableHandleExistingCredential?: boolean }
+  ui: FirebaseUI
+): never {
   if (error?.code === 'auth/account-exists-with-different-credential' && opts?.enableHandleExistingCredential) {
     if (error.credential) {
       window.sessionStorage.setItem('pendingCred', JSON.stringify(error.credential));

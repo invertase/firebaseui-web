@@ -275,6 +275,9 @@ importers:
 
   packages/firebaseui-core:
     dependencies:
+      '@firebase-ui/translations':
+        specifier: workspace:*
+        version: link:../firebaseui-translations
       nanostores:
         specifier: ^0.11.3
         version: 0.11.3
@@ -391,6 +394,8 @@ importers:
       tailwindcss:
         specifier: ^4.0.0
         version: 4.0.6
+
+  packages/firebaseui-translations: {}
 
 packages:
 
