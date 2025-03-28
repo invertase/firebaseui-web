@@ -9,6 +9,7 @@
     "@firebase-ui/styles",
     "@tanstack/angular-form",
     "nanostores",
-    "tslib"
+    "tslib",
+    "zod"
   ]
 }
