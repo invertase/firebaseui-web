@@ -7,8 +7,8 @@
     "@firebase-ui/core": "workspace:*"
   },
   "dependencies": {
-    "@nanostores/angular": "^0.0.4",
     "@tanstack/angular-form": "^1.1.0",
+    "nanostores": "^0.11.3",
     "tslib": "^2.3.0",
     "zod": "^3.24.1"
   },

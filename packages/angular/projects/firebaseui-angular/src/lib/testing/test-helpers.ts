@@ -3,7 +3,6 @@ import { FirebaseUi } from '../provider';
 import { Auth } from '@angular/fire/auth';
 import { InjectionToken } from '@angular/core';
 import { of } from 'rxjs';
-import { NANOSTORES } from '@nanostores/angular';
 
 // Mock for the Auth service
 export const mockAuth = {
@@ -69,7 +68,6 @@ export function getFirebaseUITestProviders(): Provider[] {
   return [
     { provide: Auth, useValue: mockAuth },
     { provide: FirebaseUi, useValue: mockFirebaseUi },
-    { provide: NANOSTORES, useValue: mockNanoStores },
     {
       provide: FIREBASE_UI_STORE,
       useValue: {

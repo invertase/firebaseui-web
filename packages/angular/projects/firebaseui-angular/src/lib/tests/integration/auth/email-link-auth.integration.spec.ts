@@ -10,7 +10,6 @@ import {
 import { Auth } from '@angular/fire/auth';
 import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
-import { NANOSTORES } from '@nanostores/angular';
 import { TanStackField } from '@tanstack/angular-form';
 import { initializeApp } from 'firebase/app';
 import { connectAuthEmulator, deleteUser, getAuth } from 'firebase/auth';
@@ -121,7 +120,6 @@ describe('Email Link Authentication Integration', () => {
         provideRouter([]),
         { provide: FirebaseUi, useValue: mockFirebaseUi },
         { provide: Auth, useValue: auth },
-        { provide: NANOSTORES, useValue: mockNanoStores },
         {
           provide: FIREBASE_UI_STORE,
           useValue: {

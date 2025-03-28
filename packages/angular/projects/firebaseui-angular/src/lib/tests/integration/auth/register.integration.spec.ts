@@ -4,7 +4,6 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Auth } from '@angular/fire/auth';
 import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
-import { NANOSTORES } from '@nanostores/angular';
 import { TanStackField } from '@tanstack/angular-form';
 import { initializeApp } from 'firebase/app';
 import {
@@ -119,7 +118,6 @@ describe('Register Integration', () => {
         provideRouter([]),
         { provide: FirebaseUi, useValue: mockFirebaseUi },
         { provide: Auth, useValue: auth },
-        { provide: NANOSTORES, useValue: mockNanoStores },
         {
           provide: FIREBASE_UI_STORE,
           useValue: {
