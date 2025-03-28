@@ -227,6 +227,9 @@ importers:
       '@types/node':
         specifier: ^18.18.0
         version: 18.19.76
+      firebase:
+        specifier: ^11
+        version: 11.3.1
       jasmine-core:
         specifier: ~5.5.0
         version: 5.5.0
