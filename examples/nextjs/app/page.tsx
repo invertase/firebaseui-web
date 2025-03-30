@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Link from "next/link";
 import { useUser } from "@/lib/firebase/hooks";
+import Link from "next/link";
 
 export default function Home() {
   const user = useUser();

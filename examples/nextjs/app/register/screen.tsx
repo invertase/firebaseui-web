@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useUser } from "@/lib/firebase/hooks";
 import { GoogleSignInButton, SignUpAuthScreen } from "@firebase-ui/react";

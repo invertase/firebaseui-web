@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useUser } from "@/lib/firebase/hooks";
 import { PhoneAuthScreen } from "@firebase-ui/react";
@@ -17,7 +17,5 @@ export default function Screen() {
     }
   }, [user, router]);
 
-  return (
-    <PhoneAuthScreen />
-  );
+  return <PhoneAuthScreen />;
 }

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import { useUser } from "@/lib/firebase/hooks";
-import { SignInAuthScreen, GoogleSignInButton } from "@firebase-ui/react";
+import { GoogleSignInButton, SignInAuthScreen } from "@firebase-ui/react";
 import Link from "next/link";
 
 import { useRouter } from "next/navigation";
@@ -19,8 +19,8 @@ export default function Screen() {
   }, [user, router]);
 
   return (
-    <SignInAuthScreen 
-      onForgotPasswordClick={() => router.push("/forgot-password")} 
+    <SignInAuthScreen
+      onForgotPasswordClick={() => router.push("/forgot-password")}
       onRegisterClick={() => router.push("/register")}
     >
       <GoogleSignInButton />
