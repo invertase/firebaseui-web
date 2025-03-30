@@ -1,4 +1,5 @@
 import { Locale } from ".";
+import { enUS } from "./locales/en-us";
 import type {
   Translations,
   TranslationCategory,
@@ -33,32 +34,30 @@ export const ERROR_CODE_MAP = {
     "accountExistsWithDifferentCredential",
 } satisfies Record<string, ErrorKey>;
 
-// export function getTranslation<T extends TranslationCategory>(
-//   category: T,
-//   key: TranslationKey<T>,
-//   translations: Translations,
-//   locale: Locale
-// ): string {
-//   const userPreferredTranslationSet = translations?.[language]?.[
-//     category
-//   ] as TranslationSet<T>;
+export function getTranslation<T extends TranslationCategory>(
+  category: T,
+  key: TranslationKey<T>,
+  translations: Translations,
+  locale: Locale
+): string {
+  const userPreferredTranslationSet = translations?.[locale]?.[category] as
+    | TranslationSet<T>
+    | undefined;
 
-//   // Try user's preferred language first
-//   if (userPreferredTranslationSet && key in userPreferredTranslationSet) {
-//     return userPreferredTranslationSet[key];
-//   }
+  // Try user's preferred language first
+  if (userPreferredTranslationSet && key in userPreferredTranslationSet) {
+    return userPreferredTranslationSet[key];
+  }
 
-//   // Fall back to English translations if provided
-//   const fallbackTranslationSet = translations?.["en"]?.[
-//     category
-//   ] as TranslationSet<T>;
-//   if (fallbackTranslationSet && key in fallbackTranslationSet) {
-//     return fallbackTranslationSet[key];
-//   }
+  // Fall back to English translations if provided
+  const fallbackTranslationSet = translations?.["en"]?.[category] as
+    | TranslationSet<T>
+    | undefined;
+  if (fallbackTranslationSet && key in fallbackTranslationSet) {
+    return fallbackTranslationSet[key];
+  }
 
-//   // Default to built-in English translations
-//   const defaultTranslationSet = defaultTranslations.en[
-//     category
-//   ] as TranslationSet<T>;
-//   return defaultTranslationSet[key];
-// }
+  // Default to built-in English translations
+  const defaultTranslationSet = enUS[category] as TranslationSet<T>;
+  return defaultTranslationSet[key];
+}
