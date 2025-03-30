@@ -1,11 +1,11 @@
-import { Locale } from ".";
+import { english, Locale } from ".";
 import { enUS } from "./locales/en-us";
 import type {
-  Translations,
+  ErrorKey,
   TranslationCategory,
   TranslationKey,
+  TranslationsConfig,
   TranslationSet,
-  ErrorKey,
 } from "./types";
 
 export const ERROR_CODE_MAP = {
@@ -34,15 +34,17 @@ export const ERROR_CODE_MAP = {
     "accountExistsWithDifferentCredential",
 } satisfies Record<string, ErrorKey>;
 
+export type ErrorCode = keyof typeof ERROR_CODE_MAP;
+
 export function getTranslation<T extends TranslationCategory>(
   category: T,
   key: TranslationKey<T>,
-  translations: Translations,
-  locale: Locale
+  translations: TranslationsConfig | undefined,
+  locale: Locale | undefined = undefined
 ): string {
-  const userPreferredTranslationSet = translations?.[locale]?.[category] as
-    | TranslationSet<T>
-    | undefined;
+  const userPreferredTranslationSet = translations?.[
+    locale ?? english.locale
+  ]?.[category] as TranslationSet<T> | undefined;
 
   // Try user's preferred language first
   if (userPreferredTranslationSet && key in userPreferredTranslationSet) {

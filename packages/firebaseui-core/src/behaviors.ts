@@ -88,6 +88,10 @@ export function autoUpgradeAnonymousUsers(): Behavior<
       // We don't modify state here since the user is redirected.
       // If we support popups, we'd need to modify state here.
     },
+    // @ts-ignore
+    autoUpgradeAnonymousLink: async (auth) => {
+      throw new Error('Not implemented');
+    },
   };
 }
 

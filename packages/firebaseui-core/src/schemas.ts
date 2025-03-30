@@ -1,12 +1,12 @@
 import { z } from 'zod';
 import { RecaptchaVerifier } from 'firebase/auth';
-import { type Translations, getTranslation } from '@firebase-ui/translations';
+import { type TranslationsConfig, getTranslation } from '@firebase-ui/translations';
 
 export const LoginTypes = ['email', 'phone', 'anonymous', 'emailLink', 'google'] as const;
 export type LoginType = (typeof LoginTypes)[number];
 export type AuthMode = 'signIn' | 'signUp';
 
-export function createEmailFormSchema(translations?: Translations) {
+export function createEmailFormSchema(translations?: TranslationsConfig) {
   return z.object({
     email: z.string().email({ message: getTranslation('errors', 'invalidEmail', translations) }),
     password: z.string().min(8, { message: getTranslation('errors', 'weakPassword', translations) }),

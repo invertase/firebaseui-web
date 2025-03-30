@@ -2,7 +2,11 @@
   "name": "@firebaseui/root",
   "private": true,
   "scripts": {
-    "emulators": "firebase emulators:start --only auth"
+    "emulators": "firebase emulators:start --only auth",
+    "build": "pnpm run build:translations && pnpm run build:core && pnpm run build:react",
+    "build:core": "pnpm --filter=@firebase-ui/core run build",
+    "build:translations": "pnpm --filter=@firebase-ui/translations run build",
+    "build:react": "pnpm --filter=@firebase-ui/react run build"
   },
   "devDependencies": {
     "rimraf": "^6.0.1",
