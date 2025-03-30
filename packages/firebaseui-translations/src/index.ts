@@ -2,7 +2,7 @@ import { enUS } from "./locales/en-us";
 import { Translations } from "./types";
 
 export type * from "./types";
-export type * from "./mapping";
+export * from "./mapping";
 
 export type Locale = "en-US" | `${string}-${string}`;
 

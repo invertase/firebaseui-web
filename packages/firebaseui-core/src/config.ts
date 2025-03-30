@@ -6,12 +6,12 @@ import { Behavior, type BehaviorHandlers, type BehaviorKey, getBehavior, hasBeha
 
 type FirebaseUIConfigurationOptions = {
   app: FirebaseApp | undefined; // TODO: Should this be optional? Or remove for Angular types?
-  defaultLocale: Locale | undefined;
-  translations: RegisteredTranslations[];
-  behaviors: Behavior<keyof BehaviorHandlers>[];
-  tosUrl: string | undefined;
-  privacyPolicyUrl: string | undefined;
-  recaptchaMode: 'normal' | 'invisible' | undefined;
+  defaultLocale?: Locale | undefined;
+  translations?: RegisteredTranslations[] | undefined;
+  behaviors?: Behavior<keyof BehaviorHandlers>[] | undefined;
+  tosUrl?: string | undefined;
+  privacyPolicyUrl?: string | undefined;
+  recaptchaMode?: 'normal' | 'invisible' | undefined;
 };
 
 export type FirebaseUIConfiguration = {
@@ -19,7 +19,7 @@ export type FirebaseUIConfiguration = {
   getAuth: () => Auth;
   defaultLocale: Locale;
   translations: TranslationsConfig;
-  behaviors: Record<BehaviorKey, BehaviorHandlers[BehaviorKey]>;
+  behaviors: Partial<Record<BehaviorKey, BehaviorHandlers[BehaviorKey]>>;
   tosUrl: string | undefined;
   privacyPolicyUrl: string | undefined;
   recaptchaMode: 'normal' | 'invisible';
@@ -31,7 +31,7 @@ export type FirebaseUI = MapStore<FirebaseUIConfiguration>;
 
 export function initializeUI(config: FirebaseUIConfigurationOptions, name: string = '[DEFAULT]'): FirebaseUI {
   // Reduce the behaviors to a single object.
-  const behaviors = config.behaviors.reduce(
+  const behaviors = config.behaviors?.reduce(
     (acc, behavior) => {
       return {
         ...acc,
@@ -40,7 +40,10 @@ export function initializeUI(config: FirebaseUIConfigurationOptions, name: strin
     },
     {} as Record<BehaviorKey, BehaviorHandlers[BehaviorKey]>
   );
-  const translations: TranslationsConfig = config.translations.reduce((acc, translation) => {
+
+  config.translations ??= [];
+  config.translations.push(english);
+  const translations = config.translations?.reduce((acc, translation) => {
     return {
       ...acc,
       [translation.locale]: translation.translations,
@@ -54,7 +57,7 @@ export function initializeUI(config: FirebaseUIConfigurationOptions, name: strin
       getAuth: () => getAuth(config.app),
       defaultLocale: config.defaultLocale ?? english.locale,
       translations,
-      behaviors,
+      behaviors: behaviors ?? {},
       tosUrl: config.tosUrl,
       privacyPolicyUrl: config.privacyPolicyUrl,
       recaptchaMode: config.recaptchaMode ?? 'normal',
