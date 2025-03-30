@@ -41,7 +41,7 @@ vi.mock("~/auth/forms/register-form", () => ({
 
 describe("SignUpAuthScreen", () => {
   beforeEach(() => {
-    vi.mocked(Hooks.useConfig).mockReturnValue({
+    vi.mocked(Hooks.useUI).mockReturnValue({
       language: "en",
     } as any);
     vi.mocked(Hooks.useTranslations).mockReturnValue({} as any);
@@ -59,7 +59,7 @@ describe("SignUpAuthScreen", () => {
   it("retrieves the language from the config", () => {
     render(<SignUpAuthScreen />);
 
-    expect(Hooks.useConfig).toHaveBeenCalled();
+    expect(Hooks.useUI).toHaveBeenCalled();
     expect(getTranslation).toHaveBeenCalledWith(
       "labels",
       "register",

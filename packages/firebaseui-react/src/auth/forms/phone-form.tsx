@@ -1,24 +1,24 @@
 "use client";
 
-import { useForm } from "@tanstack/react-form";
-import { useEffect, useRef, useState, useMemo, useCallback } from "react";
-import { RecaptchaVerifier, ConfirmationResult } from "firebase/auth";
-import { useAuth, useConfig, useTranslations } from "~/hooks";
 import {
-  FirebaseUIError,
-  getTranslation,
-  createPhoneFormSchema,
-  fuiSignInWithPhoneNumber,
-  fuiConfirmPhoneNumber,
+  confirmPhoneNumber,
   CountryData,
   countryData,
+  createPhoneFormSchema,
+  FirebaseUIError,
   formatPhoneNumberWithCountry,
+  signInWithPhoneNumber,
 } from "@firebase-ui/core";
+import { getTranslation } from "@firebase-ui/translations";
+import { useForm } from "@tanstack/react-form";
+import { ConfirmationResult, RecaptchaVerifier } from "firebase/auth";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { z } from "zod";
+import { useAuth, useDefaultLocale, useTranslations, useUI } from "~/hooks";
 import { Button } from "../../components/button";
+import { CountrySelector } from "../../components/country-selector";
 import { FieldInfo } from "../../components/field-info";
 import { TermsAndPrivacy } from "../../components/terms-and-privacy";
-import { CountrySelector } from "../../components/country-selector";
-import { z } from "zod";
 
 interface PhoneNumberFormProps {
   onSubmit: (phoneNumber: string) => Promise<void>;
@@ -35,8 +35,10 @@ function PhoneNumberForm({
   recaptchaContainerRef,
   showTerms,
 }: PhoneNumberFormProps) {
-  const { language } = useConfig();
-  const translations = useTranslations();
+  const ui = useUI();
+  const translations = useTranslations(ui);
+  const defaultLocale = useDefaultLocale(ui);
+
   const [selectedCountry, setSelectedCountry] = useState<CountryData>(
     countryData[0]
   );
@@ -87,7 +89,7 @@ function PhoneNumberForm({
                     "labels",
                     "phoneNumber",
                     translations,
-                    language
+                    defaultLocale
                   )}
                 </span>
                 <div className="fui-phone-input">
@@ -134,7 +136,7 @@ function PhoneNumberForm({
 
       <fieldset>
         <Button type="submit" disabled={!recaptchaVerifier}>
-          {getTranslation("labels", "sendCode", translations, language)}
+          {getTranslation("labels", "sendCode", translations, defaultLocale)}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
       </fieldset>
@@ -203,8 +205,10 @@ function VerificationForm({
   timeLeft,
   recaptchaContainerRef,
 }: VerificationFormProps) {
-  const { language } = useConfig();
-  const translations = useTranslations();
+  const ui = useUI();
+  const translations = useTranslations(ui);
+  const defaultLocale = useDefaultLocale(ui);
+
   const [firstValidationOccured, setFirstValidationOccured] = useState(false);
 
   const verificationFormSchema = useMemo(
@@ -248,7 +252,7 @@ function VerificationForm({
                     "labels",
                     "verificationCode",
                     translations,
-                    language
+                    defaultLocale
                   )}
                 </span>
                 <input
@@ -287,7 +291,7 @@ function VerificationForm({
 
       <fieldset>
         <Button type="submit">
-          {getTranslation("labels", "verifyCode", translations, language)}
+          {getTranslation("labels", "verifyCode", translations, defaultLocale)}
         </Button>
         <Button
           type="button"
@@ -296,15 +300,20 @@ function VerificationForm({
           variant="secondary"
         >
           {isResending
-            ? getTranslation("labels", "sending", translations, language)
+            ? getTranslation("labels", "sending", translations, defaultLocale)
             : !canResend
             ? `${getTranslation(
                 "labels",
                 "resendCode",
                 translations,
-                language
+                defaultLocale
               )} (${timeLeft}s)`
-            : getTranslation("labels", "resendCode", translations, language)}
+            : getTranslation(
+                "labels",
+                "resendCode",
+                translations,
+                defaultLocale
+              )}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
       </fieldset>
@@ -317,14 +326,11 @@ export interface PhoneFormProps {
 }
 
 export function PhoneForm({ resendDelay = 30 }: PhoneFormProps) {
-  const auth = useAuth();
-  const {
-    language,
-    recaptchaMode,
-    enableAutoUpgradeAnonymous,
-    enableHandleExistingCredential,
-  } = useConfig();
-  const translations = useTranslations();
+  const ui = useUI();
+  const auth = useAuth(ui);
+  const translations = useTranslations(ui);
+  const defaultLocale = useDefaultLocale(ui);
+
   const [formError, setFormError] = useState<string | null>(null);
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
@@ -342,7 +348,7 @@ export function PhoneForm({ resendDelay = 30 }: PhoneFormProps) {
       auth,
       recaptchaContainerRef.current,
       {
-        size: recaptchaMode ?? "normal",
+        size: ui.recaptchaMode ?? "normal",
       }
     );
 
@@ -352,7 +358,7 @@ export function PhoneForm({ resendDelay = 30 }: PhoneFormProps) {
       verifier.clear();
       setRecaptchaVerifier(null);
     };
-  }, [auth, recaptchaMode]);
+  }, [auth, ui.recaptchaMode]);
 
   const handlePhoneSubmit = async (number: string) => {
     setFormError(null);
@@ -361,15 +367,7 @@ export function PhoneForm({ resendDelay = 30 }: PhoneFormProps) {
         throw new Error("ReCAPTCHA not initialized");
       }
 
-      const result = await fuiSignInWithPhoneNumber(
-        auth,
-        number,
-        recaptchaVerifier,
-        {
-          translations,
-          language,
-        }
-      );
+      const result = await signInWithPhoneNumber(ui, number, recaptchaVerifier);
       setPhoneNumber(number);
       setConfirmationResult(result);
       startTimer();
@@ -380,7 +378,7 @@ export function PhoneForm({ resendDelay = 30 }: PhoneFormProps) {
       }
       console.error(error);
       setFormError(
-        getTranslation("errors", "unknownError", translations, language)
+        getTranslation("errors", "unknownError", translations, defaultLocale)
       );
     }
   };
@@ -407,20 +405,12 @@ export function PhoneForm({ resendDelay = 30 }: PhoneFormProps) {
         auth,
         recaptchaContainerRef.current,
         {
-          size: recaptchaMode ?? "normal",
+          size: ui.recaptchaMode ?? "normal",
         }
       );
       setRecaptchaVerifier(verifier);
 
-      const result = await fuiSignInWithPhoneNumber(
-        auth,
-        phoneNumber,
-        verifier,
-        {
-          translations,
-          language,
-        }
-      );
+      const result = await signInWithPhoneNumber(ui, phoneNumber, verifier);
       setConfirmationResult(result);
       startTimer();
     } catch (error) {
@@ -429,7 +419,7 @@ export function PhoneForm({ resendDelay = 30 }: PhoneFormProps) {
       } else {
         console.error(error);
         setFormError(
-          getTranslation("errors", "unknownError", translations, language)
+          getTranslation("errors", "unknownError", translations, defaultLocale)
         );
       }
     } finally {
@@ -445,12 +435,7 @@ export function PhoneForm({ resendDelay = 30 }: PhoneFormProps) {
     setFormError(null);
 
     try {
-      await fuiConfirmPhoneNumber(confirmationResult, code, {
-        translations,
-        language,
-        enableAutoUpgradeAnonymous,
-        enableHandleExistingCredential,
-      });
+      await confirmPhoneNumber(ui, confirmationResult, code);
     } catch (error) {
       if (error instanceof FirebaseUIError) {
         setFormError(error.message);
@@ -458,7 +443,7 @@ export function PhoneForm({ resendDelay = 30 }: PhoneFormProps) {
       }
       console.error(error);
       setFormError(
-        getTranslation("errors", "unknownError", translations, language)
+        getTranslation("errors", "unknownError", translations, defaultLocale)
       );
     }
   };

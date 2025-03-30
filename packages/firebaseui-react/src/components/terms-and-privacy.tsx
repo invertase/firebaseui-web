@@ -1,31 +1,33 @@
-import { getTranslation } from "@firebase-ui/core";
-import { useConfig } from "../hooks";
+import { getTranslation } from "@firebase-ui/translations";
 import { Fragment } from "react";
+import { useDefaultLocale, useTranslations, useUI } from "~/hooks";
 
 export function TermsAndPrivacy() {
-  const config = useConfig();
+  const ui = useUI();
+  const translations = useTranslations(ui);
+  const defaultLocale = useDefaultLocale(ui);
 
-  if (!config.tosUrl && !config.privacyPolicyUrl) {
+  if (!ui.tosUrl && !ui.privacyPolicyUrl) {
     return null;
   }
 
   const termsText = getTranslation(
     "labels",
     "termsOfService",
-    config.translations,
-    config.language
+    translations,
+    defaultLocale
   );
   const privacyText = getTranslation(
     "labels",
     "privacyPolicy",
-    config.translations,
-    config.language
+    translations,
+    defaultLocale
   );
   const termsAndPrivacyText = getTranslation(
     "messages",
     "termsAndPrivacy",
-    config.translations,
-    config.language
+    translations,
+    defaultLocale
   );
 
   const parts = termsAndPrivacyText.split(/(\{tos\}|\{privacy\})/);
@@ -33,11 +35,11 @@ export function TermsAndPrivacy() {
   return (
     <div className="text-text-muted text-xs text-start">
       {parts.map((part: string, index: number) => {
-        if (part === "{tos}" && config.tosUrl) {
+        if (part === "{tos}" && ui.tosUrl) {
           return (
             <a
               key={index}
-              href={config.tosUrl}
+              href={ui.tosUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="text-text-muted hover:underline text-xs"
@@ -46,11 +48,11 @@ export function TermsAndPrivacy() {
             </a>
           );
         }
-        if (part === "{privacy}" && config.privacyPolicyUrl) {
+        if (part === "{privacy}" && ui.privacyPolicyUrl) {
           return (
             <a
               key={index}
-              href={config.privacyPolicyUrl}
+              href={ui.privacyPolicyUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="text-text-muted hover:underline text-xs"

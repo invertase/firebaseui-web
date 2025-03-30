@@ -6,7 +6,7 @@ import {
   Locale,
   TranslationsConfig,
 } from '@firebase-ui/translations';
-import { FirebaseUI } from './config';
+import { FirebaseUIConfiguration } from './config';
 export class FirebaseUIError extends Error {
   code: string;
 
@@ -22,13 +22,13 @@ export class FirebaseUIError extends Error {
 }
 
 export function handleFirebaseError(
-  ui: FirebaseUI,
+  ui: FirebaseUIConfiguration,
   error: any,
   opts?: {
     enableHandleExistingCredential?: boolean;
   }
 ): never {
-  const { translations, defaultLocale } = ui.get();
+  const { translations, defaultLocale } = ui;
   if (error?.code === 'auth/account-exists-with-different-credential' && opts?.enableHandleExistingCredential) {
     if (error.credential) {
       window.sessionStorage.setItem('pendingCred', JSON.stringify(error.credential));

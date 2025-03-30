@@ -1,12 +1,12 @@
+import { getTranslation } from "@firebase-ui/translations";
+import { Divider } from "~/components/divider";
+import { useDefaultLocale, useTranslations, useUI } from "~/hooks";
 import {
   Card,
   CardHeader,
-  CardTitle,
   CardSubtitle,
+  CardTitle,
 } from "../../components/card";
-import { useConfig, useTranslations } from "~/hooks";
-import { getTranslation } from "@firebase-ui/core";
-import { Divider } from "~/components/divider";
 import { EmailLinkForm } from "../forms/email-link-form";
 
 export interface EmailLinkAuthScreenProps {
@@ -14,15 +14,21 @@ export interface EmailLinkAuthScreenProps {
 }
 
 export function EmailLinkAuthScreen({ children }: EmailLinkAuthScreenProps) {
-  const { language } = useConfig();
-  const translations = useTranslations();
+  const ui = useUI();
+  const translations = useTranslations(ui);
+  const defaultLocale = useDefaultLocale(ui);
 
-  const titleText = getTranslation("labels", "signIn", translations, language);
+  const titleText = getTranslation(
+    "labels",
+    "signIn",
+    translations,
+    defaultLocale
+  );
   const subtitleText = getTranslation(
     "prompts",
     "signInToAccount",
     translations,
-    language
+    defaultLocale
   );
 
   return (
@@ -36,7 +42,12 @@ export function EmailLinkAuthScreen({ children }: EmailLinkAuthScreenProps) {
         {children ? (
           <>
             <Divider>
-              {getTranslation("messages", "dividerOr", translations, language)}
+              {getTranslation(
+                "messages",
+                "dividerOr",
+                translations,
+                defaultLocale
+              )}
             </Divider>
             <div className="space-y-4">{children}</div>
           </>

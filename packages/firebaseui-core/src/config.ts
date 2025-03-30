@@ -4,7 +4,7 @@ import { Auth, getAuth } from 'firebase/auth';
 import { map, MapStore } from 'nanostores';
 import { Behavior, type BehaviorHandlers, type BehaviorKey, getBehavior, hasBehavior } from './behaviors';
 
-type FirebaseUIConfiguration = {
+type FirebaseUIConfigurationOptions = {
   app: FirebaseApp | undefined; // TODO: Should this be optional? Or remove for Angular types?
   defaultLocale: Locale | undefined;
   translations: RegisteredTranslations[];
@@ -14,7 +14,7 @@ type FirebaseUIConfiguration = {
   recaptchaMode: 'normal' | 'invisible' | undefined;
 };
 
-export type InternalFirebaseUIConfiguration = {
+export type FirebaseUIConfiguration = {
   app: FirebaseApp | undefined;
   getAuth: () => Auth;
   defaultLocale: Locale;
@@ -25,14 +25,11 @@ export type InternalFirebaseUIConfiguration = {
   recaptchaMode: 'normal' | 'invisible';
 };
 
-export const $config = map<Record<string, MapStore<InternalFirebaseUIConfiguration>>>({});
+export const $config = map<Record<string, MapStore<FirebaseUIConfiguration>>>({});
 
-export type FirebaseUI = MapStore<InternalFirebaseUIConfiguration>;
+export type FirebaseUI = MapStore<FirebaseUIConfiguration>;
 
-export function initializeUI(
-  config: FirebaseUIConfiguration,
-  name: string = '[DEFAULT]'
-): MapStore<InternalFirebaseUIConfiguration> {
+export function initializeUI(config: FirebaseUIConfigurationOptions, name: string = '[DEFAULT]'): FirebaseUI {
   // Reduce the behaviors to a single object.
   const behaviors = config.behaviors.reduce(
     (acc, behavior) => {
@@ -52,7 +49,7 @@ export function initializeUI(
 
   $config.setKey(
     name,
-    map<InternalFirebaseUIConfiguration>({
+    map<FirebaseUIConfiguration>({
       app: config.app,
       getAuth: () => getAuth(config.app),
       defaultLocale: config.defaultLocale ?? english.locale,
@@ -67,8 +64,8 @@ export function initializeUI(
   const ui = $config.get()[name]!;
 
   // TODO(ehesp): Should this belong here - if not, where should it be?
-  if (hasBehavior(ui, 'autoAnonymousLogin')) {
-    getBehavior(ui, 'autoAnonymousLogin')(getAuth(ui.get().app));
+  if (hasBehavior(ui.get(), 'autoAnonymousLogin')) {
+    getBehavior(ui.get(), 'autoAnonymousLogin')(getAuth(ui.get().app));
   }
 
   return ui;

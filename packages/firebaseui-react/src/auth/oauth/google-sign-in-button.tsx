@@ -1,13 +1,14 @@
 "use client";
 
-import { useConfig, useTranslations } from "~/hooks";
-import { getTranslation } from "@firebase-ui/core";
+import { getTranslation } from "@firebase-ui/translations";
 import { GoogleAuthProvider } from "firebase/auth";
+import { useDefaultLocale, useTranslations, useUI } from "~/hooks";
 import { OAuthButton } from "./oauth-button";
 
 export function GoogleSignInButton() {
-  const translations = useTranslations();
-  const { language } = useConfig();
+  const ui = useUI();
+  const translations = useTranslations(ui);
+  const defaultLocale = useDefaultLocale(ui);
 
   return (
     <OAuthButton provider={new GoogleAuthProvider()}>
@@ -34,7 +35,12 @@ export function GoogleSignInButton() {
         />
       </svg>
       <span>
-        {getTranslation("labels", "signInWithGoogle", translations, language)}
+        {getTranslation(
+          "labels",
+          "signInWithGoogle",
+          translations,
+          defaultLocale
+        )}
       </span>
     </OAuthButton>
   );

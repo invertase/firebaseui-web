@@ -23,10 +23,10 @@ import {
   fuiConfirmPhoneNumber,
   fuiSendPasswordResetEmail,
   fuiSendSignInLinkToEmail,
-  fuiSignInWithEmailLink,
+  signInWithEmailLink,
   fuiSignInAnonymously,
   fuiSignInWithOAuth,
-  fuiCompleteEmailLinkSignIn,
+  completeEmailLinkSignIn,
 } from '../../src/auth';
 
 // Mock all Firebase Auth functions
@@ -197,7 +197,7 @@ describe('Firebase UI Auth', () => {
     it('should sign in with email link', async () => {
       (signInWithCredential as any).mockResolvedValue(mockUserCredential);
 
-      const result = await fuiSignInWithEmailLink(mockAuth, 'test@test.com', 'mock-link');
+      const result = await signInWithEmailLink(mockAuth, 'test@test.com', 'mock-link');
 
       expect(EmailAuthProvider.credentialWithLink).toHaveBeenCalledWith('test@test.com', 'mock-link');
       expect(signInWithCredential).toHaveBeenCalledWith(mockAuth, mockCredential);
@@ -209,7 +209,7 @@ describe('Firebase UI Auth', () => {
       window.localStorage.setItem('emailLinkAnonymousUpgrade', 'true');
       (linkWithCredential as any).mockResolvedValue(mockUserCredential);
 
-      const result = await fuiSignInWithEmailLink(mockAuth, 'test@test.com', 'mock-link', {
+      const result = await signInWithEmailLink(mockAuth, 'test@test.com', 'mock-link', {
         enableAutoUpgradeAnonymous: true,
       });
 
@@ -305,7 +305,7 @@ describe('Firebase UI Auth', () => {
       window.localStorage.setItem('emailForSignIn', 'test@test.com');
       (signInWithCredential as any).mockResolvedValue(mockUserCredential);
 
-      const result = await fuiCompleteEmailLinkSignIn(mockAuth, 'mock-url');
+      const result = await completeEmailLinkSignIn(mockAuth, 'mock-url');
 
       expect(result).toBe(mockUserCredential);
       expect(window.localStorage.getItem('emailForSignIn')).toBeNull();
@@ -317,7 +317,7 @@ describe('Firebase UI Auth', () => {
       window.localStorage.setItem('emailLinkAnonymousUpgrade', 'true');
       (signInWithCredential as any).mockResolvedValue(mockUserCredential);
 
-      await fuiCompleteEmailLinkSignIn(mockAuth, 'mock-url');
+      await completeEmailLinkSignIn(mockAuth, 'mock-url');
 
       expect(window.localStorage.getItem('emailForSignIn')).toBeNull();
       expect(window.localStorage.getItem('emailLinkAnonymousUpgrade')).toBeNull();
@@ -326,7 +326,7 @@ describe('Firebase UI Auth', () => {
     it('should return null when not a valid sign in link', async () => {
       (isSignInWithEmailLink as any).mockReturnValue(false);
 
-      const result = await fuiCompleteEmailLinkSignIn(mockAuth, 'mock-url');
+      const result = await completeEmailLinkSignIn(mockAuth, 'mock-url');
 
       expect(result).toBeNull();
     });
@@ -334,7 +334,7 @@ describe('Firebase UI Auth', () => {
     it('should return null when no email in storage', async () => {
       (isSignInWithEmailLink as any).mockReturnValue(true);
 
-      const result = await fuiCompleteEmailLinkSignIn(mockAuth, 'mock-url');
+      const result = await completeEmailLinkSignIn(mockAuth, 'mock-url');
 
       expect(result).toBeNull();
     });
@@ -346,7 +346,7 @@ describe('Firebase UI Auth', () => {
       (isSignInWithEmailLink as any).mockReturnValue(true);
       (signInWithCredential as any).mockRejectedValue(new Error('Sign in failed'));
 
-      await expect(fuiCompleteEmailLinkSignIn(mockAuth, 'mock-url')).rejects.toThrow();
+      await expect(completeEmailLinkSignIn(mockAuth, 'mock-url')).rejects.toThrow();
 
       expect(window.localStorage.getItem('emailForSignIn')).toBeNull();
       expect(window.localStorage.getItem('emailLinkAnonymousUpgrade')).toBeNull();
@@ -399,7 +399,7 @@ describe('Firebase UI Auth', () => {
       (isSignInWithEmailLink as any).mockReturnValue(true);
       (signInWithCredential as any).mockResolvedValue(mockUserCredential);
 
-      await fuiCompleteEmailLinkSignIn(mockAuth, 'mock-url');
+      await completeEmailLinkSignIn(mockAuth, 'mock-url');
 
       expect(window.localStorage.getItem('emailForSignIn')).toBeNull();
       expect(window.localStorage.getItem('emailLinkAnonymousUpgrade')).toBeNull();
@@ -413,7 +413,7 @@ describe('Firebase UI Auth', () => {
       (isSignInWithEmailLink as any).mockReturnValue(true);
       (signInWithCredential as any).mockRejectedValue(new Error('Sign in failed'));
 
-      await expect(fuiCompleteEmailLinkSignIn(mockAuth, 'mock-url')).rejects.toThrow();
+      await expect(completeEmailLinkSignIn(mockAuth, 'mock-url')).rejects.toThrow();
 
       expect(window.localStorage.getItem('emailForSignIn')).toBeNull();
       expect(window.localStorage.getItem('emailLinkAnonymousUpgrade')).toBeNull();

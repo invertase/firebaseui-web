@@ -1,15 +1,15 @@
 "use client";
 
-import { useForm } from "@tanstack/react-form";
 import {
-  FirebaseUIError,
-  fuiSendPasswordResetEmail,
-  type ForgotPasswordFormSchema,
-  getTranslation,
   createForgotPasswordFormSchema,
+  FirebaseUIError,
+  sendPasswordResetEmail,
+  type ForgotPasswordFormSchema,
 } from "@firebase-ui/core";
-import { useAuth, useConfig, useTranslations } from "~/hooks";
+import { getTranslation } from "@firebase-ui/translations";
+import { useForm } from "@tanstack/react-form";
 import { useMemo, useState } from "react";
+import { useDefaultLocale, useTranslations, useUI } from "~/hooks";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
 import { TermsAndPrivacy } from "../../components/terms-and-privacy";
@@ -21,9 +21,10 @@ interface ForgotPasswordFormProps {
 export function ForgotPasswordForm({
   onBackToSignInClick,
 }: ForgotPasswordFormProps) {
-  const auth = useAuth();
-  const translations = useTranslations();
-  const { language } = useConfig();
+  const ui = useUI();
+  const translations = useTranslations(ui);
+  const defaultLocale = useDefaultLocale(ui);
+
   const [formError, setFormError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
   const [firstValidationOccured, setFirstValidationOccured] = useState(false);
@@ -43,10 +44,7 @@ export function ForgotPasswordForm({
     onSubmit: async ({ value }) => {
       setFormError(null);
       try {
-        await fuiSendPasswordResetEmail(auth, value.email, {
-          translations,
-          language,
-        });
+        await sendPasswordResetEmail(ui, value.email);
         setEmailSent(true);
       } catch (error) {
         if (error instanceof FirebaseUIError) {
@@ -56,7 +54,7 @@ export function ForgotPasswordForm({
 
         console.error(error);
         setFormError(
-          getTranslation("errors", "unknownError", translations, language)
+          getTranslation("errors", "unknownError", translations, defaultLocale)
         );
       }
     },
@@ -69,7 +67,7 @@ export function ForgotPasswordForm({
           "messages",
           "checkEmailForReset",
           translations,
-          language
+          defaultLocale
         )}
       </div>
     );
@@ -95,7 +93,7 @@ export function ForgotPasswordForm({
                     "labels",
                     "emailAddress",
                     translations,
-                    language
+                    defaultLocale
                   )}
                 </span>
                 <input
@@ -130,7 +128,12 @@ export function ForgotPasswordForm({
 
       <fieldset>
         <Button type="submit">
-          {getTranslation("labels", "resetPassword", translations, language)}
+          {getTranslation(
+            "labels",
+            "resetPassword",
+            translations,
+            defaultLocale
+          )}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
       </fieldset>
@@ -142,7 +145,12 @@ export function ForgotPasswordForm({
             onClick={onBackToSignInClick}
             className="fui-form__action"
           >
-            {getTranslation("labels", "backToSignIn", translations, language)}{" "}
+            {getTranslation(
+              "labels",
+              "backToSignIn",
+              translations,
+              defaultLocale
+            )}{" "}
             &rarr;
           </button>
         </div>

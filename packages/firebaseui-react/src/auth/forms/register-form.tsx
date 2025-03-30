@@ -1,15 +1,15 @@
 "use client";
 
-import { useForm } from "@tanstack/react-form";
 import {
   FirebaseUIError,
-  fuiCreateUserWithEmailAndPassword,
-  type EmailFormSchema,
-  getTranslation,
   createEmailFormSchema,
+  createUserWithEmailAndPassword,
+  type EmailFormSchema,
 } from "@firebase-ui/core";
-import { useAuth, useConfig, useTranslations } from "~/hooks";
+import { getTranslation } from "@firebase-ui/translations";
+import { useForm } from "@tanstack/react-form";
 import { useMemo, useState } from "react";
+import { useDefaultLocale, useTranslations, useUI } from "~/hooks";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
 import { TermsAndPrivacy } from "../../components/terms-and-privacy";
@@ -19,9 +19,10 @@ export function RegisterForm({
 }: {
   onBackToSignInClick?: () => void;
 }) {
-  const auth = useAuth();
-  const { language, enableAutoUpgradeAnonymous } = useConfig();
-  const translations = useTranslations();
+  const ui = useUI();
+  const translations = useTranslations(ui);
+  const defaultLocale = useDefaultLocale(ui);
+
   const [formError, setFormError] = useState<string | null>(null);
   const [firstValidationOccured, setFirstValidationOccured] = useState(false);
   const emailFormSchema = useMemo(
@@ -41,16 +42,7 @@ export function RegisterForm({
     onSubmit: async ({ value }) => {
       setFormError(null);
       try {
-        await fuiCreateUserWithEmailAndPassword(
-          auth,
-          value.email,
-          value.password,
-          {
-            translations,
-            language,
-            enableAutoUpgradeAnonymous,
-          }
-        );
+        await createUserWithEmailAndPassword(ui, value.email, value.password);
       } catch (error) {
         if (error instanceof FirebaseUIError) {
           setFormError(error.message);
@@ -59,7 +51,7 @@ export function RegisterForm({
 
         console.error(error);
         setFormError(
-          getTranslation("errors", "unknownError", translations, language)
+          getTranslation("errors", "unknownError", translations, defaultLocale)
         );
       }
     },
@@ -85,7 +77,7 @@ export function RegisterForm({
                     "labels",
                     "emailAddress",
                     translations,
-                    language
+                    defaultLocale
                   )}
                 </span>
                 <input
@@ -123,7 +115,12 @@ export function RegisterForm({
             <>
               <label htmlFor={field.name}>
                 <span>
-                  {getTranslation("labels", "password", translations, language)}
+                  {getTranslation(
+                    "labels",
+                    "password",
+                    translations,
+                    defaultLocale
+                  )}
                 </span>
                 <input
                   aria-invalid={
@@ -157,7 +154,12 @@ export function RegisterForm({
 
       <fieldset>
         <Button type="submit">
-          {getTranslation("labels", "createAccount", translations, language)}
+          {getTranslation(
+            "labels",
+            "createAccount",
+            translations,
+            defaultLocale
+          )}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
       </fieldset>
@@ -169,8 +171,14 @@ export function RegisterForm({
             onClick={onBackToSignInClick}
             className="fui-form__action"
           >
-            {getTranslation("prompts", "haveAccount", translations, language)}{" "}
-            {getTranslation("labels", "signIn", translations, language)} &rarr;
+            {getTranslation(
+              "prompts",
+              "haveAccount",
+              translations,
+              defaultLocale
+            )}{" "}
+            {getTranslation("labels", "signIn", translations, defaultLocale)}{" "}
+            &rarr;
           </button>
         </div>
       )}

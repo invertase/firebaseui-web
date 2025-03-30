@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { useConfig, useAuth, useTranslations } from "../../../src/hooks";
+import { useUI, useAuth, useTranslations } from "../../../src/hooks";
 import { getAuth } from "firebase/auth";
-import { ConfigContext } from "../../../src/context/config-context";
+import { FirebaseUIContext } from "../../../src/context/ui-context";
 
 // Mock Firebase
 vi.mock("firebase/auth", () => ({
@@ -32,9 +32,9 @@ describe("Hooks", () => {
   };
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <ConfigContext.Provider value={mockConfig}>
+    <FirebaseUIContext.Provider value={mockConfig}>
       {children}
-    </ConfigContext.Provider>
+    </FirebaseUIContext.Provider>
   );
 
   beforeEach(() => {
@@ -43,7 +43,7 @@ describe("Hooks", () => {
 
   describe("useConfig", () => {
     it("returns the config from context", () => {
-      const { result } = renderHook(() => useConfig(), { wrapper });
+      const { result } = renderHook(() => useUI(), { wrapper });
 
       expect(result.current).toEqual(mockConfig);
     });

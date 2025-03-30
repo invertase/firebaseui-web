@@ -18,7 +18,7 @@ import {
   UserCredential,
 } from 'firebase/auth';
 import { getBehavior, hasBehavior } from './behaviors';
-import { FirebaseUI } from './config';
+import { FirebaseUIConfiguration } from './config';
 import { handleFirebaseError } from './errors';
 
 async function handlePendingCredential(user: UserCredential): Promise<UserCredential> {
@@ -37,12 +37,12 @@ async function handlePendingCredential(user: UserCredential): Promise<UserCreden
 }
 
 export async function signInWithEmailAndPassword(
-  ui: FirebaseUI,
+  ui: FirebaseUIConfiguration,
   email: string,
   password: string
 ): Promise<UserCredential> {
   try {
-    const auth = getAuth(ui.get().app);
+    const auth = getAuth(ui.app);
     const credential = EmailAuthProvider.credential(email, password);
 
     if (hasBehavior(ui, 'autoUpgradeAnonymousCredential')) {
@@ -61,12 +61,12 @@ export async function signInWithEmailAndPassword(
 }
 
 export async function createUserWithEmailAndPassword(
-  ui: FirebaseUI,
+  ui: FirebaseUIConfiguration,
   email: string,
   password: string
 ): Promise<UserCredential> {
   try {
-    const auth = getAuth(ui.get().app);
+    const auth = getAuth(ui.app);
     const credential = EmailAuthProvider.credential(email, password);
 
     if (hasBehavior(ui, 'autoUpgradeAnonymousCredential')) {
@@ -85,12 +85,12 @@ export async function createUserWithEmailAndPassword(
 }
 
 export async function signInWithPhoneNumber(
-  ui: FirebaseUI,
+  ui: FirebaseUIConfiguration,
   phoneNumber: string,
   recaptchaVerifier: RecaptchaVerifier
 ): Promise<ConfirmationResult> {
   try {
-    const auth = getAuth(ui.get().app);
+    const auth = getAuth(ui.app);
     return await _signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
   } catch (error) {
     handleFirebaseError(ui, error);
@@ -98,12 +98,12 @@ export async function signInWithPhoneNumber(
 }
 
 export async function confirmPhoneNumber(
-  ui: FirebaseUI,
+  ui: FirebaseUIConfiguration,
   confirmationResult: ConfirmationResult,
   verificationCode: string
 ): Promise<UserCredential> {
   try {
-    const auth = getAuth(ui.get().app);
+    const auth = getAuth(ui.app);
     const currentUser = auth.currentUser;
     const credential = PhoneAuthProvider.credential(confirmationResult.verificationId, verificationCode);
 
@@ -122,18 +122,18 @@ export async function confirmPhoneNumber(
   }
 }
 
-export async function sendPasswordResetEmail(ui: FirebaseUI, email: string): Promise<void> {
+export async function sendPasswordResetEmail(ui: FirebaseUIConfiguration, email: string): Promise<void> {
   try {
-    const auth = getAuth(ui.get().app);
+    const auth = getAuth(ui.app);
     await _sendPasswordResetEmail(auth, email);
   } catch (error) {
     handleFirebaseError(ui, error);
   }
 }
 
-export async function sendSignInLinkToEmail(ui: FirebaseUI, email: string): Promise<void> {
+export async function sendSignInLinkToEmail(ui: FirebaseUIConfiguration, email: string): Promise<void> {
   try {
-    const auth = getAuth(ui.get().app);
+    const auth = getAuth(ui.app);
 
     const actionCodeSettings = {
       url: window.location.href,
@@ -148,9 +148,13 @@ export async function sendSignInLinkToEmail(ui: FirebaseUI, email: string): Prom
   }
 }
 
-export async function fuiSignInWithEmailLink(ui: FirebaseUI, email: string, link: string): Promise<UserCredential> {
+export async function signInWithEmailLink(
+  ui: FirebaseUIConfiguration,
+  email: string,
+  link: string
+): Promise<UserCredential> {
   try {
-    const auth = ui.get().getAuth();
+    const auth = ui.getAuth();
     const credential = EmailAuthProvider.credentialWithLink(email, link);
 
     if (hasBehavior(ui, 'autoUpgradeAnonymousCredential')) {
@@ -167,9 +171,9 @@ export async function fuiSignInWithEmailLink(ui: FirebaseUI, email: string, link
   }
 }
 
-export async function signInAnonymously(ui: FirebaseUI): Promise<UserCredential> {
+export async function signInAnonymously(ui: FirebaseUIConfiguration): Promise<UserCredential> {
   try {
-    const auth = getAuth(ui.get().app);
+    const auth = getAuth(ui.app);
     const result = await _signInAnonymously(auth);
     return handlePendingCredential(result);
   } catch (error) {
@@ -177,9 +181,9 @@ export async function signInAnonymously(ui: FirebaseUI): Promise<UserCredential>
   }
 }
 
-export async function signInWithOAuth(ui: FirebaseUI, provider: AuthProvider): Promise<void> {
+export async function signInWithOAuth(ui: FirebaseUIConfiguration, provider: AuthProvider): Promise<void> {
   try {
-    const auth = getAuth(ui.get().app);
+    const auth = getAuth(ui.app);
 
     if (hasBehavior(ui, 'autoUpgradeAnonymousProvider')) {
       await getBehavior(ui, 'autoUpgradeAnonymousProvider')(auth, provider);
@@ -193,9 +197,12 @@ export async function signInWithOAuth(ui: FirebaseUI, provider: AuthProvider): P
   }
 }
 
-export async function fuiCompleteEmailLinkSignIn(ui: FirebaseUI, currentUrl: string): Promise<UserCredential | null> {
+export async function completeEmailLinkSignIn(
+  ui: FirebaseUIConfiguration,
+  currentUrl: string
+): Promise<UserCredential | null> {
   try {
-    const auth = ui.get().getAuth();
+    const auth = ui.getAuth();
     if (!_isSignInWithEmailLink(auth, currentUrl)) {
       return null;
     }
@@ -203,7 +210,7 @@ export async function fuiCompleteEmailLinkSignIn(ui: FirebaseUI, currentUrl: str
     const email = window.localStorage.getItem('emailForSignIn');
     if (!email) return null;
 
-    const result = await fuiSignInWithEmailLink(ui, email, currentUrl);
+    const result = await signInWithEmailLink(ui, email, currentUrl);
     return handlePendingCredential(result);
   } catch (error) {
     handleFirebaseError(ui, error);

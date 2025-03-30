@@ -1,13 +1,13 @@
+import { getTranslation } from "@firebase-ui/translations";
+import { Divider } from "~/components/divider";
+import { useDefaultLocale, useTranslations, useUI } from "~/hooks";
 import {
   Card,
   CardHeader,
-  CardTitle,
   CardSubtitle,
+  CardTitle,
 } from "../../components/card";
 import { RegisterForm } from "../forms/register-form";
-import { useConfig, useTranslations } from "~/hooks";
-import { getTranslation } from "@firebase-ui/core";
-import { Divider } from "~/components/divider";
 
 export interface SignUpAuthScreenProps {
   onBackToSignInClick?: () => void;
@@ -18,20 +18,21 @@ export function SignUpAuthScreen({
   onBackToSignInClick,
   children,
 }: SignUpAuthScreenProps) {
-  const { language } = useConfig();
-  const translations = useTranslations();
+  const ui = useUI();
+  const translations = useTranslations(ui);
+  const defaultLocale = useDefaultLocale(ui);
 
   const titleText = getTranslation(
     "labels",
     "register",
     translations,
-    language
+    defaultLocale
   );
   const subtitleText = getTranslation(
     "prompts",
     "enterDetailsToCreate",
     translations,
-    language
+    defaultLocale
   );
 
   return (
@@ -45,7 +46,12 @@ export function SignUpAuthScreen({
         {children ? (
           <>
             <Divider>
-              {getTranslation("messages", "dividerOr", translations, language)}
+              {getTranslation(
+                "messages",
+                "dividerOr",
+                translations,
+                defaultLocale
+              )}
             </Divider>
             <div className="space-y-4">{children}</div>
           </>

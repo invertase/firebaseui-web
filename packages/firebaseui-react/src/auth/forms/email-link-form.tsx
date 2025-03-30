@@ -1,27 +1,25 @@
 "use client";
 
-import { useForm } from "@tanstack/react-form";
-import { useAuth, useConfig, useTranslations } from "~/hooks";
 import {
   FirebaseUIError,
-  getTranslation,
+  completeEmailLinkSignIn,
   createEmailLinkFormSchema,
-  fuiSendSignInLinkToEmail,
-  fuiCompleteEmailLinkSignIn,
+  sendSignInLinkToEmail,
 } from "@firebase-ui/core";
+import { getTranslation } from "@firebase-ui/translations";
+import { useForm } from "@tanstack/react-form";
+import { useEffect, useMemo, useState } from "react";
+import { useAuth, useDefaultLocale, useTranslations, useUI } from "~/hooks";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
-import { useEffect, useState, useMemo } from "react";
 import { TermsAndPrivacy } from "../../components/terms-and-privacy";
 
 export function EmailLinkForm() {
-  const auth = useAuth();
-  const {
-    language,
-    enableAutoUpgradeAnonymous,
-    enableHandleExistingCredential,
-  } = useConfig();
-  const translations = useTranslations();
+  const ui = useUI();
+  const auth = useAuth(ui);
+  const translations = useTranslations(ui);
+  const defaultLocale = useDefaultLocale(ui);
+
   const [formError, setFormError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
   const [firstValidationOccured, setFirstValidationOccured] = useState(false);
@@ -42,11 +40,7 @@ export function EmailLinkForm() {
     onSubmit: async ({ value }) => {
       setFormError(null);
       try {
-        await fuiSendSignInLinkToEmail(auth, value.email, {
-          translations,
-          language,
-          enableAutoUpgradeAnonymous,
-        });
+        await sendSignInLinkToEmail(ui, value.email);
         setEmailSent(true);
       } catch (error) {
         if (error instanceof FirebaseUIError) {
@@ -56,7 +50,7 @@ export function EmailLinkForm() {
 
         console.error(error);
         setFormError(
-          getTranslation("errors", "unknownError", translations, language)
+          getTranslation("errors", "unknownError", translations, defaultLocale)
         );
       }
     },
@@ -66,12 +60,7 @@ export function EmailLinkForm() {
   useEffect(() => {
     const completeSignIn = async () => {
       try {
-        await fuiCompleteEmailLinkSignIn(auth, window.location.href, {
-          translations,
-          language,
-          enableAutoUpgradeAnonymous,
-          enableHandleExistingCredential,
-        });
+        await completeEmailLinkSignIn(ui, window.location.href);
       } catch (error) {
         if (error instanceof FirebaseUIError) {
           setFormError(error.message);
@@ -80,19 +69,18 @@ export function EmailLinkForm() {
     };
 
     void completeSignIn();
-  }, [
-    auth,
-    translations,
-    language,
-    enableAutoUpgradeAnonymous,
-    enableHandleExistingCredential,
-  ]);
+  }, [auth, translations]);
 
   if (emailSent) {
     // TODO: Improve this UI
     return (
       <div>
-        {getTranslation("messages", "signInLinkSent", translations, language)}
+        {getTranslation(
+          "messages",
+          "signInLinkSent",
+          translations,
+          defaultLocale
+        )}
       </div>
     );
   }
@@ -117,7 +105,7 @@ export function EmailLinkForm() {
                     "labels",
                     "emailAddress",
                     translations,
-                    language
+                    defaultLocale
                   )}
                 </span>
                 <input
@@ -152,7 +140,12 @@ export function EmailLinkForm() {
 
       <fieldset>
         <Button type="submit">
-          {getTranslation("labels", "sendSignInLink", translations, language)}
+          {getTranslation(
+            "labels",
+            "sendSignInLink",
+            translations,
+            defaultLocale
+          )}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
       </fieldset>

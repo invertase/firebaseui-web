@@ -1,15 +1,15 @@
 "use client";
 
-import { useForm } from "@tanstack/react-form";
 import {
-  FirebaseUIError,
-  fuiSignInWithEmailAndPassword,
-  type EmailFormSchema,
-  getTranslation,
   createEmailFormSchema,
+  FirebaseUIError,
+  signInWithEmailAndPassword,
+  type EmailFormSchema,
 } from "@firebase-ui/core";
-import { useAuth, useConfig, useTranslations } from "~/hooks";
+import { getTranslation } from "@firebase-ui/translations";
+import { useForm } from "@tanstack/react-form";
 import { useMemo, useState } from "react";
+import { useDefaultLocale, useTranslations, useUI } from "~/hooks";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
 import { TermsAndPrivacy } from "../../components/terms-and-privacy";
@@ -23,13 +23,10 @@ export function EmailPasswordForm({
   onForgotPasswordClick,
   onRegisterClick,
 }: EmailPasswordFormProps) {
-  const auth = useAuth();
-  const translations = useTranslations();
-  const {
-    language,
-    enableAutoUpgradeAnonymous,
-    enableHandleExistingCredential,
-  } = useConfig();
+  const ui = useUI();
+  const translations = useTranslations(ui);
+  const defaultLocale = useDefaultLocale(ui);
+
   const [formError, setFormError] = useState<string | null>(null);
   const [firstValidationOccured, setFirstValidationOccured] = useState(false);
 
@@ -51,12 +48,7 @@ export function EmailPasswordForm({
     onSubmit: async ({ value }) => {
       setFormError(null);
       try {
-        await fuiSignInWithEmailAndPassword(auth, value.email, value.password, {
-          translations,
-          language,
-          enableAutoUpgradeAnonymous,
-          enableHandleExistingCredential,
-        });
+        await signInWithEmailAndPassword(ui, value.email, value.password);
       } catch (error) {
         if (error instanceof FirebaseUIError) {
           setFormError(error.message);
@@ -65,7 +57,7 @@ export function EmailPasswordForm({
 
         console.error(error);
         setFormError(
-          getTranslation("errors", "unknownError", translations, language)
+          getTranslation("errors", "unknownError", translations, defaultLocale)
         );
       }
     },
@@ -91,7 +83,7 @@ export function EmailPasswordForm({
                     "labels",
                     "emailAddress",
                     translations,
-                    language
+                    defaultLocale
                   )}
                 </span>
                 <input
@@ -134,7 +126,7 @@ export function EmailPasswordForm({
                       "labels",
                       "password",
                       translations,
-                      language
+                      defaultLocale
                     )}
                   </span>
                   <button
@@ -146,7 +138,7 @@ export function EmailPasswordForm({
                       "labels",
                       "forgotPassword",
                       translations,
-                      language
+                      defaultLocale
                     )}
                   </button>
                 </span>
@@ -182,7 +174,7 @@ export function EmailPasswordForm({
 
       <fieldset>
         <Button type="submit">
-          {getTranslation("labels", "signIn", translations, language)}
+          {getTranslation("labels", "signIn", translations, defaultLocale)}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
       </fieldset>
@@ -194,8 +186,13 @@ export function EmailPasswordForm({
             onClick={onRegisterClick}
             className="fui-form__action"
           >
-            {getTranslation("prompts", "noAccount", translations, language)}{" "}
-            {getTranslation("labels", "register", translations, language)}
+            {getTranslation(
+              "prompts",
+              "noAccount",
+              translations,
+              defaultLocale
+            )}{" "}
+            {getTranslation("labels", "register", translations, defaultLocale)}
           </button>
         </div>
       )}

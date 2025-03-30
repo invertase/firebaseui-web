@@ -1,13 +1,13 @@
+import { getTranslation } from "@firebase-ui/translations";
+import { Divider } from "~/components/divider";
+import { useDefaultLocale, useTranslations, useUI } from "~/hooks";
 import {
   Card,
-  CardTitle,
-  CardSubtitle,
   CardHeader,
+  CardSubtitle,
+  CardTitle,
 } from "../../components/card";
 import { EmailPasswordForm } from "../forms/email-password-form";
-import { useConfig, useTranslations } from "~/hooks";
-import { getTranslation } from "@firebase-ui/core";
-import { Divider } from "~/components/divider";
 
 export interface SignInAuthScreenProps {
   onForgotPasswordClick?: () => void;
@@ -20,15 +20,21 @@ export function SignInAuthScreen({
   onRegisterClick,
   children,
 }: SignInAuthScreenProps) {
-  const { language } = useConfig();
-  const translations = useTranslations();
+  const ui = useUI();
+  const translations = useTranslations(ui);
+  const defaultLocale = useDefaultLocale(ui);
 
-  const titleText = getTranslation("labels", "signIn", translations, language);
+  const titleText = getTranslation(
+    "labels",
+    "signIn",
+    translations,
+    defaultLocale
+  );
   const subtitleText = getTranslation(
     "prompts",
     "signInToAccount",
     translations,
-    language
+    defaultLocale
   );
 
   return (
@@ -45,7 +51,12 @@ export function SignInAuthScreen({
         {children ? (
           <>
             <Divider>
-              {getTranslation("messages", "dividerOr", translations, language)}
+              {getTranslation(
+                "messages",
+                "dividerOr",
+                translations,
+                defaultLocale
+              )}
             </Divider>
             <div className="space-y-4">{children}</div>
           </>

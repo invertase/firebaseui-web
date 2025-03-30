@@ -9,7 +9,7 @@ import {
   fuiSignInAnonymously,
   fuiSendPasswordResetEmail,
   fuiSignInWithOAuth,
-  fuiCompleteEmailLinkSignIn,
+  completeEmailLinkSignIn,
   fuiConfirmPhoneNumber,
 } from '../../src/auth';
 import { FirebaseUIError } from '../../src/errors';

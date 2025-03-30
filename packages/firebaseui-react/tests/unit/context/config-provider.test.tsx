@@ -1,14 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { render, act } from "@testing-library/react";
-import { ConfigProvider } from "../../../src/context/config-provider";
-import { ConfigContext } from "../../../src/context/config-context";
+import { FirebaseUIProvider } from "../../../src/context/ui-provider";
+import { FirebaseUIContext } from "../../../src/context/ui-context";
 import { map } from "nanostores";
 import { useContext } from "react";
 import { FUIConfig } from "@firebase-ui/core";
 
 // Mock component to test context value
 function TestConsumer() {
-  const config = useContext(ConfigContext);
+  const config = useContext(FirebaseUIContext);
   return <div data-testid="test-value">{config.language || "no-value"}</div>;
 }
 
@@ -20,9 +20,9 @@ describe("ConfigProvider", () => {
     });
 
     const { getByTestId } = render(
-      <ConfigProvider config={mockConfig}>
+      <FirebaseUIProvider config={mockConfig}>
         <TestConsumer />
-      </ConfigProvider>
+      </FirebaseUIProvider>
     );
 
     expect(getByTestId("test-value").textContent).toBe("en");
@@ -35,9 +35,9 @@ describe("ConfigProvider", () => {
     });
 
     const { getByTestId } = render(
-      <ConfigProvider config={mockConfig}>
+      <FirebaseUIProvider config={mockConfig}>
         <TestConsumer />
-      </ConfigProvider>
+      </FirebaseUIProvider>
     );
 
     expect(getByTestId("test-value").textContent).toBe("en");

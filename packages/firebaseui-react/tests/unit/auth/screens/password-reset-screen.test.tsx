@@ -40,7 +40,7 @@ describe("PasswordResetScreen", () => {
 
   beforeEach(() => {
     // Setup default mock values
-    vi.mocked(hooks.useConfig).mockReturnValue({
+    vi.mocked(hooks.useUI).mockReturnValue({
       language: "en",
     } as any);
 
@@ -63,7 +63,7 @@ describe("PasswordResetScreen", () => {
   it("calls useConfig to get the language", () => {
     render(<PasswordResetScreen />);
 
-    expect(hooks.useConfig).toHaveBeenCalled();
+    expect(hooks.useUI).toHaveBeenCalled();
   });
 
   it("includes the ForgotPasswordForm component", () => {

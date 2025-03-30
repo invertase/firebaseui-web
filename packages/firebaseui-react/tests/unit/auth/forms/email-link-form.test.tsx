@@ -49,7 +49,7 @@ vi.mock("@firebase-ui/core", () => {
 import {
   FirebaseUIError,
   fuiSendSignInLinkToEmail,
-  fuiCompleteEmailLinkSignIn,
+  completeEmailLinkSignIn,
 } from "@firebase-ui/core";
 
 // Mock React's useState to control state for testing
@@ -167,7 +167,7 @@ vi.mock("react", async () => {
 });
 
 const mockSendSignInLink = vi.mocked(fuiSendSignInLinkToEmail);
-const mockCompleteEmailLink = vi.mocked(fuiCompleteEmailLinkSignIn);
+const mockCompleteEmailLink = vi.mocked(completeEmailLinkSignIn);
 
 describe("EmailLinkForm", () => {
   beforeEach(() => {

@@ -9,7 +9,7 @@ import {
   User,
   UserCredential,
 } from 'firebase/auth';
-import { FirebaseUI } from './config';
+import { FirebaseUIConfiguration } from './config';
 import { $state } from './state';
 
 export type BehaviorHandlers = {
@@ -26,16 +26,16 @@ export type Behavior<T extends keyof BehaviorHandlers = keyof BehaviorHandlers> 
 
 export type BehaviorKey = keyof BehaviorHandlers;
 
-export function hasBehavior(ui: FirebaseUI, key: BehaviorKey): boolean {
-  return !!ui.get().behaviors[key];
+export function hasBehavior(ui: FirebaseUIConfiguration, key: BehaviorKey): boolean {
+  return !!ui.behaviors[key];
 }
 
-export function getBehavior<T extends BehaviorKey>(ui: FirebaseUI, key: T): Behavior[T] {
+export function getBehavior<T extends BehaviorKey>(ui: FirebaseUIConfiguration, key: T): Behavior[T] {
   if (!hasBehavior(ui, key)) {
     throw new Error(`Behavior ${key} not found`);
   }
 
-  return ui.get().behaviors[key] as Behavior[T];
+  return ui.behaviors[key] as Behavior[T];
 }
 
 export function autoAnonymousLogin(): Behavior<'autoAnonymousLogin'> {

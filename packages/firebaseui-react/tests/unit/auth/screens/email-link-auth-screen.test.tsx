@@ -28,7 +28,7 @@ vi.mock("~/auth/forms/email-link-form", () => ({
 describe("EmailLinkAuthScreen", () => {
   beforeEach(() => {
     // Setup default mock values
-    vi.mocked(hooks.useConfig).mockReturnValue({
+    vi.mocked(hooks.useUI).mockReturnValue({
       language: "en",
     } as any);
 
@@ -49,7 +49,7 @@ describe("EmailLinkAuthScreen", () => {
   it("calls useConfig to get the language", () => {
     render(<EmailLinkAuthScreen />);
 
-    expect(hooks.useConfig).toHaveBeenCalled();
+    expect(hooks.useUI).toHaveBeenCalled();
   });
 
   it("includes the EmailLinkForm component", () => {
