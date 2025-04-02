@@ -9,7 +9,7 @@ type FirebaseUIConfigurationOptions = {
   app: FirebaseApp | undefined; // TODO: Should this be optional? Or remove for Angular types?
   locale?: Locale | undefined;
   translations?: RegisteredTranslations[] | undefined;
-  behaviors?: Behavior<keyof BehaviorHandlers>[] | undefined;
+  behaviors?: Partial<Behavior<keyof BehaviorHandlers>>[] | undefined;
   tosUrl?: string | undefined;
   privacyPolicyUrl?: string | undefined;
   recaptchaMode?: 'normal' | 'invisible' | undefined;
@@ -61,13 +61,13 @@ export function initializeUI(config: FirebaseUIConfigurationOptions, name: strin
       getAuth: () => getAuth(config.app),
       locale: config.locale ?? english.locale,
       setLocale: (locale: Locale) => {
-        // @ts-ignore `value` of `setKey` is not correctly typed. It's not `DeepMapStore<FirebaseUIConfiguration>`
-        $config.setKey(`${name}.locale`, locale);
+        const current = $config.get()[name]!;
+        current.setKey(`locale`, locale);
       },
       state: 'loading',
       setState: (state: FirebaseUIState) => {
-        // @ts-ignore `value` of `setKey` is not correctly typed. It's not `DeepMapStore<FirebaseUIConfiguration>`
-        $config.setKey(`${name}.state`, state);
+        const current = $config.get()[name]!;
+        current.setKey(`state`, state);
       },
       translations,
       behaviors: behaviors ?? {},

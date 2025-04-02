@@ -3,7 +3,7 @@
 import { initializeApp, getApps } from "firebase/app";
 import { firebaseConfig } from "./config";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
-import { initializeUI } from "@firebase-ui/core";
+import { autoAnonymousLogin, initializeUI } from "@firebase-ui/core";
 import { customLanguage, english } from "@firebase-ui/translations";
 
 export const firebaseApp =
@@ -13,10 +13,9 @@ export const auth = getAuth(firebaseApp);
 
 export const ui = initializeUI({
   app: firebaseApp,
-  // enableAutoAnonymousLogin: true,
-  // enableAutoUpgradeAnonymous: true,
   tosUrl: "https://www.google.com",
   privacyPolicyUrl: "https://www.google.com",
+  behaviors: [autoAnonymousLogin()],
   translations: [
     customLanguage(english.locale, {
       labels: {

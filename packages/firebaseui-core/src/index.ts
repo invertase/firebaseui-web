@@ -1,4 +1,5 @@
 export * from './auth';
+export * from './behaviors';
 export * from './config';
 export * from './errors';
 export * from './schemas';
