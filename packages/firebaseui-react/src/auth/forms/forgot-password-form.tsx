@@ -111,7 +111,7 @@ export function ForgotPasswordForm({
       <TermsAndPrivacy />
 
       <fieldset>
-        <Button type="submit">
+        <Button type="submit" disabled={ui.state !== "idle"}>
           {getTranslation(ui, "labels", "resetPassword")}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
@@ -121,6 +121,7 @@ export function ForgotPasswordForm({
         <div className="flex justify-center items-center">
           <button
             type="button"
+            disabled={ui.state !== "idle"}
             onClick={onBackToSignInClick}
             className="fui-form__action"
           >

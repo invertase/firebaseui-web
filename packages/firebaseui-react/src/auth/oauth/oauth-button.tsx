@@ -38,6 +38,7 @@ export function OAuthButton({ provider, children }: OAuthButtonProps) {
     <div>
       <Button
         type="button"
+        disabled={ui.state !== "idle"}
         onClick={handleOAuthSignIn}
         className="fui-provider__button"
       >

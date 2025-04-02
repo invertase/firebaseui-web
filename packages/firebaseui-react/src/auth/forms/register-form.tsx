@@ -135,7 +135,7 @@ export function RegisterForm({
       <TermsAndPrivacy />
 
       <fieldset>
-        <Button type="submit">
+        <Button type="submit" disabled={ui.state !== "idle"}>
           {getTranslation(ui, "labels", "createAccount")}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
@@ -145,6 +145,7 @@ export function RegisterForm({
         <div className="flex justify-center items-center">
           <button
             type="button"
+            disabled={ui.state !== "idle"}
             onClick={onBackToSignInClick}
             className="fui-form__action"
           >

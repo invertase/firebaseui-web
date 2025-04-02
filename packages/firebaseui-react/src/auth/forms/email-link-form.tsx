@@ -119,7 +119,7 @@ export function EmailLinkForm() {
       <TermsAndPrivacy />
 
       <fieldset>
-        <Button type="submit">
+        <Button type="submit" disabled={ui.state !== "idle"}>
           {getTranslation(ui, "labels", "sendSignInLink")}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}

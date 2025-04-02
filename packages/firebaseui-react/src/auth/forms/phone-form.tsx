@@ -126,7 +126,10 @@ function PhoneNumberForm({
       {showTerms && <TermsAndPrivacy />}
 
       <fieldset>
-        <Button type="submit" disabled={!recaptchaVerifier}>
+        <Button
+          type="submit"
+          disabled={!recaptchaVerifier || ui.state !== "idle"}
+        >
           {getTranslation(ui, "labels", "sendCode")}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
@@ -272,13 +275,13 @@ function VerificationForm({
       {showTerms && <TermsAndPrivacy />}
 
       <fieldset>
-        <Button type="submit">
+        <Button type="submit" disabled={ui.state !== "idle"}>
           {getTranslation(ui, "labels", "verifyCode")}
         </Button>
         <Button
           type="button"
+          disabled={isResending || !canResend || ui.state !== "idle"}
           onClick={onResend}
-          disabled={isResending || !canResend}
           variant="secondary"
         >
           {isResending
