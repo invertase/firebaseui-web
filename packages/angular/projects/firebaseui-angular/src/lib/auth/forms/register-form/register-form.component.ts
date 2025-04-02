@@ -1,23 +1,31 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { ButtonComponent } from '../../../components/button/button.component';
 import { FirebaseUi } from '../../../provider';
 import { CommonModule } from '@angular/common';
 import { injectForm, TanStackField } from '@tanstack/angular-form';
-import { createEmailFormSchema, EmailFormSchema, fuiCreateUserWithEmailAndPassword } from '@firebase-ui/core';
-import { map } from 'rxjs/operators';
+import {
+  createEmailFormSchema,
+  EmailFormSchema,
+  FirebaseUIError,
+  fuiCreateUserWithEmailAndPassword,
+} from '@firebase-ui/core';
 import { Auth } from '@angular/fire/auth';
+import { TermsAndPrivacyComponent } from '../../../components/terms-and-privacy/terms-and-privacy.component';
+import { firstValueFrom } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'fui-register-form',
-  imports: [CommonModule, TanStackField, ButtonComponent],
+  imports: [
+    CommonModule,
+    TanStackField,
+    ButtonComponent,
+    TermsAndPrivacyComponent,
+  ],
   template: `
     <form (submit)="handleSubmit($event)" class="fui-form">
       <fieldset>
-        <ng-container
-          [tanstackField]="form"
-          name="email"
-          #email="field"
-        >
+        <ng-container [tanstackField]="form" name="email" #email="field">
           <label [for]="email.api.name">
             <span>{{ emailLabel | async }}</span>
             <input
@@ -29,10 +37,10 @@ import { Auth } from '@angular/fire/auth';
               (input)="email.api.handleChange($any($event).target.value)"
               [attr.aria-invalid]="!!email.api.state.meta.errors.length"
             />
-            <span 
-              role="alert" 
-              aria-live="polite" 
-              class="fui-form__error" 
+            <span
+              role="alert"
+              aria-live="polite"
+              class="fui-form__error"
               *ngIf="!!email.api.state.meta.errors.length"
             >
               {{ email.api.state.meta.errors.join(', ') }}
@@ -41,11 +49,7 @@ import { Auth } from '@angular/fire/auth';
         </ng-container>
       </fieldset>
       <fieldset>
-        <ng-container
-          [tanstackField]="form"
-          name="password"
-          #password="field"
-        >
+        <ng-container [tanstackField]="form" name="password" #password="field">
           <label [for]="password.api.name">
             <span>{{ passwordLabel | async }}</span>
             <input
@@ -57,10 +61,10 @@ import { Auth } from '@angular/fire/auth';
               (input)="password.api.handleChange($any($event).target.value)"
               [attr.aria-invalid]="!!password.api.state.meta.errors.length"
             />
-            <span 
-              role="alert" 
-              aria-live="polite" 
-              class="fui-form__error" 
+            <span
+              role="alert"
+              aria-live="polite"
+              class="fui-form__error"
               *ngIf="!!password.api.state.meta.errors.length"
             >
               {{ password.api.state.meta.errors.join(', ') }}
@@ -68,46 +72,127 @@ import { Auth } from '@angular/fire/auth';
           </label>
         </ng-container>
       </fieldset>
+
+      <fui-terms-and-privacy></fui-terms-and-privacy>
+
       <fieldset>
         <fui-button type="submit">
           {{ createAccountLabel | async }}
         </fui-button>
+        <div class="fui-form__error" *ngIf="formError">{{ formError }}</div>
       </fieldset>
+
+      <div class="flex justify-center items-center" *ngIf="signInRoute">
+        <button
+          type="button"
+          (click)="navigateTo(signInRoute)"
+          class="fui-form__action"
+        >
+          {{ haveAccountLabel | async }} {{ signInLabel | async }} &rarr;
+        </button>
+      </div>
     </form>
-  `
+  `,
+  standalone: true,
 })
-export class RegisterFormComponent {
+export class RegisterFormComponent implements OnInit {
   private ui = inject(FirebaseUi);
   private auth = inject(Auth);
-  private schema = this.ui.config().pipe(
-    map(config => createEmailFormSchema(config.translations))
-  );
+  private router = inject(Router);
 
-  form = injectForm<EmailFormSchema>({
+  @Input({ required: true }) signInRoute!: string;
+
+  formError: string | null = null;
+  private formSchema: any;
+  private config: any;
+
+  form = injectForm({
     defaultValues: {
       email: '',
-      password: ''
+      password: '',
     },
-    onSubmit: async ({ value }) => {
-      await fuiCreateUserWithEmailAndPassword(this.auth, value.email, value.password);
-    }
   });
 
-  constructor() {
-    this.schema.subscribe(schema => {
+  async ngOnInit() {
+    try {
+      this.config = await firstValueFrom(this.ui.config());
+
+      this.formSchema = createEmailFormSchema(this.config?.translations);
+
       this.form.update({
         validators: {
-          onSubmit: schema,
-          onBlur: schema
-        }
+          onSubmit: this.formSchema,
+          onBlur: this.formSchema,
+        },
       });
-    });
+    } catch (error) {
+      this.formError = await firstValueFrom(
+        this.ui.translation('errors', 'unknownError')
+      );
+    }
   }
 
-  handleSubmit(event: SubmitEvent) {
-    event.preventDefault()
-    event.stopPropagation()
-    this.form.handleSubmit()
+  async handleSubmit(event: SubmitEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const email = this.form.state.values.email;
+    const password = this.form.state.values.password;
+
+    if (!email || !password) {
+      return;
+    }
+
+    await this.registerUser(email, password);
+  }
+
+  async registerUser(email: string, password: string) {
+    this.formError = null;
+
+    try {
+      const validationResult = this.formSchema.safeParse({
+        email,
+        password,
+      });
+
+      if (!validationResult.success) {
+        const validationErrors = validationResult.error.format();
+
+        if (validationErrors.email?._errors?.length) {
+          this.formError = validationErrors.email._errors[0];
+          return;
+        }
+
+        if (validationErrors.password?._errors?.length) {
+          this.formError = validationErrors.password._errors[0];
+          return;
+        }
+
+        this.formError = await firstValueFrom(
+          this.ui.translation('errors', 'unknownError')
+        );
+        return;
+      }
+
+      await fuiCreateUserWithEmailAndPassword(this.auth, email, password, {
+        translations: this.config?.translations,
+        language: this.config?.language,
+        enableAutoUpgradeAnonymous: this.config?.enableAutoUpgradeAnonymous,
+      });
+    } catch (error) {
+      if (error instanceof FirebaseUIError) {
+        this.formError = error.message;
+        return;
+      }
+
+      this.formError = await firstValueFrom(
+        this.ui.translation('errors', 'unknownError')
+      );
+    }
+  }
+
+  navigateTo(route: string) {
+    this.router.navigateByUrl(route);
   }
 
   get emailLabel() {
@@ -120,5 +205,13 @@ export class RegisterFormComponent {
 
   get createAccountLabel() {
     return this.ui.translation('labels', 'createAccount');
+  }
+
+  get haveAccountLabel() {
+    return this.ui.translation('prompts', 'haveAccount');
+  }
+
+  get signInLabel() {
+    return this.ui.translation('labels', 'signIn');
   }
 }

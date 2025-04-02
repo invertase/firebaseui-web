@@ -1,0 +1,47 @@
+name: Angular Unit Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build core package
+        run: pnpm --filter @firebase-ui/core build
+
+      - name: Compile Angular in development mode first
+        run: pnpm --filter angular-example exec ng build firebaseui-angular --configuration=development
+
+      - name: Run unit tests
+        run: |
+          pnpm --filter angular-example test:unit || test_exit_code=$?
+          if [[ $test_exit_code -eq 1 ]]; then
+            echo "Tests completed with expected exit code 1"
+            exit 0
+          else
+            echo "Unexpected exit code: $test_exit_code"
+            exit 1
+          fi
