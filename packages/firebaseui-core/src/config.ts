@@ -82,6 +82,8 @@ export function initializeUI(config: FirebaseUIConfigurationOptions, name: strin
   // TODO(ehesp): Should this belong here - if not, where should it be?
   if (hasBehavior(ui.get(), 'autoAnonymousLogin')) {
     getBehavior(ui.get(), 'autoAnonymousLogin')(ui.get());
+  } else {
+    ui.setKey('state', 'idle');
   }
 
   return ui;
