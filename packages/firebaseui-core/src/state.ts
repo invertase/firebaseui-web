@@ -1,6 +1,9 @@
-import { atom } from "nanostores";
-
-export type FirebaseUIState = 'idle' | 'signing-in' | 'signing-out' | 'linking';
-
-export const $state = atom<FirebaseUIState>('idle');
-
+export type FirebaseUIState =
+  | 'loading'
+  | 'idle'
+  | 'signing-in'
+  | 'signing-out'
+  | 'linking'
+  | 'creating-user'
+  | 'sending-password-reset-email'
+  | 'sending-sign-in-link-to-email';

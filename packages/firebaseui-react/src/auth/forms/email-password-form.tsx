@@ -3,13 +3,13 @@
 import {
   createEmailFormSchema,
   FirebaseUIError,
+  getTranslation,
   signInWithEmailAndPassword,
   type EmailFormSchema,
 } from "@firebase-ui/core";
-import { getTranslation } from "@firebase-ui/translations";
 import { useForm } from "@tanstack/react-form";
 import { useMemo, useState } from "react";
-import { useDefaultLocale, useTranslations, useUI } from "~/hooks";
+import { useUI } from "~/hooks";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
 import { TermsAndPrivacy } from "../../components/terms-and-privacy";
@@ -24,16 +24,14 @@ export function EmailPasswordForm({
   onRegisterClick,
 }: EmailPasswordFormProps) {
   const ui = useUI();
-  const translations = useTranslations(ui);
-  const defaultLocale = useDefaultLocale(ui);
 
   const [formError, setFormError] = useState<string | null>(null);
   const [firstValidationOccured, setFirstValidationOccured] = useState(false);
 
   // TODO: Do we need to memoize this?
   const emailFormSchema = useMemo(
-    () => createEmailFormSchema(translations),
-    [translations]
+    () => createEmailFormSchema(ui.translations),
+    [ui.translations]
   );
 
   const form = useForm<EmailFormSchema>({
@@ -56,9 +54,7 @@ export function EmailPasswordForm({
         }
 
         console.error(error);
-        setFormError(
-          getTranslation("errors", "unknownError", translations, defaultLocale)
-        );
+        setFormError(getTranslation(ui, "errors", "unknownError"));
       }
     },
   });
@@ -78,14 +74,7 @@ export function EmailPasswordForm({
           children={(field) => (
             <>
               <label htmlFor={field.name}>
-                <span>
-                  {getTranslation(
-                    "labels",
-                    "emailAddress",
-                    translations,
-                    defaultLocale
-                  )}
-                </span>
+                <span>{getTranslation(ui, "labels", "emailAddress")}</span>
                 <input
                   aria-invalid={
                     field.state.meta.isTouched &&
@@ -122,24 +111,14 @@ export function EmailPasswordForm({
               <label htmlFor={field.name}>
                 <span className="inline-flex flex">
                   <span className="flex-grow">
-                    {getTranslation(
-                      "labels",
-                      "password",
-                      translations,
-                      defaultLocale
-                    )}
+                    {getTranslation(ui, "labels", "password")}
                   </span>
                   <button
                     type="button"
                     onClick={onForgotPasswordClick}
                     className="fui-form__action"
                   >
-                    {getTranslation(
-                      "labels",
-                      "forgotPassword",
-                      translations,
-                      defaultLocale
-                    )}
+                    {getTranslation(ui, "labels", "forgotPassword")}
                   </button>
                 </span>
                 <input
@@ -173,9 +152,7 @@ export function EmailPasswordForm({
       <TermsAndPrivacy />
 
       <fieldset>
-        <Button type="submit">
-          {getTranslation("labels", "signIn", translations, defaultLocale)}
-        </Button>
+        <Button type="submit">{getTranslation(ui, "labels", "signIn")}</Button>
         {formError && <div className="fui-form__error">{formError}</div>}
       </fieldset>
 
@@ -186,13 +163,8 @@ export function EmailPasswordForm({
             onClick={onRegisterClick}
             className="fui-form__action"
           >
-            {getTranslation(
-              "prompts",
-              "noAccount",
-              translations,
-              defaultLocale
-            )}{" "}
-            {getTranslation("labels", "register", translations, defaultLocale)}
+            {getTranslation(ui, "prompts", "noAccount")}{" "}
+            {getTranslation(ui, "labels", "register")}
           </button>
         </div>
       )}

@@ -1,12 +1,13 @@
 import { english, Locale, RegisteredTranslations, TranslationsConfig } from '@firebase-ui/translations';
 import type { FirebaseApp } from 'firebase/app';
 import { Auth, getAuth } from 'firebase/auth';
-import { map, MapStore } from 'nanostores';
+import { deepMap, DeepMapStore, map } from 'nanostores';
 import { Behavior, type BehaviorHandlers, type BehaviorKey, getBehavior, hasBehavior } from './behaviors';
+import { FirebaseUIState } from './state';
 
 type FirebaseUIConfigurationOptions = {
   app: FirebaseApp | undefined; // TODO: Should this be optional? Or remove for Angular types?
-  defaultLocale?: Locale | undefined;
+  locale?: Locale | undefined;
   translations?: RegisteredTranslations[] | undefined;
   behaviors?: Behavior<keyof BehaviorHandlers>[] | undefined;
   tosUrl?: string | undefined;
@@ -17,7 +18,10 @@ type FirebaseUIConfigurationOptions = {
 export type FirebaseUIConfiguration = {
   app: FirebaseApp | undefined;
   getAuth: () => Auth;
-  defaultLocale: Locale;
+  setLocale: (locale: Locale) => void;
+  state: FirebaseUIState;
+  setState: (state: FirebaseUIState) => void;
+  locale: Locale;
   translations: TranslationsConfig;
   behaviors: Partial<Record<BehaviorKey, BehaviorHandlers[BehaviorKey]>>;
   tosUrl: string | undefined;
@@ -25,9 +29,9 @@ export type FirebaseUIConfiguration = {
   recaptchaMode: 'normal' | 'invisible';
 };
 
-export const $config = map<Record<string, MapStore<FirebaseUIConfiguration>>>({});
+export const $config = map<Record<string, DeepMapStore<FirebaseUIConfiguration>>>({});
 
-export type FirebaseUI = MapStore<FirebaseUIConfiguration>;
+export type FirebaseUI = DeepMapStore<FirebaseUIConfiguration>;
 
 export function initializeUI(config: FirebaseUIConfigurationOptions, name: string = '[DEFAULT]'): FirebaseUI {
   // Reduce the behaviors to a single object.
@@ -52,10 +56,19 @@ export function initializeUI(config: FirebaseUIConfigurationOptions, name: strin
 
   $config.setKey(
     name,
-    map<FirebaseUIConfiguration>({
+    deepMap<FirebaseUIConfiguration>({
       app: config.app,
       getAuth: () => getAuth(config.app),
-      defaultLocale: config.defaultLocale ?? english.locale,
+      locale: config.locale ?? english.locale,
+      setLocale: (locale: Locale) => {
+        // @ts-ignore `value` of `setKey` is not correctly typed. It's not `DeepMapStore<FirebaseUIConfiguration>`
+        $config.setKey(`${name}.locale`, locale);
+      },
+      state: 'loading',
+      setState: (state: FirebaseUIState) => {
+        // @ts-ignore `value` of `setKey` is not correctly typed. It's not `DeepMapStore<FirebaseUIConfiguration>`
+        $config.setKey(`${name}.state`, state);
+      },
       translations,
       behaviors: behaviors ?? {},
       tosUrl: config.tosUrl,
@@ -68,7 +81,7 @@ export function initializeUI(config: FirebaseUIConfigurationOptions, name: strin
 
   // TODO(ehesp): Should this belong here - if not, where should it be?
   if (hasBehavior(ui.get(), 'autoAnonymousLogin')) {
-    getBehavior(ui.get(), 'autoAnonymousLogin')(getAuth(ui.get().app));
+    getBehavior(ui.get(), 'autoAnonymousLogin')(ui.get());
   }
 
   return ui;

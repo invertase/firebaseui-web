@@ -30,7 +30,6 @@
   },
   "peerDependencies": {
     "@firebase-ui/core": "workspace:*",
-    "@firebase-ui/translations": "workspace:*",
     "@firebase-ui/styles": "workspace:*"
   },
   "dependencies": {

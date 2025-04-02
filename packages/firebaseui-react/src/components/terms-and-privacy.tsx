@@ -1,34 +1,17 @@
-import { getTranslation } from "@firebase-ui/translations";
+import { getTranslation } from "@firebase-ui/core";
 import { Fragment } from "react";
-import { useDefaultLocale, useTranslations, useUI } from "~/hooks";
+import { useUI } from "~/hooks";
 
 export function TermsAndPrivacy() {
   const ui = useUI();
-  const translations = useTranslations(ui);
-  const defaultLocale = useDefaultLocale(ui);
 
   if (!ui.tosUrl && !ui.privacyPolicyUrl) {
     return null;
   }
 
-  const termsText = getTranslation(
-    "labels",
-    "termsOfService",
-    translations,
-    defaultLocale
-  );
-  const privacyText = getTranslation(
-    "labels",
-    "privacyPolicy",
-    translations,
-    defaultLocale
-  );
-  const termsAndPrivacyText = getTranslation(
-    "messages",
-    "termsAndPrivacy",
-    translations,
-    defaultLocale
-  );
+  const termsText = getTranslation(ui, "labels", "termsOfService");
+  const privacyText = getTranslation(ui, "labels", "privacyPolicy");
+  const termsAndPrivacyText = getTranslation(ui, "messages", "termsAndPrivacy");
 
   const parts = termsAndPrivacyText.split(/(\{tos\}|\{privacy\})/);
 

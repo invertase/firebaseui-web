@@ -28,7 +28,7 @@ export function handleFirebaseError(
     enableHandleExistingCredential?: boolean;
   }
 ): never {
-  const { translations, defaultLocale } = ui;
+  const { translations, locale: defaultLocale } = ui;
   if (error?.code === 'auth/account-exists-with-different-credential' && opts?.enableHandleExistingCredential) {
     if (error.credential) {
       window.sessionStorage.setItem('pendingCred', JSON.stringify(error.credential));

@@ -1,6 +1,5 @@
-import { getTranslation } from "@firebase-ui/translations";
 import { Divider } from "~/components/divider";
-import { useDefaultLocale, useTranslations, useUI } from "~/hooks";
+import { useUI } from "~/hooks";
 import {
   Card,
   CardHeader,
@@ -8,6 +7,7 @@ import {
   CardTitle,
 } from "../../components/card";
 import { RegisterForm } from "../forms/register-form";
+import { getTranslation } from "@firebase-ui/core";
 
 export interface SignUpAuthScreenProps {
   onBackToSignInClick?: () => void;
@@ -19,21 +19,9 @@ export function SignUpAuthScreen({
   children,
 }: SignUpAuthScreenProps) {
   const ui = useUI();
-  const translations = useTranslations(ui);
-  const defaultLocale = useDefaultLocale(ui);
 
-  const titleText = getTranslation(
-    "labels",
-    "register",
-    translations,
-    defaultLocale
-  );
-  const subtitleText = getTranslation(
-    "prompts",
-    "enterDetailsToCreate",
-    translations,
-    defaultLocale
-  );
+  const titleText = getTranslation(ui, "labels", "register");
+  const subtitleText = getTranslation(ui, "prompts", "enterDetailsToCreate");
 
   return (
     <div className="fui-screen">
@@ -45,14 +33,7 @@ export function SignUpAuthScreen({
         <RegisterForm onBackToSignInClick={onBackToSignInClick} />
         {children ? (
           <>
-            <Divider>
-              {getTranslation(
-                "messages",
-                "dividerOr",
-                translations,
-                defaultLocale
-              )}
-            </Divider>
+            <Divider>{getTranslation(ui, "messages", "dividerOr")}</Divider>
             <div className="space-y-4">{children}</div>
           </>
         ) : null}

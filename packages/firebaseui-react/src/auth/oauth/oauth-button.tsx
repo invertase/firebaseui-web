@@ -1,12 +1,15 @@
 "use client";
 
-import { FirebaseUIError, signInWithOAuth } from "@firebase-ui/core";
-import { getTranslation } from "@firebase-ui/translations";
+import {
+  FirebaseUIError,
+  getTranslation,
+  signInWithOAuth,
+} from "@firebase-ui/core";
 import type { AuthProvider } from "firebase/auth";
 import type { PropsWithChildren } from "react";
 import { useState } from "react";
 import { Button } from "~/components/button";
-import { useDefaultLocale, useTranslations, useUI } from "~/hooks";
+import { useUI } from "~/hooks";
 
 export type OAuthButtonProps = PropsWithChildren<{
   provider: AuthProvider;
@@ -14,8 +17,6 @@ export type OAuthButtonProps = PropsWithChildren<{
 
 export function OAuthButton({ provider, children }: OAuthButtonProps) {
   const ui = useUI();
-  const translations = useTranslations(ui);
-  const defaultLocale = useDefaultLocale(ui);
 
   const [error, setError] = useState<string | null>(null);
 
@@ -29,9 +30,7 @@ export function OAuthButton({ provider, children }: OAuthButtonProps) {
         return;
       }
       console.error(error);
-      setError(
-        getTranslation("errors", "unknownError", translations, defaultLocale)
-      );
+      setError(getTranslation(ui, "errors", "unknownError"));
     }
   };
 

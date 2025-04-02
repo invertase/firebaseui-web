@@ -4,12 +4,12 @@ import {
   FirebaseUIError,
   completeEmailLinkSignIn,
   createEmailLinkFormSchema,
+  getTranslation,
   sendSignInLinkToEmail,
 } from "@firebase-ui/core";
-import { getTranslation } from "@firebase-ui/translations";
 import { useForm } from "@tanstack/react-form";
 import { useEffect, useMemo, useState } from "react";
-import { useAuth, useDefaultLocale, useTranslations, useUI } from "~/hooks";
+import { useAuth, useUI } from "~/hooks";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
 import { TermsAndPrivacy } from "../../components/terms-and-privacy";
@@ -17,16 +17,14 @@ import { TermsAndPrivacy } from "../../components/terms-and-privacy";
 export function EmailLinkForm() {
   const ui = useUI();
   const auth = useAuth(ui);
-  const translations = useTranslations(ui);
-  const defaultLocale = useDefaultLocale(ui);
 
   const [formError, setFormError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
   const [firstValidationOccured, setFirstValidationOccured] = useState(false);
 
   const emailLinkFormSchema = useMemo(
-    () => createEmailLinkFormSchema(translations),
-    [translations]
+    () => createEmailLinkFormSchema(ui.translations),
+    [ui.translations]
   );
 
   const form = useForm({
@@ -49,9 +47,7 @@ export function EmailLinkForm() {
         }
 
         console.error(error);
-        setFormError(
-          getTranslation("errors", "unknownError", translations, defaultLocale)
-        );
+        setFormError(getTranslation(ui, "errors", "unknownError"));
       }
     },
   });
@@ -69,20 +65,11 @@ export function EmailLinkForm() {
     };
 
     void completeSignIn();
-  }, [auth, translations]);
+  }, [auth, ui.translations]);
 
   if (emailSent) {
     // TODO: Improve this UI
-    return (
-      <div>
-        {getTranslation(
-          "messages",
-          "signInLinkSent",
-          translations,
-          defaultLocale
-        )}
-      </div>
-    );
+    return <div>{getTranslation(ui, "messages", "signInLinkSent")}</div>;
   }
 
   return (
@@ -100,14 +87,7 @@ export function EmailLinkForm() {
           children={(field) => (
             <>
               <label htmlFor={field.name}>
-                <span>
-                  {getTranslation(
-                    "labels",
-                    "emailAddress",
-                    translations,
-                    defaultLocale
-                  )}
-                </span>
+                <span>{getTranslation(ui, "labels", "emailAddress")}</span>
                 <input
                   aria-invalid={
                     field.state.meta.isTouched &&
@@ -140,12 +120,7 @@ export function EmailLinkForm() {
 
       <fieldset>
         <Button type="submit">
-          {getTranslation(
-            "labels",
-            "sendSignInLink",
-            translations,
-            defaultLocale
-          )}
+          {getTranslation(ui, "labels", "sendSignInLink")}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
       </fieldset>

@@ -1,5 +1,5 @@
-import { getTranslation } from "@firebase-ui/translations";
-import { useDefaultLocale, useTranslations, useUI } from "~/hooks";
+import { getTranslation } from "@firebase-ui/core";
+import { useUI } from "~/hooks";
 import {
   Card,
   CardHeader,
@@ -14,22 +14,10 @@ export interface OAuthAuthScreenProps {
 
 export function OAuthScreen({ children }: OAuthAuthScreenProps) {
   const ui = useUI();
-  const translations = useTranslations(ui);
-  const defaultLocale = useDefaultLocale(ui);
 
   // TODO: Translations for oauth providers
-  const titleText = getTranslation(
-    "labels",
-    "signIn",
-    translations,
-    defaultLocale
-  );
-  const subtitleText = getTranslation(
-    "prompts",
-    "signInToAccount",
-    translations,
-    defaultLocale
-  );
+  const titleText = getTranslation(ui, "labels", "signIn");
+  const subtitleText = getTranslation(ui, "prompts", "signInToAccount");
 
   return (
     <div className="fui-screen">

@@ -4,12 +4,12 @@ import {
   FirebaseUIError,
   createEmailFormSchema,
   createUserWithEmailAndPassword,
+  getTranslation,
   type EmailFormSchema,
 } from "@firebase-ui/core";
-import { getTranslation } from "@firebase-ui/translations";
 import { useForm } from "@tanstack/react-form";
 import { useMemo, useState } from "react";
-import { useDefaultLocale, useTranslations, useUI } from "~/hooks";
+import { useUI } from "~/hooks";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
 import { TermsAndPrivacy } from "../../components/terms-and-privacy";
@@ -20,14 +20,12 @@ export function RegisterForm({
   onBackToSignInClick?: () => void;
 }) {
   const ui = useUI();
-  const translations = useTranslations(ui);
-  const defaultLocale = useDefaultLocale(ui);
 
   const [formError, setFormError] = useState<string | null>(null);
   const [firstValidationOccured, setFirstValidationOccured] = useState(false);
   const emailFormSchema = useMemo(
-    () => createEmailFormSchema(translations),
-    [translations]
+    () => createEmailFormSchema(ui.translations),
+    [ui.translations]
   );
 
   const form = useForm<EmailFormSchema>({
@@ -50,9 +48,7 @@ export function RegisterForm({
         }
 
         console.error(error);
-        setFormError(
-          getTranslation("errors", "unknownError", translations, defaultLocale)
-        );
+        setFormError(getTranslation(ui, "errors", "unknownError"));
       }
     },
   });
@@ -72,14 +68,7 @@ export function RegisterForm({
           children={(field) => (
             <>
               <label htmlFor={field.name}>
-                <span>
-                  {getTranslation(
-                    "labels",
-                    "emailAddress",
-                    translations,
-                    defaultLocale
-                  )}
-                </span>
+                <span>{getTranslation(ui, "labels", "emailAddress")}</span>
                 <input
                   aria-invalid={
                     field.state.meta.isTouched &&
@@ -114,14 +103,7 @@ export function RegisterForm({
           children={(field) => (
             <>
               <label htmlFor={field.name}>
-                <span>
-                  {getTranslation(
-                    "labels",
-                    "password",
-                    translations,
-                    defaultLocale
-                  )}
-                </span>
+                <span>{getTranslation(ui, "labels", "password")}</span>
                 <input
                   aria-invalid={
                     field.state.meta.isTouched &&
@@ -154,12 +136,7 @@ export function RegisterForm({
 
       <fieldset>
         <Button type="submit">
-          {getTranslation(
-            "labels",
-            "createAccount",
-            translations,
-            defaultLocale
-          )}
+          {getTranslation(ui, "labels", "createAccount")}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
       </fieldset>
@@ -171,14 +148,8 @@ export function RegisterForm({
             onClick={onBackToSignInClick}
             className="fui-form__action"
           >
-            {getTranslation(
-              "prompts",
-              "haveAccount",
-              translations,
-              defaultLocale
-            )}{" "}
-            {getTranslation("labels", "signIn", translations, defaultLocale)}{" "}
-            &rarr;
+            {getTranslation(ui, "prompts", "haveAccount")}{" "}
+            {getTranslation(ui, "labels", "signIn")} &rarr;
           </button>
         </div>
       )}

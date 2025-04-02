@@ -1,5 +1,4 @@
 import {
-  Auth,
   AuthCredential,
   AuthProvider,
   linkWithCredential,
@@ -10,13 +9,15 @@ import {
   UserCredential,
 } from 'firebase/auth';
 import { FirebaseUIConfiguration } from './config';
-import { $state } from './state';
 
 export type BehaviorHandlers = {
-  autoAnonymousLogin: (auth: Auth) => Promise<User>;
-  autoUpgradeAnonymousCredential: (auth: Auth, credential: AuthCredential) => Promise<UserCredential | undefined>;
-  autoUpgradeAnonymousProvider: (auth: Auth, provider: AuthProvider) => Promise<undefined | never>;
-  autoUpgradeAnonymousLink: (auth: Auth) => {
+  autoAnonymousLogin: (ui: FirebaseUIConfiguration) => Promise<User>;
+  autoUpgradeAnonymousCredential: (
+    ui: FirebaseUIConfiguration,
+    credential: AuthCredential
+  ) => Promise<UserCredential | undefined>;
+  autoUpgradeAnonymousProvider: (ui: FirebaseUIConfiguration, provider: AuthProvider) => Promise<undefined | never>;
+  autoUpgradeAnonymousLink: (ui: FirebaseUIConfiguration) => {
     setStorageItem: (key: string, value: string) => void;
     removeStorageItem: (key: string) => void;
   };
@@ -40,8 +41,9 @@ export function getBehavior<T extends BehaviorKey>(ui: FirebaseUIConfiguration, 
 
 export function autoAnonymousLogin(): Behavior<'autoAnonymousLogin'> {
   return {
-    autoAnonymousLogin: async (auth) => {
-      $state.set('signing-in');
+    autoAnonymousLogin: async (ui) => {
+      const auth = ui.getAuth();
+      ui.setState('signing-in');
       const user = await new Promise<User>((resolve) => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
           if (!user) {
@@ -53,7 +55,7 @@ export function autoAnonymousLogin(): Behavior<'autoAnonymousLogin'> {
           resolve(user);
         });
       });
-      $state.set('idle');
+      ui.setState('idle');
       return user;
     },
   };
@@ -63,7 +65,8 @@ export function autoUpgradeAnonymousUsers(): Behavior<
   'autoUpgradeAnonymousCredential' | 'autoUpgradeAnonymousProvider' | 'autoUpgradeAnonymousLink'
 > {
   return {
-    autoUpgradeAnonymousCredential: async (auth, credential) => {
+    autoUpgradeAnonymousCredential: async (ui, credential) => {
+      const auth = ui.getAuth();
       const currentUser = auth.currentUser;
 
       // Check if the user is anonymous. If not, we can't upgrade them.
@@ -71,25 +74,26 @@ export function autoUpgradeAnonymousUsers(): Behavior<
         return;
       }
 
-      $state.set('linking');
+      ui.setState('linking');
       const result = await linkWithCredential(currentUser, credential);
-      $state.set('idle');
+      ui.setState('idle');
       return result;
     },
-    autoUpgradeAnonymousProvider: async (auth, provider) => {
+    autoUpgradeAnonymousProvider: async (ui, provider) => {
+      const auth = ui.getAuth();
       const currentUser = auth.currentUser;
 
       if (!currentUser?.isAnonymous) {
         return;
       }
 
-      $state.set('linking');
+      ui.setState('linking');
       await linkWithRedirect(currentUser, provider);
       // We don't modify state here since the user is redirected.
       // If we support popups, we'd need to modify state here.
     },
     // @ts-ignore
-    autoUpgradeAnonymousLink: async (auth) => {
+    autoUpgradeAnonymousLink: async (ui) => {
       throw new Error('Not implemented');
     },
   };

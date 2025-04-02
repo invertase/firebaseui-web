@@ -3,13 +3,13 @@
 import {
   createForgotPasswordFormSchema,
   FirebaseUIError,
+  getTranslation,
   sendPasswordResetEmail,
   type ForgotPasswordFormSchema,
 } from "@firebase-ui/core";
-import { getTranslation } from "@firebase-ui/translations";
 import { useForm } from "@tanstack/react-form";
 import { useMemo, useState } from "react";
-import { useDefaultLocale, useTranslations, useUI } from "~/hooks";
+import { useUI } from "~/hooks";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
 import { TermsAndPrivacy } from "../../components/terms-and-privacy";
@@ -22,15 +22,13 @@ export function ForgotPasswordForm({
   onBackToSignInClick,
 }: ForgotPasswordFormProps) {
   const ui = useUI();
-  const translations = useTranslations(ui);
-  const defaultLocale = useDefaultLocale(ui);
 
   const [formError, setFormError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
   const [firstValidationOccured, setFirstValidationOccured] = useState(false);
   const forgotPasswordFormSchema = useMemo(
-    () => createForgotPasswordFormSchema(translations),
-    [translations]
+    () => createForgotPasswordFormSchema(ui.translations),
+    [ui.translations]
   );
 
   const form = useForm<ForgotPasswordFormSchema>({
@@ -53,9 +51,7 @@ export function ForgotPasswordForm({
         }
 
         console.error(error);
-        setFormError(
-          getTranslation("errors", "unknownError", translations, defaultLocale)
-        );
+        setFormError(getTranslation(ui, "errors", "unknownError"));
       }
     },
   });
@@ -63,12 +59,7 @@ export function ForgotPasswordForm({
   if (emailSent) {
     return (
       <div className="fui-form__success">
-        {getTranslation(
-          "messages",
-          "checkEmailForReset",
-          translations,
-          defaultLocale
-        )}
+        {getTranslation(ui, "messages", "checkEmailForReset")}
       </div>
     );
   }
@@ -88,14 +79,7 @@ export function ForgotPasswordForm({
           children={(field) => (
             <>
               <label htmlFor={field.name}>
-                <span>
-                  {getTranslation(
-                    "labels",
-                    "emailAddress",
-                    translations,
-                    defaultLocale
-                  )}
-                </span>
+                <span>{getTranslation(ui, "labels", "emailAddress")}</span>
                 <input
                   aria-invalid={
                     field.state.meta.isTouched &&
@@ -128,12 +112,7 @@ export function ForgotPasswordForm({
 
       <fieldset>
         <Button type="submit">
-          {getTranslation(
-            "labels",
-            "resetPassword",
-            translations,
-            defaultLocale
-          )}
+          {getTranslation(ui, "labels", "resetPassword")}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
       </fieldset>
@@ -145,13 +124,7 @@ export function ForgotPasswordForm({
             onClick={onBackToSignInClick}
             className="fui-form__action"
           >
-            {getTranslation(
-              "labels",
-              "backToSignIn",
-              translations,
-              defaultLocale
-            )}{" "}
-            &rarr;
+            {getTranslation(ui, "labels", "backToSignIn")} &rarr;
           </button>
         </div>
       )}

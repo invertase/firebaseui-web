@@ -324,9 +324,6 @@ importers:
       '@firebase-ui/styles':
         specifier: workspace:*
         version: link:../firebaseui-styles
-      '@firebase-ui/translations':
-        specifier: workspace:*
-        version: link:../firebaseui-translations
       '@nanostores/react':
         specifier: ^0.8.4
         version: 0.8.4(nanostores@0.11.3)(react@19.0.0)
