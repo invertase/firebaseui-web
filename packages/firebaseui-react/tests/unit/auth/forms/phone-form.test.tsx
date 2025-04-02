@@ -6,7 +6,7 @@ import { act } from "react";
 // Mock Firebase Auth
 vi.mock("firebase/auth", () => ({
   RecaptchaVerifier: vi.fn().mockImplementation(() => ({
-    render: vi.fn().mockResolvedValue("recaptcha-token"),
+    render: vi.fn().mockResolvedValue(123),
     clear: vi.fn(),
     verify: vi.fn().mockResolvedValue("verification-token"),
   })),

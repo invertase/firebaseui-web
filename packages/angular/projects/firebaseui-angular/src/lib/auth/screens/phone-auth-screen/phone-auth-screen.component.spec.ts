@@ -4,7 +4,7 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
 import { FirebaseUi } from '../../../provider';
-import { SignUpAuthScreenComponent } from './sign-up-auth-screen.component';
+import { PhoneAuthScreenComponent } from './phone-auth-screen.component';
 
 // Mock Card components
 @Component({
@@ -35,19 +35,19 @@ class MockCardTitleComponent {}
 })
 class MockCardSubtitleComponent {}
 
-// Mock RegisterForm component
+// Mock PhoneForm component
 @Component({
-  selector: 'fui-register-form',
+  selector: 'fui-phone-form',
   template: `
-    <div data-testid="register-form">
-      Register Form
-      <p>Sign In Route: {{ signInRoute }}</p>
+    <div data-testid="phone-form">
+      Phone Form
+      <p>Resend Delay: {{ resendDelay }}</p>
     </div>
   `,
   standalone: true,
 })
-class MockRegisterFormComponent {
-  @Input() signInRoute: string = '';
+class MockPhoneFormComponent {
+  @Input() resendDelay: number = 30;
 }
 
 // Mock Divider component
@@ -61,11 +61,11 @@ class MockDividerComponent {}
 // Create mock for FirebaseUi provider
 class MockFirebaseUi {
   translation(category: string, key: string) {
-    if (category === 'labels' && key === 'register') {
-      return of('Create Account');
+    if (category === 'labels' && key === 'signIn') {
+      return of('Sign in');
     }
-    if (category === 'prompts' && key === 'enterDetailsToCreate') {
-      return of('Enter your details to create an account');
+    if (category === 'prompts' && key === 'signInToAccount') {
+      return of('Sign in to your account');
     }
     if (category === 'messages' && key === 'dividerOr') {
       return of('OR');
@@ -77,24 +77,24 @@ class MockFirebaseUi {
 // Test component with content projection
 @Component({
   template: `
-    <fui-sign-up-auth-screen>
-      <div data-testid="test-child">Child element</div>
-    </fui-sign-up-auth-screen>
+    <fui-phone-auth-screen>
+      <button data-testid="test-button">Test Button</button>
+    </fui-phone-auth-screen>
   `,
   standalone: true,
-  imports: [SignUpAuthScreenComponent],
+  imports: [PhoneAuthScreenComponent],
 })
 class TestHostWithChildrenComponent {}
 
 // Test component without content projection
 @Component({
-  template: ` <fui-sign-up-auth-screen></fui-sign-up-auth-screen> `,
+  template: ` <fui-phone-auth-screen></fui-phone-auth-screen> `,
   standalone: true,
-  imports: [SignUpAuthScreenComponent],
+  imports: [PhoneAuthScreenComponent],
 })
 class TestHostWithoutChildrenComponent {}
 
-describe('SignUpAuthScreenComponent', () => {
+describe('PhoneAuthScreenComponent', () => {
   let mockFirebaseUi: MockFirebaseUi;
 
   beforeEach(async () => {
@@ -103,20 +103,20 @@ describe('SignUpAuthScreenComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         CommonModule,
-        SignUpAuthScreenComponent,
+        PhoneAuthScreenComponent,
         TestHostWithChildrenComponent,
         TestHostWithoutChildrenComponent,
         MockCardComponent,
         MockCardHeaderComponent,
         MockCardTitleComponent,
         MockCardSubtitleComponent,
-        MockRegisterFormComponent,
+        MockPhoneFormComponent,
         MockDividerComponent,
       ],
       providers: [{ provide: FirebaseUi, useValue: mockFirebaseUi }],
     }).compileComponents();
 
-    TestBed.overrideComponent(SignUpAuthScreenComponent, {
+    TestBed.overrideComponent(PhoneAuthScreenComponent, {
       set: {
         imports: [
           CommonModule,
@@ -124,7 +124,7 @@ describe('SignUpAuthScreenComponent', () => {
           MockCardHeaderComponent,
           MockCardTitleComponent,
           MockCardSubtitleComponent,
-          MockRegisterFormComponent,
+          MockPhoneFormComponent,
           MockDividerComponent,
         ],
       },
@@ -132,49 +132,35 @@ describe('SignUpAuthScreenComponent', () => {
   });
 
   it('should create', () => {
-    const fixture = TestBed.createComponent(SignUpAuthScreenComponent);
+    const fixture = TestBed.createComponent(PhoneAuthScreenComponent);
     const component = fixture.componentInstance;
     expect(component).toBeTruthy();
   });
 
-  it('renders the correct title and subtitle', () => {
-    const fixture = TestBed.createComponent(SignUpAuthScreenComponent);
+  it('displays the correct title and subtitle', () => {
+    const fixture = TestBed.createComponent(PhoneAuthScreenComponent);
     fixture.detectChanges();
 
     const titleEl = fixture.debugElement.query(By.css('.fui-card-title'));
     const subtitleEl = fixture.debugElement.query(By.css('.fui-card-subtitle'));
 
-    expect(titleEl.nativeElement.textContent).toBe('Create Account');
+    expect(titleEl.nativeElement.textContent).toBe('Sign in');
     expect(subtitleEl.nativeElement.textContent).toBe(
-      'Enter your details to create an account'
+      'Sign in to your account'
     );
   });
 
-  it('includes the RegisterForm component', () => {
-    const fixture = TestBed.createComponent(SignUpAuthScreenComponent);
-    fixture.detectChanges();
-
-    const formEl = fixture.debugElement.query(
-      By.css('[data-testid="register-form"]')
-    );
-    expect(formEl).toBeTruthy();
-    expect(formEl.nativeElement.textContent).toContain('Register Form');
-  });
-
-  it('passes signInRoute to RegisterForm', () => {
-    const fixture = TestBed.createComponent(SignUpAuthScreenComponent);
+  it('includes the PhoneForm with the correct resendDelay prop', () => {
+    const fixture = TestBed.createComponent(PhoneAuthScreenComponent);
     const component = fixture.componentInstance;
-
-    component.signInRoute = '/sign-in';
-
+    component.resendDelay = 60;
     fixture.detectChanges();
 
-    const formEl = fixture.debugElement.query(
-      By.css('[data-testid="register-form"]')
+    const phoneFormEl = fixture.debugElement.query(
+      By.css('[data-testid="phone-form"]')
     );
-    expect(formEl.nativeElement.textContent).toContain(
-      'Sign In Route: /sign-in'
-    );
+    expect(phoneFormEl).toBeTruthy();
+    expect(phoneFormEl.nativeElement.textContent).toContain('Resend Delay: 60');
   });
 
   it('renders children when provided', fakeAsync(() => {
@@ -185,18 +171,18 @@ describe('SignUpAuthScreenComponent', () => {
     tick(0);
     fixture.detectChanges();
 
-    const childEl = fixture.debugElement.query(
-      By.css('[data-testid="test-child"]')
+    const buttonEl = fixture.debugElement.query(
+      By.css('[data-testid="test-button"]')
     );
     const dividerEl = fixture.debugElement.query(By.css('.fui-divider'));
 
-    expect(childEl).toBeTruthy();
-    expect(childEl.nativeElement.textContent).toBe('Child element');
+    expect(buttonEl).toBeTruthy();
+    expect(buttonEl.nativeElement.textContent).toBe('Test Button');
     expect(dividerEl).toBeTruthy();
     expect(dividerEl.nativeElement.textContent).toBe('OR');
   }));
 
-  it('does not render divider or children container when no children are provided', fakeAsync(() => {
+  it('does not render children or divider when not provided', fakeAsync(() => {
     const fixture = TestBed.createComponent(TestHostWithoutChildrenComponent);
     fixture.detectChanges();
 

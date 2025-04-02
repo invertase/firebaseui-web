@@ -4,7 +4,7 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
 import { FirebaseUi } from '../../../provider';
-import { SignUpAuthScreenComponent } from './sign-up-auth-screen.component';
+import { SignInAuthScreenComponent } from './sign-in-auth-screen.component';
 
 // Mock Card components
 @Component({
@@ -35,19 +35,21 @@ class MockCardTitleComponent {}
 })
 class MockCardSubtitleComponent {}
 
-// Mock RegisterForm component
+// Mock EmailPasswordForm component
 @Component({
-  selector: 'fui-register-form',
+  selector: 'fui-email-password-form',
   template: `
-    <div data-testid="register-form">
-      Register Form
-      <p>Sign In Route: {{ signInRoute }}</p>
+    <div data-testid="email-password-form">
+      Email Password Form
+      <p>Forgot Password Route: {{ forgotPasswordRoute }}</p>
+      <p>Register Route: {{ registerRoute }}</p>
     </div>
   `,
   standalone: true,
 })
-class MockRegisterFormComponent {
-  @Input() signInRoute: string = '';
+class MockEmailPasswordFormComponent {
+  @Input() forgotPasswordRoute: string = '';
+  @Input() registerRoute: string = '';
 }
 
 // Mock Divider component
@@ -61,11 +63,11 @@ class MockDividerComponent {}
 // Create mock for FirebaseUi provider
 class MockFirebaseUi {
   translation(category: string, key: string) {
-    if (category === 'labels' && key === 'register') {
-      return of('Create Account');
+    if (category === 'labels' && key === 'signIn') {
+      return of('Sign in');
     }
-    if (category === 'prompts' && key === 'enterDetailsToCreate') {
-      return of('Enter your details to create an account');
+    if (category === 'prompts' && key === 'signInToAccount') {
+      return of('Sign in to your account');
     }
     if (category === 'messages' && key === 'dividerOr') {
       return of('OR');
@@ -77,24 +79,24 @@ class MockFirebaseUi {
 // Test component with content projection
 @Component({
   template: `
-    <fui-sign-up-auth-screen>
-      <div data-testid="test-child">Child element</div>
-    </fui-sign-up-auth-screen>
+    <fui-sign-in-auth-screen>
+      <button data-testid="test-button">Test Button</button>
+    </fui-sign-in-auth-screen>
   `,
   standalone: true,
-  imports: [SignUpAuthScreenComponent],
+  imports: [SignInAuthScreenComponent],
 })
 class TestHostWithChildrenComponent {}
 
 // Test component without content projection
 @Component({
-  template: ` <fui-sign-up-auth-screen></fui-sign-up-auth-screen> `,
+  template: ` <fui-sign-in-auth-screen></fui-sign-in-auth-screen> `,
   standalone: true,
-  imports: [SignUpAuthScreenComponent],
+  imports: [SignInAuthScreenComponent],
 })
 class TestHostWithoutChildrenComponent {}
 
-describe('SignUpAuthScreenComponent', () => {
+describe('SignInAuthScreenComponent', () => {
   let mockFirebaseUi: MockFirebaseUi;
 
   beforeEach(async () => {
@@ -103,20 +105,20 @@ describe('SignUpAuthScreenComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         CommonModule,
-        SignUpAuthScreenComponent,
+        SignInAuthScreenComponent,
         TestHostWithChildrenComponent,
         TestHostWithoutChildrenComponent,
         MockCardComponent,
         MockCardHeaderComponent,
         MockCardTitleComponent,
         MockCardSubtitleComponent,
-        MockRegisterFormComponent,
+        MockEmailPasswordFormComponent,
         MockDividerComponent,
       ],
       providers: [{ provide: FirebaseUi, useValue: mockFirebaseUi }],
     }).compileComponents();
 
-    TestBed.overrideComponent(SignUpAuthScreenComponent, {
+    TestBed.overrideComponent(SignInAuthScreenComponent, {
       set: {
         imports: [
           CommonModule,
@@ -124,7 +126,7 @@ describe('SignUpAuthScreenComponent', () => {
           MockCardHeaderComponent,
           MockCardTitleComponent,
           MockCardSubtitleComponent,
-          MockRegisterFormComponent,
+          MockEmailPasswordFormComponent,
           MockDividerComponent,
         ],
       },
@@ -132,48 +134,52 @@ describe('SignUpAuthScreenComponent', () => {
   });
 
   it('should create', () => {
-    const fixture = TestBed.createComponent(SignUpAuthScreenComponent);
+    const fixture = TestBed.createComponent(SignInAuthScreenComponent);
     const component = fixture.componentInstance;
     expect(component).toBeTruthy();
   });
 
-  it('renders the correct title and subtitle', () => {
-    const fixture = TestBed.createComponent(SignUpAuthScreenComponent);
+  it('displays the correct title and subtitle', () => {
+    const fixture = TestBed.createComponent(SignInAuthScreenComponent);
     fixture.detectChanges();
 
     const titleEl = fixture.debugElement.query(By.css('.fui-card-title'));
     const subtitleEl = fixture.debugElement.query(By.css('.fui-card-subtitle'));
 
-    expect(titleEl.nativeElement.textContent).toBe('Create Account');
+    expect(titleEl.nativeElement.textContent).toBe('Sign in');
     expect(subtitleEl.nativeElement.textContent).toBe(
-      'Enter your details to create an account'
+      'Sign in to your account'
     );
   });
 
-  it('includes the RegisterForm component', () => {
-    const fixture = TestBed.createComponent(SignUpAuthScreenComponent);
+  it('includes the EmailPasswordForm component', () => {
+    const fixture = TestBed.createComponent(SignInAuthScreenComponent);
     fixture.detectChanges();
 
     const formEl = fixture.debugElement.query(
-      By.css('[data-testid="register-form"]')
+      By.css('[data-testid="email-password-form"]')
     );
     expect(formEl).toBeTruthy();
-    expect(formEl.nativeElement.textContent).toContain('Register Form');
+    expect(formEl.nativeElement.textContent).toContain('Email Password Form');
   });
 
-  it('passes signInRoute to RegisterForm', () => {
-    const fixture = TestBed.createComponent(SignUpAuthScreenComponent);
+  it('passes route props to EmailPasswordForm', () => {
+    const fixture = TestBed.createComponent(SignInAuthScreenComponent);
     const component = fixture.componentInstance;
 
-    component.signInRoute = '/sign-in';
+    component.forgotPasswordRoute = '/reset-password';
+    component.registerRoute = '/sign-up';
 
     fixture.detectChanges();
 
     const formEl = fixture.debugElement.query(
-      By.css('[data-testid="register-form"]')
+      By.css('[data-testid="email-password-form"]')
     );
     expect(formEl.nativeElement.textContent).toContain(
-      'Sign In Route: /sign-in'
+      'Forgot Password Route: /reset-password'
+    );
+    expect(formEl.nativeElement.textContent).toContain(
+      'Register Route: /sign-up'
     );
   });
 
@@ -185,18 +191,18 @@ describe('SignUpAuthScreenComponent', () => {
     tick(0);
     fixture.detectChanges();
 
-    const childEl = fixture.debugElement.query(
-      By.css('[data-testid="test-child"]')
+    const buttonEl = fixture.debugElement.query(
+      By.css('[data-testid="test-button"]')
     );
     const dividerEl = fixture.debugElement.query(By.css('.fui-divider'));
 
-    expect(childEl).toBeTruthy();
-    expect(childEl.nativeElement.textContent).toBe('Child element');
+    expect(buttonEl).toBeTruthy();
+    expect(buttonEl.nativeElement.textContent).toBe('Test Button');
     expect(dividerEl).toBeTruthy();
     expect(dividerEl.nativeElement.textContent).toBe('OR');
   }));
 
-  it('does not render divider or children container when no children are provided', fakeAsync(() => {
+  it('does not render children or divider when not provided', fakeAsync(() => {
     const fixture = TestBed.createComponent(TestHostWithoutChildrenComponent);
     fixture.detectChanges();
 
