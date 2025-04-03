@@ -12,13 +12,20 @@ import { useMemo, useState } from "react";
 import { useUI } from "~/hooks";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
-import { TermsAndPrivacy } from "../../components/terms-and-privacy";
+import {
+  TermsAndPrivacy,
+  TermsAndPrivacyProps,
+} from "../../components/terms-and-privacy";
+
+interface RegisterFormProps extends TermsAndPrivacyProps {
+  onBackToSignInClick?: () => void;
+}
 
 export function RegisterForm({
   onBackToSignInClick,
-}: {
-  onBackToSignInClick?: () => void;
-}) {
+  tosUrl,
+  privacyPolicyUrl,
+}: RegisterFormProps) {
   const ui = useUI();
 
   const [formError, setFormError] = useState<string | null>(null);
@@ -132,7 +139,7 @@ export function RegisterForm({
         />
       </fieldset>
 
-      <TermsAndPrivacy />
+      <TermsAndPrivacy tosUrl={tosUrl} privacyPolicyUrl={privacyPolicyUrl} />
 
       <fieldset>
         <Button type="submit" disabled={ui.state !== "idle"}>

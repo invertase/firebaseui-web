@@ -10,8 +10,6 @@ type FirebaseUIConfigurationOptions = {
   locale?: Locale | undefined;
   translations?: RegisteredTranslations[] | undefined;
   behaviors?: Partial<Behavior<keyof BehaviorHandlers>>[] | undefined;
-  tosUrl?: string | undefined;
-  privacyPolicyUrl?: string | undefined;
   recaptchaMode?: 'normal' | 'invisible' | undefined;
 };
 
@@ -24,8 +22,6 @@ export type FirebaseUIConfiguration = {
   locale: Locale;
   translations: TranslationsConfig;
   behaviors: Partial<Record<BehaviorKey, BehaviorHandlers[BehaviorKey]>>;
-  tosUrl: string | undefined;
-  privacyPolicyUrl: string | undefined;
   recaptchaMode: 'normal' | 'invisible';
 };
 
@@ -71,8 +67,6 @@ export function initializeUI(config: FirebaseUIConfigurationOptions, name: strin
       },
       translations,
       behaviors: behaviors ?? {},
-      tosUrl: config.tosUrl,
-      privacyPolicyUrl: config.privacyPolicyUrl,
       recaptchaMode: config.recaptchaMode ?? 'normal',
     })
   );

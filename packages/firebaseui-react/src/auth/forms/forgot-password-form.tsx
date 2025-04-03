@@ -12,14 +12,19 @@ import { useMemo, useState } from "react";
 import { useUI } from "~/hooks";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
-import { TermsAndPrivacy } from "../../components/terms-and-privacy";
+import {
+  TermsAndPrivacy,
+  TermsAndPrivacyProps,
+} from "../../components/terms-and-privacy";
 
-interface ForgotPasswordFormProps {
+interface ForgotPasswordFormProps extends TermsAndPrivacyProps {
   onBackToSignInClick?: () => void;
 }
 
 export function ForgotPasswordForm({
   onBackToSignInClick,
+  tosUrl,
+  privacyPolicyUrl,
 }: ForgotPasswordFormProps) {
   const ui = useUI();
 
@@ -108,7 +113,7 @@ export function ForgotPasswordForm({
         />
       </fieldset>
 
-      <TermsAndPrivacy />
+      <TermsAndPrivacy tosUrl={tosUrl} privacyPolicyUrl={privacyPolicyUrl} />
 
       <fieldset>
         <Button type="submit" disabled={ui.state !== "idle"}>

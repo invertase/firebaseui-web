@@ -6,13 +6,20 @@ import {
   CardSubtitle,
   CardTitle,
 } from "../../components/card";
-import { TermsAndPrivacy } from "../../components/terms-and-privacy";
+import {
+  TermsAndPrivacy,
+  TermsAndPrivacyProps,
+} from "../../components/terms-and-privacy";
 
-export interface OAuthAuthScreenProps {
+export interface OAuthAuthScreenProps extends TermsAndPrivacyProps {
   children: React.ReactNode | React.ReactNode[];
 }
 
-export function OAuthScreen({ children }: OAuthAuthScreenProps) {
+export function OAuthScreen({
+  children,
+  tosUrl,
+  privacyPolicyUrl,
+}: OAuthAuthScreenProps) {
   const ui = useUI();
 
   // TODO: Translations for oauth providers
@@ -27,7 +34,7 @@ export function OAuthScreen({ children }: OAuthAuthScreenProps) {
           <CardSubtitle>{subtitleText}</CardSubtitle>
         </CardHeader>
         {children}
-        <TermsAndPrivacy />
+        <TermsAndPrivacy tosUrl={tosUrl} privacyPolicyUrl={privacyPolicyUrl} />
       </Card>
     </div>
   );

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { TermsAndPrivacy } from "../../../src/components/terms-and-privacy";
-import { getTranslation } from "@firebase-ui/core";
+import { FirebaseUIConfiguration, getTranslation } from "@firebase-ui/core";
 
 // Mock useConfig hook
 const useConfigMock = vi.fn();
@@ -24,7 +24,7 @@ describe("TermsAndPrivacy Component", () => {
 
     // Override getTranslation for specific cases
     vi.mocked(getTranslation).mockImplementation(
-      (section: string, key: string) => {
+      (ui: FirebaseUIConfiguration, section: string, key: string) => {
         if (section === "labels" && key === "termsOfService") {
           return "Terms of Service";
         }
@@ -40,7 +40,12 @@ describe("TermsAndPrivacy Component", () => {
   });
 
   it("renders component with terms and privacy links", () => {
-    render(<TermsAndPrivacy />);
+    render(
+      <TermsAndPrivacy
+        tosUrl="https://example.com/terms"
+        privacyPolicyUrl="https://example.com/privacy"
+      />
+    );
 
     // Check that the text and links are rendered
     expect(
@@ -65,13 +70,13 @@ describe("TermsAndPrivacy Component", () => {
   it("returns null when both tosUrl and privacyPolicyUrl are not provided", () => {
     // Mock the useConfig to return no URLs
     useConfigMock.mockReturnValue({
-      tosUrl: undefined,
-      privacyPolicyUrl: undefined,
       translations: {},
       language: "en",
     });
 
-    const { container } = render(<TermsAndPrivacy />);
+    const { container } = render(
+      <TermsAndPrivacy tosUrl={undefined} privacyPolicyUrl={undefined} />
+    );
     expect(container).toBeEmptyDOMElement();
   });
 
@@ -84,7 +89,12 @@ describe("TermsAndPrivacy Component", () => {
       language: "en",
     });
 
-    render(<TermsAndPrivacy />);
+    render(
+      <TermsAndPrivacy
+        tosUrl="https://example.com/terms"
+        privacyPolicyUrl={undefined}
+      />
+    );
 
     // Terms of Service link should be present
     const tosLink = screen.getByText("Terms of Service");
@@ -104,7 +114,12 @@ describe("TermsAndPrivacy Component", () => {
       language: "en",
     });
 
-    render(<TermsAndPrivacy />);
+    render(
+      <TermsAndPrivacy
+        tosUrl={undefined}
+        privacyPolicyUrl="https://example.com/privacy"
+      />
+    );
 
     // Privacy Policy link should be present
     const privacyLink = screen.getByText("Privacy Policy");
@@ -118,7 +133,7 @@ describe("TermsAndPrivacy Component", () => {
   it("uses custom template text when provided", () => {
     // Set up a custom template for this test
     vi.mocked(getTranslation).mockImplementation(
-      (section: string, key: string) => {
+      (ui: FirebaseUIConfiguration, section: string, key: string) => {
         if (section === "labels" && key === "termsOfService") {
           return "Terms of Service";
         }
@@ -132,7 +147,12 @@ describe("TermsAndPrivacy Component", () => {
       }
     );
 
-    render(<TermsAndPrivacy />);
+    render(
+      <TermsAndPrivacy
+        tosUrl="https://example.com/terms"
+        privacyPolicyUrl="https://example.com/privacy"
+      />
+    );
 
     expect(screen.getByText(/Custom template with/)).toBeInTheDocument();
     // Search for partial text since the text might be split across elements

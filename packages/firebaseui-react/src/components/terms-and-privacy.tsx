@@ -2,11 +2,46 @@ import { getTranslation } from "@firebase-ui/core";
 import { Fragment } from "react";
 import { useUI } from "~/hooks";
 
-export function TermsAndPrivacy() {
-  const ui = useUI();
+type Url =
+  | string
+  | URL
+  | undefined
+  | (() => string | URL | void)
+  | Promise<string | URL | void>
+  | (() => Promise<string | URL | void>);
 
-  if (!ui.tosUrl && !ui.privacyPolicyUrl) {
+export interface TermsAndPrivacyProps {
+  tosUrl: Url;
+  privacyPolicyUrl: Url;
+}
+
+export function TermsAndPrivacy(props: TermsAndPrivacyProps) {
+  const ui = useUI();
+  const { tosUrl: tosUrlProp, privacyPolicyUrl: privacyPolicyUrlProp } = props;
+
+  if (!tosUrlProp && !privacyPolicyUrlProp) {
     return null;
+  }
+
+  async function handleUrl(urlOrFunction: Url) {
+    let url: string | URL | void;
+
+    if (typeof urlOrFunction === "function") {
+      const urlOrPromise = urlOrFunction();
+      if (typeof urlOrPromise === "string" || urlOrPromise instanceof URL) {
+        url = urlOrPromise;
+      } else {
+        url = await urlOrPromise;
+      }
+    } else if (urlOrFunction instanceof Promise) {
+      url = await urlOrFunction;
+    } else {
+      url = urlOrFunction;
+    }
+
+    if (url) {
+      window.open(url.toString(), "_blank");
+    }
   }
 
   const termsText = getTranslation(ui, "labels", "termsOfService");
@@ -18,11 +53,11 @@ export function TermsAndPrivacy() {
   return (
     <div className="text-text-muted text-xs text-start">
       {parts.map((part: string, index: number) => {
-        if (part === "{tos}" && ui.tosUrl) {
+        if (part === "{tos}" && props.tosUrl) {
           return (
             <a
               key={index}
-              href={ui.tosUrl}
+              onClick={() => handleUrl(props.tosUrl)}
               target="_blank"
               rel="noopener noreferrer"
               className="text-text-muted hover:underline text-xs"
@@ -31,11 +66,11 @@ export function TermsAndPrivacy() {
             </a>
           );
         }
-        if (part === "{privacy}" && ui.privacyPolicyUrl) {
+        if (part === "{privacy}" && props.privacyPolicyUrl) {
           return (
             <a
               key={index}
-              href={ui.privacyPolicyUrl}
+              onClick={() => handleUrl(props.privacyPolicyUrl)}
               target="_blank"
               rel="noopener noreferrer"
               className="text-text-muted hover:underline text-xs"
