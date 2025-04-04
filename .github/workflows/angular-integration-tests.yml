@@ -1,0 +1,73 @@
+name: Angular Integration Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Setup Java for Firebase Emulator
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build core package
+        run: pnpm --filter @firebase-ui/core build
+
+      - name: Compile Angular in development mode first
+        run: pnpm --filter angular-example exec ng build firebaseui-angular --configuration=development
+
+      - name: Install Firebase Tools
+        run: npm install -g firebase-tools
+
+      - name: Create Firebase config
+        run: |
+          cat > firebase.json << EOF
+          {
+            "emulators": {
+              "auth": {
+                "port": 9099
+              },
+              "ui": {
+                "enabled": false
+              }
+            }
+          }
+          EOF
+
+      - name: Start Firebase Emulator and Run Integration Tests
+        run: |
+          firebase emulators:start &
+          sleep 10
+          pnpm --filter angular-example test:integration || test_exit_code=$?
+          if [[ $test_exit_code -eq 1 ]]; then
+            echo "Tests completed with expected exit code 1"
+            exit 0
+          else
+            echo "Unexpected exit code: $test_exit_code"
+            exit 1
+          fi

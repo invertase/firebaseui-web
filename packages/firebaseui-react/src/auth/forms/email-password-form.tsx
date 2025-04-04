@@ -114,7 +114,7 @@ export function EmailPasswordForm({
           children={(field) => (
             <>
               <label htmlFor={field.name}>
-                <span className="inline-flex flex">
+                <span className="flex">
                   <span className="flex-grow">
                     {getTranslation(ui, "labels", "password")}
                   </span>

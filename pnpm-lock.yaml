@@ -148,9 +148,6 @@ importers:
       '@angular/compiler-cli':
         specifier: ^19.1.0
         version: 19.1.6(@angular/compiler@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0)))(typescript@5.7.3)
-      '@nanostores/angular':
-        specifier: ^0.0.4
-        version: 0.0.4(@angular/common@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(nanostores@0.11.3)
       '@tanstack/angular-form':
         specifier: ^0.42.0
         version: 0.42.0(@angular/common@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))
@@ -163,6 +160,9 @@ importers:
       '@types/node':
         specifier: ^18.18.0
         version: 18.19.76
+      firebase:
+        specifier: ^11
+        version: 11.3.1
       jasmine-core:
         specifier: ~5.5.0
         version: 5.5.0
@@ -181,6 +181,9 @@ importers:
       karma-jasmine-html-reporter:
         specifier: ~2.1.0
         version: 2.1.0(jasmine-core@5.5.0)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4)
+      nanostores:
+        specifier: ^0.11.3
+        version: 0.11.3
       ng-packagr:
         specifier: ^19.1.0
         version: 19.1.2(@angular/compiler-cli@19.1.6(@angular/compiler@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0)))(typescript@5.7.3))(tailwindcss@4.0.6)(tslib@2.8.1)(typescript@5.7.3)
@@ -199,15 +202,18 @@ importers:
       '@firebase-ui/core':
         specifier: workspace:*
         version: link:../../../firebaseui-core
-      '@nanostores/angular':
-        specifier: ^0.0.4
-        version: 0.0.4(@angular/common@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(nanostores@0.11.3)
       '@tanstack/angular-form':
-        specifier: ^0.42.0
-        version: 0.42.0(@angular/common@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))
+        specifier: ^1.1.0
+        version: 1.1.0(@angular/common@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))
+      nanostores:
+        specifier: ^0.11.3
+        version: 0.11.3
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
+      zod:
+        specifier: ^3.24.1
+        version: 3.24.2
 
   packages/firebaseui-core:
     dependencies:
@@ -2022,14 +2028,6 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@nanostores/angular@0.0.4':
-    resolution: {integrity: sha512-Xlpnj/IMLprMjGF4/OgKJ1kSeM/8TCUG7KoIh/We+6/d0DWQZPb3b8aYAGKDQE1/IGjBTiIfyK1ilFSKXooaLA==}
-    engines: {node: '>= 14'}
-    peerDependencies:
-      '@angular/common': ^12.2.17
-      '@angular/core': ^12.2.17
-      nanostores: ^0.7.1
-
   '@nanostores/react@0.8.4':
     resolution: {integrity: sha512-EciHSzDXg7GmGODjegGG1VldPEinbAK+12/Uz5+MAdHmxf082Rl6eXqKFxAAu4pZAcr5dNTpv6wMfEe7XacjkQ==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -2756,6 +2754,11 @@ packages:
     peerDependencies:
       '@angular/core': '>=19.0.0'
 
+  '@tanstack/angular-form@1.1.0':
+    resolution: {integrity: sha512-APf/lRqXf0Smn36MK4nOh8Pwso2Yoh9pa2MWd5mG8DGGM9q7PtIPQ2bj3/7ul3gQ3o307WDCQCIozQ2vXna0hw==}
+    peerDependencies:
+      '@angular/core': '>=19.0.0'
+
   '@tanstack/angular-store@0.7.0':
     resolution: {integrity: sha512-Ybl3fCZpfubPDQPbhhvpLGHFx2FRwQHv5bi5tluOtlkTZw3gVxuF+rMxVHfvm3CTI418W7VwiRfPz8//8Gxvkw==}
     peerDependencies:
@@ -2767,6 +2770,9 @@ packages:
 
   '@tanstack/form-core@0.42.0':
     resolution: {integrity: sha512-NL2tDWK/40zPsbGWwPMPPuXy0STQ0NxzUCfkAKWnW7MuL5N6wVT7VQc5U45M1RruyGUWrRmS2XdKEeYR6H4FrA==}
+
+  '@tanstack/form-core@1.1.0':
+    resolution: {integrity: sha512-RfRv+grnTzQhG6UyjhA+t9zyx0mSjaowyVzuo2qb4NR2Pc73zoNA5WKEAUhjwONlXrLSSs0h9LE0vJDbk8kYrQ==}
 
   '@tanstack/react-form@0.41.4':
     resolution: {integrity: sha512-uIfIDZJNqR1dLW03TNByK/woyKd2jfXIrEBq6DPJbqupqyfYXTDo5TMd/7koTYLO4dgTM5wd+2v3uBX3M2bRaA==}
@@ -8574,13 +8580,6 @@ snapshots:
   '@msgpackr-extract/msgpackr-extract-win32-x64@3.0.3':
     optional: true
 
-  '@nanostores/angular@0.0.4(@angular/common@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(nanostores@0.11.3)':
-    dependencies:
-      '@angular/common': 19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)
-      '@angular/core': 19.1.6(rxjs@7.8.1)(zone.js@0.15.0)
-      nanostores: 0.11.3
-      tslib: 2.8.1
-
   '@nanostores/react@0.8.4(nanostores@0.11.3)(react@19.0.0)':
     dependencies:
       nanostores: 0.11.3
@@ -9193,6 +9192,15 @@ snapshots:
     transitivePeerDependencies:
       - '@angular/common'
 
+  '@tanstack/angular-form@1.1.0(@angular/common@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))':
+    dependencies:
+      '@angular/core': 19.1.6(rxjs@7.8.1)(zone.js@0.15.0)
+      '@tanstack/angular-store': 0.7.0(@angular/common@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))
+      '@tanstack/form-core': 1.1.0
+      tslib: 2.8.1
+    transitivePeerDependencies:
+      - '@angular/common'
+
   '@tanstack/angular-store@0.7.0(@angular/common@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))':
     dependencies:
       '@angular/common': 19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)
@@ -9205,6 +9213,10 @@ snapshots:
       '@tanstack/store': 0.7.0
 
   '@tanstack/form-core@0.42.0':
+    dependencies:
+      '@tanstack/store': 0.7.0
+
+  '@tanstack/form-core@1.1.0':
     dependencies:
       '@tanstack/store': 0.7.0
 
