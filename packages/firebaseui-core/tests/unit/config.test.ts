@@ -1,160 +1,139 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { initializeUI, $config, getTranslations } from '../../src/config';
-import { fuiSignInAnonymously } from '../../src/auth';
+import { describe, it, expect, vi } from 'vitest';
+import { initializeUI, $config } from '../../src/config';
+import { english } from '@firebase-ui/translations';
 import { onAuthStateChanged } from 'firebase/auth';
-import type { FirebaseApp } from 'firebase/app';
-import type { FUIConfig } from '../../src/types';
-import { map } from 'nanostores';
 
 vi.mock('firebase/auth', () => ({
-  getAuth: vi.fn(() => ({})),
-  onAuthStateChanged: vi.fn(() => () => {}),
-}));
-
-vi.mock('../../src/auth', () => ({
-  fuiSignInAnonymously: vi.fn(),
+  getAuth: vi.fn(),
+  onAuthStateChanged: vi.fn(),
 }));
 
 describe('Config', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    $config.set({});
-  });
-
   describe('initializeUI', () => {
     it('should initialize config with default name', () => {
-      const mockApp = {
-        name: 'test',
-        options: {},
-        automaticDataCollectionEnabled: false,
-      } as FirebaseApp;
-      const config: FUIConfig = {
-        app: mockApp,
-        enableAutoAnonymousLogin: false,
-        enableHandleExistingCredential: false,
+      const config = {
+        app: {
+          name: 'test',
+          options: {},
+          automaticDataCollectionEnabled: false,
+        },
       };
+
       const store = initializeUI(config);
-      expect(store.get()).toEqual(config);
+      expect(store.get()).toEqual({
+        app: config.app,
+        getAuth: expect.any(Function),
+        locale: 'en-US',
+        setLocale: expect.any(Function),
+        state: 'idle',
+        setState: expect.any(Function),
+        translations: {
+          'en-US': english.translations,
+        },
+        behaviors: {},
+        recaptchaMode: 'normal',
+      });
       expect($config.get()['[DEFAULT]']).toBe(store);
     });
 
     it('should initialize config with custom name', () => {
-      const mockApp = {
-        name: 'test',
-        options: {},
-        automaticDataCollectionEnabled: false,
-      } as FirebaseApp;
-      const config: FUIConfig = {
-        app: mockApp,
-        enableAutoAnonymousLogin: false,
-        enableHandleExistingCredential: true,
+      const config = {
+        app: {
+          name: 'test',
+          options: {},
+          automaticDataCollectionEnabled: false,
+        },
       };
+
       const store = initializeUI(config, 'custom');
-      expect(store.get()).toEqual(config);
+      expect(store.get()).toEqual({
+        app: config.app,
+        getAuth: expect.any(Function),
+        locale: 'en-US',
+        setLocale: expect.any(Function),
+        state: 'idle',
+        setState: expect.any(Function),
+        translations: {
+          'en-US': english.translations,
+        },
+        behaviors: {},
+        recaptchaMode: 'normal',
+      });
       expect($config.get()['custom']).toBe(store);
     });
 
     it('should setup auto anonymous login when enabled', () => {
-      const mockApp = {
-        name: 'test',
-        options: {},
-        automaticDataCollectionEnabled: false,
-      } as FirebaseApp;
-      const config: FUIConfig = {
-        app: mockApp,
-        enableAutoAnonymousLogin: true,
-        enableHandleExistingCredential: false,
+      const config = {
+        app: {
+          name: 'test',
+          options: {},
+          automaticDataCollectionEnabled: false,
+        },
+        behaviors: [
+          {
+            autoAnonymousLogin: vi.fn().mockImplementation(async (ui) => {
+              ui.setState('idle');
+              return {};
+            }),
+          },
+        ],
       };
-      initializeUI(config);
-      expect(onAuthStateChanged).toHaveBeenCalled();
-      const callback = (onAuthStateChanged as any).mock.calls[0][1];
-      callback(null);
-      expect(fuiSignInAnonymously).toHaveBeenCalled();
+
+      const store = initializeUI(config);
+      expect(store.get().behaviors.autoAnonymousLogin).toBeDefined();
+      expect(store.get().behaviors.autoAnonymousLogin).toHaveBeenCalled();
+      expect(store.get().state).toBe('idle');
     });
 
     it('should not setup auto anonymous login when disabled', () => {
-      const mockApp = {
-        name: 'test',
-        options: {},
-        automaticDataCollectionEnabled: false,
-      } as FirebaseApp;
-      const config: FUIConfig = {
-        app: mockApp,
-        enableAutoAnonymousLogin: false,
-        enableHandleExistingCredential: true,
+      const config = {
+        app: {
+          name: 'test',
+          options: {},
+          automaticDataCollectionEnabled: false,
+        },
       };
-      initializeUI(config);
-      expect(onAuthStateChanged).not.toHaveBeenCalled();
+
+      const store = initializeUI(config);
+      expect(store.get().behaviors.autoAnonymousLogin).toBeUndefined();
     });
 
     it('should handle both auto features being enabled', () => {
-      const mockApp = {
-        name: 'test',
-        options: {},
-        automaticDataCollectionEnabled: false,
-      } as FirebaseApp;
-      const config: FUIConfig = {
-        app: mockApp,
-        enableAutoAnonymousLogin: true,
-        enableHandleExistingCredential: true,
+      const config = {
+        app: {
+          name: 'test',
+          options: {},
+          automaticDataCollectionEnabled: false,
+        },
+        behaviors: [
+          {
+            autoAnonymousLogin: vi.fn().mockImplementation(async (ui) => {
+              ui.setState('idle');
+              return {};
+            }),
+            autoUpgradeAnonymousCredential: vi.fn(),
+          },
+        ],
       };
+
       const store = initializeUI(config);
-      expect(store.get()).toEqual(config);
-      expect(onAuthStateChanged).toHaveBeenCalled();
-    });
-  });
-
-  describe('getTranslations', () => {
-    it('should return translations for default config', () => {
-      const mockApp = {
-        name: 'test',
-        options: {},
-        automaticDataCollectionEnabled: false,
-      } as FirebaseApp;
-      const config: FUIConfig = {
-        app: mockApp,
+      expect(store.get()).toEqual({
+        app: config.app,
+        getAuth: expect.any(Function),
+        locale: 'en-US',
+        setLocale: expect.any(Function),
+        state: 'idle',
+        setState: expect.any(Function),
         translations: {
-          en: {
-            errors: {
-              invalidEmail: 'Test Error',
-            },
-          },
+          'en-US': english.translations,
         },
-      };
-      const configStore = map<Record<string, FUIConfig>>({
-        '[DEFAULT]': config,
-      });
-      const translations = getTranslations(configStore);
-      expect(translations.get()).toEqual(config.translations);
-    });
-
-    it('should return translations for named config', () => {
-      const mockApp = {
-        name: 'test',
-        options: {},
-        automaticDataCollectionEnabled: false,
-      } as FirebaseApp;
-      const config: FUIConfig = {
-        app: mockApp,
-        translations: {
-          en: {
-            errors: {
-              invalidEmail: 'Test Error',
-            },
-          },
+        behaviors: {
+          autoAnonymousLogin: expect.any(Function),
+          autoUpgradeAnonymousCredential: expect.any(Function),
         },
-      };
-      const configStore = map<Record<string, FUIConfig>>({
-        custom: config,
+        recaptchaMode: 'normal',
       });
-      const translations = getTranslations(configStore, 'custom');
-      expect(translations.get()).toEqual(config.translations);
-    });
-
-    it('should return undefined for non-existent config', () => {
-      const configStore = map<Record<string, FUIConfig>>({});
-      const translations = getTranslations(configStore, 'non-existent');
-      expect(translations.get()).toBeUndefined();
+      expect(store.get().behaviors.autoAnonymousLogin).toHaveBeenCalled();
     });
   });
 });
