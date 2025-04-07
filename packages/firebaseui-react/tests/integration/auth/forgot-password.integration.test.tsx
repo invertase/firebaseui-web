@@ -1,5 +1,5 @@
 import { describe, it, expect, afterAll, beforeEach } from "vitest";
-import { screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { fireEvent, waitFor, act, render } from "@testing-library/react";
 import { ForgotPasswordForm } from "../../../src/auth/forms/forgot-password-form";
 import { initializeApp } from "firebase/app";
 import {
@@ -10,8 +10,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { renderWithProviders } from "../../utils/mocks";
-import { getTranslation } from "@firebase-ui/core";
+import { initializeUI } from "@firebase-ui/core";
+import { FirebaseUIProvider } from "~/context";
 
 // Prepare the test environment
 const firebaseConfig = {
@@ -26,6 +26,10 @@ const auth = getAuth(app);
 
 // Connect to the auth emulator
 connectAuthEmulator(auth, "http://localhost:9099", { disableWarnings: true });
+
+const ui = initializeUI({
+  app,
+});
 
 describe("Forgot Password Integration", () => {
   const testEmail = `test-${Date.now()}@example.com`;
@@ -74,7 +78,11 @@ describe("Forgot Password Integration", () => {
 
     // For integration tests, we want to test the actual implementation
 
-    const { container } = renderWithProviders(<ForgotPasswordForm />);
+    const { container } = render(
+      <FirebaseUIProvider ui={ui}>
+        <ForgotPasswordForm />
+      </FirebaseUIProvider>
+    );
 
     // Wait for form to be rendered
     await waitFor(() => {
@@ -91,9 +99,8 @@ describe("Forgot Password Integration", () => {
       }
     });
 
-    const submitButton = screen.getByRole("button", {
-      name: getTranslation("labels", "resetPassword", { en: {} }, "en"),
-    });
+    const submitButton = container.querySelector('button[type="submit"]')!;
+    expect(submitButton).not.toBeNull();
 
     await act(async () => {
       fireEvent.click(submitButton);
@@ -106,9 +113,7 @@ describe("Forgot Password Integration", () => {
     await waitFor(
       () => {
         // Check for success message
-        const successMessage = screen.queryByText(
-          getTranslation("messages", "checkEmailForReset", { en: {} }, "en")
-        );
+        const successMessage = container.querySelector(".fui-form__success");
         
         // If we have a success message, the test passes
         if (successMessage) {
@@ -149,7 +154,11 @@ describe("Forgot Password Integration", () => {
   });
 
   it("should handle invalid email format", async () => {
-    const { container } = renderWithProviders(<ForgotPasswordForm />);
+    const { container } = render(
+      <FirebaseUIProvider ui={ui}>
+        <ForgotPasswordForm />
+      </FirebaseUIProvider>
+    );
 
     // Wait for form to be rendered
     await waitFor(() => {
@@ -166,9 +175,8 @@ describe("Forgot Password Integration", () => {
       }
     });
 
-    const submitButton = screen.getByRole("button", {
-      name: getTranslation("labels", "resetPassword", { en: {} }, "en"),
-    });
+    const submitButton = container.querySelector('button[type="submit"]')!;
+    expect(submitButton).not.toBeNull();
 
     await act(async () => {
       fireEvent.click(submitButton);

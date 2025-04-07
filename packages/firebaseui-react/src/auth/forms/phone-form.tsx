@@ -18,17 +18,13 @@ import { useAuth, useUI } from "~/hooks";
 import { Button } from "../../components/button";
 import { CountrySelector } from "../../components/country-selector";
 import { FieldInfo } from "../../components/field-info";
-import {
-  TermsAndPrivacy,
-  TermsAndPrivacyProps,
-} from "../../components/terms-and-privacy";
+import { Policies } from "../../components/policies";
 
-interface PhoneNumberFormProps extends TermsAndPrivacyProps {
+interface PhoneNumberFormProps {
   onSubmit: (phoneNumber: string) => Promise<void>;
   formError: string | null;
   recaptchaVerifier: RecaptchaVerifier | null;
   recaptchaContainerRef: React.RefObject<HTMLDivElement | null>;
-  showTerms?: boolean;
 }
 
 function PhoneNumberForm({
@@ -36,9 +32,6 @@ function PhoneNumberForm({
   formError,
   recaptchaVerifier,
   recaptchaContainerRef,
-  showTerms,
-  tosUrl,
-  privacyPolicyUrl,
 }: PhoneNumberFormProps) {
   const ui = useUI();
 
@@ -128,9 +121,7 @@ function PhoneNumberForm({
         <div className="fui-recaptcha-container" ref={recaptchaContainerRef} />
       </fieldset>
 
-      {showTerms && (
-        <TermsAndPrivacy tosUrl={tosUrl} privacyPolicyUrl={privacyPolicyUrl} />
-      )}
+      <Policies />
 
       <fieldset>
         <Button
@@ -185,11 +176,10 @@ function useResendTimer(initialDelay: number) {
   return { timeLeft, canResend, startTimer };
 }
 
-interface VerificationFormProps extends TermsAndPrivacyProps {
+interface VerificationFormProps {
   onSubmit: (code: string) => Promise<void>;
   onResend: () => Promise<void>;
   formError: string | null;
-  showTerms?: boolean;
   isResending: boolean;
   canResend: boolean;
   timeLeft: number;
@@ -200,13 +190,10 @@ function VerificationForm({
   onSubmit,
   onResend,
   formError,
-  showTerms,
   isResending,
   canResend,
   timeLeft,
   recaptchaContainerRef,
-  tosUrl,
-  privacyPolicyUrl,
 }: VerificationFormProps) {
   const ui = useUI();
 
@@ -281,9 +268,7 @@ function VerificationForm({
         <div className="fui-recaptcha-container" ref={recaptchaContainerRef} />
       </fieldset>
 
-      {showTerms && (
-        <TermsAndPrivacy tosUrl={tosUrl} privacyPolicyUrl={privacyPolicyUrl} />
-      )}
+      <Policies />
 
       <fieldset>
         <Button type="submit" disabled={ui.state !== "idle"}>
@@ -298,8 +283,8 @@ function VerificationForm({
           {isResending
             ? getTranslation(ui, "labels", "sending")
             : !canResend
-            ? `${getTranslation(ui, "labels", "resendCode")} (${timeLeft}s)`
-            : getTranslation(ui, "labels", "resendCode")}
+              ? `${getTranslation(ui, "labels", "resendCode")} (${timeLeft}s)`
+              : getTranslation(ui, "labels", "resendCode")}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
       </fieldset>
@@ -307,15 +292,11 @@ function VerificationForm({
   );
 }
 
-export interface PhoneFormProps extends TermsAndPrivacyProps {
+export interface PhoneFormProps {
   resendDelay?: number;
 }
 
-export function PhoneForm({
-  resendDelay = 30,
-  tosUrl,
-  privacyPolicyUrl,
-}: PhoneFormProps) {
+export function PhoneForm({ resendDelay = 30 }: PhoneFormProps) {
   const ui = useUI();
   const auth = useAuth(ui);
 
@@ -437,13 +418,10 @@ export function PhoneForm({
           onSubmit={handleVerificationSubmit}
           onResend={handleResend}
           formError={formError}
-          showTerms={false}
           isResending={isResending}
           canResend={canResend}
           timeLeft={timeLeft}
           recaptchaContainerRef={recaptchaContainerRef}
-          tosUrl={tosUrl}
-          privacyPolicyUrl={privacyPolicyUrl}
         />
       ) : (
         <PhoneNumberForm
@@ -451,9 +429,6 @@ export function PhoneForm({
           formError={formError}
           recaptchaVerifier={recaptchaVerifier}
           recaptchaContainerRef={recaptchaContainerRef}
-          showTerms
-          tosUrl={tosUrl}
-          privacyPolicyUrl={privacyPolicyUrl}
         />
       )}
     </div>

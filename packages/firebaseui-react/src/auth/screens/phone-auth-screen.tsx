@@ -1,3 +1,4 @@
+import type { PropsWithChildren } from "react";
 import { getTranslation } from "@firebase-ui/core";
 import { Divider } from "~/components/divider";
 import { useUI } from "~/hooks";
@@ -9,10 +10,9 @@ import {
 } from "../../components/card";
 import { PhoneForm } from "../forms/phone-form";
 
-export interface PhoneAuthScreenProps {
-  children?: React.ReactNode | React.ReactNode[];
+export type PhoneAuthScreenProps = PropsWithChildren<{
   resendDelay?: number;
-}
+}>;
 
 export function PhoneAuthScreen({
   children,

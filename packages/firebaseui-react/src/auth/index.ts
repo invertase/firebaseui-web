@@ -17,7 +17,7 @@ export {
   type SignUpAuthScreenProps,
 } from "./screens/sign-up-auth-screen";
 
-export { OAuthScreen, type OAuthAuthScreenProps } from "./screens/oauth-screen";
+export { OAuthScreen, type OAuthScreenProps } from "./screens/oauth-screen";
 
 export {
   PasswordResetScreen,

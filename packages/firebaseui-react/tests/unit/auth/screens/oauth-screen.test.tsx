@@ -4,30 +4,32 @@ import { OAuthScreen } from "~/auth/screens/oauth-screen";
 
 // Mock hooks
 vi.mock("~/hooks", () => ({
-  useConfig: () => ({ language: "en" }),
-  useTranslations: () => ({}),
-}));
-
-// Mock getTranslation
-vi.mock("@firebase-ui/core", () => ({
-  getTranslation: vi.fn((category, key) => {
-    if (category === "labels" && key === "signIn") return "Sign In";
-    if (category === "prompts" && key === "signInToAccount")
-      return "Sign in to your account";
-    return key;
+  useUI: () => ({
+    locale: "en-US",
+    translations: {
+      "en-US": {
+        labels: {
+          signIn: "Sign In",
+          signInToAccount: "Sign in to your account",
+        },
+      },
+    },
   }),
 }));
 
+// Mock getTranslation
+// vi.mock("@firebase-ui/core", () => ({
+//   getTranslation: vi.fn((category, key) => {
+//     if (category === "labels" && key === "signIn") return "Sign In";
+//     if (category === "prompts" && key === "signInToAccount")
+//       return "Sign in to your account";
+//     return key;
+//   }),
+// }));
+
 // Mock TermsAndPrivacy component
-vi.mock("../../../../src/components/terms-and-privacy", () => ({
-  TermsAndPrivacy: () => (
-    <div
-      className="text-text-muted text-xs text-start"
-      data-testid="terms-and-privacy"
-    >
-      Terms and Privacy
-    </div>
-  ),
+vi.mock("../../../../src/components/policies", () => ({
+  Policies: () => <div data-testid="policies">Policies</div>,
 }));
 
 describe("OAuthScreen", () => {
@@ -63,9 +65,9 @@ describe("OAuthScreen", () => {
     expect(getByText("Provider 2")).toBeInTheDocument();
   });
 
-  it("includes the TermsAndPrivacy component", () => {
+  it("includes the Policies component", () => {
     const { getByTestId } = render(<OAuthScreen>OAuth Provider</OAuthScreen>);
 
-    expect(getByTestId("terms-and-privacy")).toBeInTheDocument();
+    expect(getByTestId("policies")).toBeInTheDocument();
   });
 });

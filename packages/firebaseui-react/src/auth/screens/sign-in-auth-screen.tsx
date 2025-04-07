@@ -1,3 +1,4 @@
+import type { PropsWithChildren } from "react";
 import { getTranslation } from "@firebase-ui/core";
 import { Divider } from "~/components/divider";
 import { useUI } from "~/hooks";
@@ -9,11 +10,10 @@ import {
 } from "../../components/card";
 import { EmailPasswordForm } from "../forms/email-password-form";
 
-export interface SignInAuthScreenProps {
+export type SignInAuthScreenProps = PropsWithChildren<{
   onForgotPasswordClick?: () => void;
   onRegisterClick?: () => void;
-  children?: React.ReactNode | React.ReactNode[];
-}
+}>;
 
 export function SignInAuthScreen({
   onForgotPasswordClick,

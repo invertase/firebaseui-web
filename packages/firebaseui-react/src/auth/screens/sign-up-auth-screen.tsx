@@ -1,3 +1,4 @@
+import { PropsWithChildren } from "react";
 import { Divider } from "~/components/divider";
 import { useUI } from "~/hooks";
 import {
@@ -9,10 +10,9 @@ import {
 import { RegisterForm } from "../forms/register-form";
 import { getTranslation } from "@firebase-ui/core";
 
-export interface SignUpAuthScreenProps {
+export type SignUpAuthScreenProps = PropsWithChildren<{
   onBackToSignInClick?: () => void;
-  children?: React.ReactNode | React.ReactNode[];
-}
+}>;
 
 export function SignUpAuthScreen({
   onBackToSignInClick,

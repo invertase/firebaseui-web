@@ -1,3 +1,4 @@
+import type { PropsWithChildren } from "react";
 import { getTranslation } from "@firebase-ui/core";
 import { Divider } from "~/components/divider";
 import { useUI } from "~/hooks";
@@ -9,9 +10,7 @@ import {
 } from "../../components/card";
 import { EmailLinkForm } from "../forms/email-link-form";
 
-export interface EmailLinkAuthScreenProps {
-  children?: React.ReactNode | React.ReactNode[];
-}
+export type EmailLinkAuthScreenProps = PropsWithChildren;
 
 export function EmailLinkAuthScreen({ children }: EmailLinkAuthScreenProps) {
   const ui = useUI();

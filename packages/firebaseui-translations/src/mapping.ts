@@ -1,5 +1,5 @@
-import { english, Locale } from ".";
 import { enUS } from "./locales/en-us";
+import { Locale, english } from ".";
 import type {
   ErrorKey,
   TranslationCategory,

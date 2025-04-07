@@ -5,19 +5,22 @@ import * as hooks from "~/hooks";
 
 // Mock the hooks
 vi.mock("~/hooks", () => ({
-  useConfig: vi.fn(),
-  useTranslations: vi.fn(),
-}));
-
-// Mock dependencies
-vi.mock("@firebase-ui/core", () => ({
-  getTranslation: vi.fn((category, key) => {
-    if (category === "labels" && key === "signIn") return "Sign In";
-    if (category === "prompts" && key === "signInToAccount")
-      return "Sign in to your account";
-    if (category === "messages" && key === "dividerOr") return "or";
-    return key;
-  }),
+  useUI: vi.fn(() => ({
+    locale: "en-US",
+    translations: {
+      "en-US": {
+        labels: {
+          signIn: "Sign In",
+        },
+        prompts: {
+          signInToAccount: "Sign in to your account",
+        },
+        messages: {
+          dividerOr: "or",
+        },
+      },
+    },
+  })),
 }));
 
 // Mock the EmailLinkForm component
@@ -29,10 +32,8 @@ describe("EmailLinkAuthScreen", () => {
   beforeEach(() => {
     // Setup default mock values
     vi.mocked(hooks.useUI).mockReturnValue({
-      language: "en",
+      locale: "en-US",
     } as any);
-
-    vi.mocked(hooks.useTranslations).mockReturnValue({} as any);
   });
 
   afterEach(() => {
@@ -46,9 +47,8 @@ describe("EmailLinkAuthScreen", () => {
     expect(getByText("Sign in to your account")).toBeInTheDocument();
   });
 
-  it("calls useConfig to get the language", () => {
+  it("calls useUI to get the locale", () => {
     render(<EmailLinkAuthScreen />);
-
     expect(hooks.useUI).toHaveBeenCalled();
   });
 

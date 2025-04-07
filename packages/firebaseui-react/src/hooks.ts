@@ -1,6 +1,6 @@
 import { useContext, useMemo } from "react";
 import { getAuth } from "firebase/auth";
-import { FirebaseUIContext } from "./context/ui-context";
+import { FirebaseUIContext } from "./context";
 import { FirebaseUIConfiguration } from "@firebase-ui/core";
 
 /**
@@ -18,7 +18,7 @@ export function useAuth(ui?: FirebaseUIConfiguration | undefined) {
   const config = ui ?? useUI();
   const auth = useMemo(
     () => ui?.getAuth() ?? getAuth(config.app),
-    [config.app]
+    [config.app],
   );
   return auth;
 }

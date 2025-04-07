@@ -8,9 +8,9 @@ import {
 } from "../../components/card";
 import { ForgotPasswordForm } from "../forms/forgot-password-form";
 
-export interface PasswordResetScreenProps {
+export type PasswordResetScreenProps = {
   onBackToSignInClick?: () => void;
-}
+};
 
 export function PasswordResetScreen({
   onBackToSignInClick,

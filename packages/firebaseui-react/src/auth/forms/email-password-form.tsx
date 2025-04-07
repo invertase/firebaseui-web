@@ -12,12 +12,9 @@ import { useMemo, useState } from "react";
 import { useUI } from "~/hooks";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
-import {
-  TermsAndPrivacy,
-  TermsAndPrivacyProps,
-} from "../../components/terms-and-privacy";
+import { Policies } from "../../components/policies";
 
-interface EmailPasswordFormProps extends TermsAndPrivacyProps {
+interface EmailPasswordFormProps {
   onForgotPasswordClick?: () => void;
   onRegisterClick?: () => void;
 }
@@ -25,8 +22,6 @@ interface EmailPasswordFormProps extends TermsAndPrivacyProps {
 export function EmailPasswordForm({
   onForgotPasswordClick,
   onRegisterClick,
-  tosUrl,
-  privacyPolicyUrl,
 }: EmailPasswordFormProps) {
   const ui = useUI();
 
@@ -155,7 +150,7 @@ export function EmailPasswordForm({
         />
       </fieldset>
 
-      <TermsAndPrivacy tosUrl={tosUrl} privacyPolicyUrl={privacyPolicyUrl} />
+      <Policies />
 
       <fieldset>
         <Button type="submit" disabled={ui.state !== "idle"}>

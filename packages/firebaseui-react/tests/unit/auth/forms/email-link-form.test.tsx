@@ -3,11 +3,13 @@ import { render, screen, fireEvent, act } from "@testing-library/react";
 import { EmailLinkForm } from "../../../../src/auth/forms/email-link-form";
 
 // Mock Firebase UI Core
-vi.mock("@firebase-ui/core", () => {
+vi.mock("@firebase-ui/core", async (importOriginal) => {
+  const mod = await importOriginal<typeof import("@firebase-ui/core")>();
   const FirebaseUIError = vi.fn();
   FirebaseUIError.prototype.message = "Test error message";
 
   return {
+    ...mod,
     FirebaseUIError: class FirebaseUIError {
       message: string;
       code?: string;
@@ -17,8 +19,8 @@ vi.mock("@firebase-ui/core", () => {
         this.message = message;
       }
     },
-    fuiCompleteEmailLinkSignIn: vi.fn(),
-    fuiSendSignInLinkToEmail: vi.fn(),
+    completeEmailLinkSignIn: vi.fn(),
+    sendSignInLinkToEmail: vi.fn(),
     createEmailLinkFormSchema: () => ({
       email: {
         validate: (value: string) => {
@@ -27,28 +29,12 @@ vi.mock("@firebase-ui/core", () => {
         },
       },
     }),
-    getTranslation: (section: string, key: string) => {
-      const defaultTranslations: Record<string, Record<string, string>> = {
-        labels: {
-          emailAddress: "Email",
-          sendSignInLink: "sendSignInLink",
-        },
-        messages: {
-          signInLinkSent: "Sign-in link sent!",
-        },
-        errors: {
-          unknownError: "An unknown error occurred",
-        },
-      };
-
-      return defaultTranslations[section]?.[key] || `${section}.${key}`;
-    },
   };
 });
 
 import {
   FirebaseUIError,
-  fuiSendSignInLinkToEmail,
+  sendSignInLinkToEmail,
   completeEmailLinkSignIn,
 } from "@firebase-ui/core";
 
@@ -59,29 +45,18 @@ const setEmailSentMock = vi.fn();
 
 // Mock hooks
 vi.mock("../../../../src/hooks", () => ({
-  useAuth: vi.fn(() => ({})),
-  useFirebaseUIAuth: vi.fn(() => ({})),
-  useFirebaseUIConfig: vi.fn(() => ({
-    config: {
-      signInOptions: ["email"],
-      callbacks: {
-        signInSuccessWithAuthResult: vi.fn(),
+  useUI: vi.fn(() => ({
+    locale: "en-US",
+    translations: {
+      "en-US": {
+        labels: {
+          emailAddress: "Email",
+          sendSignInLink: "sendSignInLink",
+        },
       },
     },
   })),
-  useConfig: vi.fn(() => ({
-    language: "en",
-    signInOptions: ["email"],
-    callbacks: {
-      signInSuccessWithAuthResult: vi.fn(),
-    },
-    enableAutoUpgradeAnonymous: false,
-    enableHandleExistingCredential: false,
-  })),
-  useTranslations: vi.fn(() => ({
-    signInWithEmail: "Sign in with email",
-    emailLinkSignInMessage: "Check your email for sign-in link",
-  })),
+  useAuth: vi.fn(() => ({})),
 }));
 
 // Mock form
@@ -121,10 +96,8 @@ vi.mock("../../../../src/components/field-info", () => ({
   FieldInfo: () => <div data-testid="field-info" />,
 }));
 
-vi.mock("../../../../src/components/terms-and-privacy", () => ({
-  TermsAndPrivacy: () => (
-    <div data-testid="terms-and-privacy">Terms & Privacy</div>
-  ),
+vi.mock("../../../../src/components/policies", () => ({
+  Policies: () => <div data-testid="policies">Policies</div>,
 }));
 
 vi.mock("../../../../src/components/button", () => ({
@@ -166,7 +139,7 @@ vi.mock("react", async () => {
   };
 });
 
-const mockSendSignInLink = vi.mocked(fuiSendSignInLinkToEmail);
+const mockSendSignInLink = vi.mocked(sendSignInLinkToEmail);
 const mockCompleteEmailLink = vi.mocked(completeEmailLinkSignIn);
 
 describe("EmailLinkForm", () => {
@@ -209,11 +182,7 @@ describe("EmailLinkForm", () => {
     }: {
       value: { email: string };
     }) => {
-      await fuiSendSignInLinkToEmail(
-        expect.anything(),
-        value.email,
-        expect.anything()
-      );
+      await sendSignInLinkToEmail(expect.anything(), value.email);
     };
 
     // Submit the form
@@ -224,7 +193,6 @@ describe("EmailLinkForm", () => {
     expect(mockSendSignInLink).toHaveBeenCalledWith(
       expect.anything(),
       "test@example.com",
-      expect.anything()
     );
   });
 
@@ -247,11 +215,7 @@ describe("EmailLinkForm", () => {
     (global as any).formOnSubmit = async () => {
       try {
         // Simulate the action that would throw an error
-        await fuiSendSignInLinkToEmail(
-          expect.anything(),
-          "invalid-email",
-          expect.anything()
-        );
+        await sendSignInLinkToEmail(expect.anything(), "invalid-email");
       } catch (error) {
         // Simulate the error being caught and error state being set
         setFormErrorMock("Invalid email");

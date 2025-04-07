@@ -12,17 +12,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth, useUI } from "~/hooks";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
-import {
-  TermsAndPrivacy,
-  TermsAndPrivacyProps,
-} from "../../components/terms-and-privacy";
+import { Policies } from "../../components/policies";
 
-interface EmailLinkFormProps extends TermsAndPrivacyProps {}
+interface EmailLinkFormProps {}
 
-export function EmailLinkForm({
-  tosUrl,
-  privacyPolicyUrl,
-}: EmailLinkFormProps) {
+export function EmailLinkForm(_: EmailLinkFormProps) {
   const ui = useUI();
   const auth = useAuth(ui);
 
@@ -124,7 +118,7 @@ export function EmailLinkForm({
         />
       </fieldset>
 
-      <TermsAndPrivacy tosUrl={tosUrl} privacyPolicyUrl={privacyPolicyUrl} />
+      <Policies />
 
       <fieldset>
         <Button type="submit" disabled={ui.state !== "idle"}>
