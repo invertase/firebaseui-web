@@ -23,7 +23,7 @@ import { of } from 'rxjs';
 import { ForgotPasswordFormComponent } from '../../../auth/forms/forgot-password-form/forgot-password-form.component';
 import { ButtonComponent } from '../../../components/button/button.component';
 import { TermsAndPrivacyComponent } from '../../../components/terms-and-privacy/terms-and-privacy.component';
-import { FirebaseUi } from '../../../provider';
+import { FirebaseUI } from '../../../provider';
 
 // Create token for Firebase UI store
 const FIREBASE_UI_STORE = new InjectionToken<any>('firebaseui.store');
@@ -117,7 +117,7 @@ describe('Forgot Password Integration', () => {
       ],
       providers: [
         provideRouter([]),
-        { provide: FirebaseUi, useValue: mockFirebaseUi },
+        { provide: FirebaseUI, useValue: mockFirebaseUi },
         { provide: Auth, useValue: auth },
         {
           provide: FIREBASE_UI_STORE,

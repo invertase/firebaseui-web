@@ -1,5 +1,5 @@
 import { Provider } from '@angular/core';
-import { FirebaseUi } from '../provider';
+import { FirebaseUI } from '../provider';
 import { Auth } from '@angular/fire/auth';
 import { InjectionToken } from '@angular/core';
 import { of } from 'rxjs';
@@ -67,7 +67,7 @@ export const FIREBASE_UI_STORE = new InjectionToken<any>('firebaseui.store');
 export function getFirebaseUITestProviders(): Provider[] {
   return [
     { provide: Auth, useValue: mockAuth },
-    { provide: FirebaseUi, useValue: mockFirebaseUi },
+    { provide: FirebaseUI, useValue: mockFirebaseUi },
     {
       provide: FIREBASE_UI_STORE,
       useValue: {
