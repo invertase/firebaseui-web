@@ -70,8 +70,7 @@ export function EmailLinkForm(_: EmailLinkFormProps) {
   }, [auth, ui.translations]);
 
   if (emailSent) {
-    // TODO: Improve this UI
-    return <div>{getTranslation(ui, "messages", "signInLinkSent")}</div>;
+    return <div className="fui-success">{getTranslation(ui, "messages", "signInLinkSent")}</div>;
   }
 
   return (

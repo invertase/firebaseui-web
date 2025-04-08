@@ -57,10 +57,11 @@ export async function signInWithEmailAndPassword(
 
     ui.setState('signing-in');
     const result = await signInWithCredential(auth, credential);
-    ui.setState('idle');
     return handlePendingCredential(ui, result);
   } catch (error) {
     handleFirebaseError(ui, error);
+  } finally {
+    ui.setState('idle');
   }
 }
 
@@ -83,10 +84,11 @@ export async function createUserWithEmailAndPassword(
 
     ui.setState('creating-user');
     const result = await _createUserWithEmailAndPassword(auth, email, password);
-    ui.setState('idle');
     return handlePendingCredential(ui, result);
   } catch (error) {
     handleFirebaseError(ui, error);
+  } finally {
+    ui.setState('idle');
   }
 }
 
@@ -98,11 +100,11 @@ export async function signInWithPhoneNumber(
   try {
     const auth = getAuth(ui.app);
     ui.setState('signing-in');
-    const result = await _signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
-    ui.setState('idle');
-    return result;
+    return await _signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
   } catch (error) {
     handleFirebaseError(ui, error);
+  } finally {
+    ui.setState('idle');
   }
 }
 
@@ -126,10 +128,11 @@ export async function confirmPhoneNumber(
 
     ui.setState('signing-in');
     const result = await signInWithCredential(auth, credential);
-    ui.setState('idle');
     return handlePendingCredential(ui, result);
   } catch (error) {
     handleFirebaseError(ui, error);
+  } finally {
+    ui.setState('idle');
   }
 }
 
@@ -138,9 +141,10 @@ export async function sendPasswordResetEmail(ui: FirebaseUIConfiguration, email:
     const auth = getAuth(ui.app);
     ui.setState('sending-password-reset-email');
     await _sendPasswordResetEmail(auth, email);
-    ui.setState('idle');
   } catch (error) {
     handleFirebaseError(ui, error);
+  } finally {
+    ui.setState('idle');
   }
 }
 
@@ -156,10 +160,11 @@ export async function sendSignInLinkToEmail(ui: FirebaseUIConfiguration, email: 
 
     ui.setState('sending-sign-in-link-to-email');
     await _sendSignInLinkToEmail(auth, email, actionCodeSettings);
-    ui.setState('idle');
     window.localStorage.setItem('emailForSignIn', email);
   } catch (error) {
     handleFirebaseError(ui, error);
+  } finally {
+    ui.setState('idle');
   }
 }
 
@@ -181,10 +186,11 @@ export async function signInWithEmailLink(
 
     ui.setState('signing-in');
     const result = await signInWithCredential(auth, credential);
-    ui.setState('idle');
     return handlePendingCredential(ui, result);
   } catch (error) {
     handleFirebaseError(ui, error);
+  } finally {
+    ui.setState('idle');
   }
 }
 
@@ -193,10 +199,11 @@ export async function signInAnonymously(ui: FirebaseUIConfiguration): Promise<Us
     const auth = getAuth(ui.app);
     ui.setState('signing-in');
     const result = await _signInAnonymously(auth);
-    ui.setState('idle');
     return handlePendingCredential(ui, result);
   } catch (error) {
     handleFirebaseError(ui, error);
+  } finally {
+    ui.setState('idle');
   }
 }
 
@@ -216,6 +223,8 @@ export async function signInWithOAuth(ui: FirebaseUIConfiguration, provider: Aut
     // If we support popups, we'd need to modify state here.
   } catch (error) {
     handleFirebaseError(ui, error);
+  } finally {
+    ui.setState('idle');
   }
 }
 
@@ -239,6 +248,7 @@ export async function completeEmailLinkSignIn(
   } catch (error) {
     handleFirebaseError(ui, error);
   } finally {
+    ui.setState('idle');
     window.localStorage.removeItem('emailForSignIn');
   }
 }

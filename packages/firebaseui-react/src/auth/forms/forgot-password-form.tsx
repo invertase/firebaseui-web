@@ -58,7 +58,7 @@ export function ForgotPasswordForm({
 
   if (emailSent) {
     return (
-      <div className="fui-form__success">
+      <div className="fui-success">
         {getTranslation(ui, "messages", "checkEmailForReset")}
       </div>
     );

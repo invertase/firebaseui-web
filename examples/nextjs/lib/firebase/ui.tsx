@@ -8,5 +8,15 @@ export function FirebaseUIProvider({
 }: {
   children: React.ReactNode;
 }) {
-  return <ConfigProvider ui={ui}>{children}</ConfigProvider>;
+  return (
+    <ConfigProvider
+      ui={ui}
+      policies={{
+        termsOfServiceUrl: "https://www.google.com",
+        privacyPolicyUrl: "https://www.google.com",
+      }}
+    >
+      {children}
+    </ConfigProvider>
+  );
 }

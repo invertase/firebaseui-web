@@ -69,7 +69,7 @@ export function Policies() {
               onClick={() => handleUrl(termsOfServiceUrl)}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-text-muted hover:underline text-xs"
+              className="text-text-muted hover:underline font-semibold"
             >
               {termsText}
             </a>
@@ -82,7 +82,7 @@ export function Policies() {
               onClick={() => handleUrl(privacyPolicyUrl)}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-text-muted hover:underline text-xs"
+              className="text-text-muted hover:underline font-semibold"
             >
               {privacyText}
             </a>

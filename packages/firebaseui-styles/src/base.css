@@ -86,7 +86,11 @@
   }
 
   .fui-form .fui-form__error {
-    @apply text-error text-xs;
+    @apply text-error text-center text-xs;
+  }
+
+  .fui-success {
+    @apply text-center text-xs;
   }
 
   .fui-button {

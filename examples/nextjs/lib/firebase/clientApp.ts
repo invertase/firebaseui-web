@@ -13,8 +13,6 @@ export const auth = getAuth(firebaseApp);
 
 export const ui = initializeUI({
   app: firebaseApp,
-  tosUrl: "https://www.google.com",
-  privacyPolicyUrl: "https://www.google.com",
   behaviors: [autoAnonymousLogin()],
   translations: [
     customLanguage(english.locale, {
