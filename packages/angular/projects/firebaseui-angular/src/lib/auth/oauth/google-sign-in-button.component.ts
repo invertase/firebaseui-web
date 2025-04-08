@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OAuthButtonComponent } from './oauth-button.component';
-import { FirebaseUi } from '../../provider';
+import { FirebaseUI } from '../../provider';
 import { GoogleAuthProvider } from '@angular/fire/auth';
 
 @Component({
@@ -38,7 +38,7 @@ import { GoogleAuthProvider } from '@angular/fire/auth';
   `
 })
 export class GoogleSignInButtonComponent {
-  private ui = inject(FirebaseUi);
+  private ui = inject(FirebaseUI);
   googleProvider = new GoogleAuthProvider();
 
   get signInWithGoogleLabel() {

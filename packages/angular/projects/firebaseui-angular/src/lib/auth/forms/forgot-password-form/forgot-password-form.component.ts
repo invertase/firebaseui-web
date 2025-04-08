@@ -1,15 +1,14 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { injectForm, TanStackField } from '@tanstack/angular-form';
-import { FirebaseUi } from '../../../provider';
+import { FirebaseUI } from '../../../provider';
 import { Auth } from '@angular/fire/auth';
 import { ButtonComponent } from '../../../components/button/button.component';
 import { TermsAndPrivacyComponent } from '../../../components/terms-and-privacy/terms-and-privacy.component';
 import {
   createForgotPasswordFormSchema,
   FirebaseUIError,
-  ForgotPasswordFormSchema,
-  fuiSendPasswordResetEmail,
+  sendPasswordResetEmail,
 } from '@firebase-ui/core';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
@@ -75,8 +74,7 @@ import { Router } from '@angular/router';
   `,
 })
 export class ForgotPasswordFormComponent implements OnInit {
-  private ui = inject(FirebaseUi);
-  private auth = inject(Auth);
+  private ui = inject(FirebaseUI);
   private router = inject(Router);
 
   @Input({ required: true }) signInRoute!: string;
@@ -149,10 +147,7 @@ export class ForgotPasswordFormComponent implements OnInit {
       }
 
       // Send password reset email
-      await fuiSendPasswordResetEmail(this.auth, email, {
-        translations: this.config?.translations,
-        language: this.config?.language,
-      });
+      await sendPasswordResetEmail(await firstValueFrom(this.ui.config()), email);
 
       this.emailSent = true;
     } catch (error) {

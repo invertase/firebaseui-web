@@ -2,7 +2,7 @@ import { Component, EventEmitter, inject, Input, Output, QueryList, AfterContent
 import { CommonModule } from '@angular/common';
 import { CardComponent, CardHeaderComponent, CardTitleComponent, CardSubtitleComponent } from '../../../components/card/card.component';
 
-import { FirebaseUi } from '../../../provider';
+import { FirebaseUI } from '../../../provider';
 import { RegisterFormComponent } from '../../forms/register-form/register-form.component';
 import { DividerComponent } from '../../../components/divider/divider.component';
 
@@ -40,7 +40,7 @@ import { DividerComponent } from '../../../components/divider/divider.component'
   `
 })
 export class SignUpAuthScreenComponent implements AfterContentInit {
-  private ui = inject(FirebaseUi);
+  private ui = inject(FirebaseUI);
 
   @Input() signInRoute: string = '';
   @ViewChild('contentContainer') contentContainer!: ElementRef;

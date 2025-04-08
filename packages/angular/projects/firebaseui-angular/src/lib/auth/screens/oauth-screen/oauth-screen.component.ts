@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardComponent, CardHeaderComponent, CardTitleComponent, CardSubtitleComponent } from '../../../components/card/card.component';
-import { FirebaseUi } from '../../../provider';
+import { FirebaseUI } from '../../../provider';
 import { TermsAndPrivacyComponent } from '../../../components/terms-and-privacy/terms-and-privacy.component';
 
 @Component({
@@ -29,7 +29,7 @@ import { TermsAndPrivacyComponent } from '../../../components/terms-and-privacy/
   `
 })
 export class OAuthScreenComponent {
-  private ui = inject(FirebaseUi);
+  private ui = inject(FirebaseUI);
 
   get titleText() {
     return this.ui.translation('labels', 'signIn');

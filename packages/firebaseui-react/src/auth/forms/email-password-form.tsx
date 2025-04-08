@@ -115,7 +115,7 @@ export function EmailPasswordForm({
                   </span>
                   <button
                     type="button"
-                    disabled={ui.state !== "idle"}
+                    disabled={ui.state !== "idle" ? true : false}
                     onClick={onForgotPasswordClick}
                     className="fui-form__action"
                   >
@@ -153,7 +153,7 @@ export function EmailPasswordForm({
       <Policies />
 
       <fieldset>
-        <Button type="submit" disabled={ui.state !== "idle"}>
+        <Button type="submit" disabled={ui.state !== "idle" ? true : false}>
           {getTranslation(ui, "labels", "signIn")}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
@@ -163,7 +163,7 @@ export function EmailPasswordForm({
         <div className="flex justify-center items-center">
           <button
             type="button"
-            disabled={ui.state !== "idle"}
+            disabled={ui.state !== "idle" ? true : false}
             onClick={onRegisterClick}
             className="fui-form__action"
           >

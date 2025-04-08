@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
-import { FirebaseUi } from '../../../provider';
+import { FirebaseUI } from '../../../provider';
 import { OAuthScreenComponent } from './oauth-screen.component';
 
 // Mock Card components
@@ -99,7 +99,7 @@ describe('OAuthScreenComponent', () => {
         MockCardSubtitleComponent,
         MockTermsAndPrivacyComponent,
       ],
-      providers: [{ provide: FirebaseUi, useValue: mockFirebaseUi }],
+      providers: [{ provide: FirebaseUI, useValue: mockFirebaseUi }],
     }).compileComponents();
 
     TestBed.overrideComponent(OAuthScreenComponent, {

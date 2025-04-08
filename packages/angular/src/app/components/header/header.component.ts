@@ -21,7 +21,7 @@ import { Observable } from 'rxjs';
               <button (click)="onSignOut()">Sign Out</button>
             </li>
             <ng-template #signInLink>
-              <li><a routerLink="/auth/sign-in">Sign In</a></li>
+              <li><a routerLink="/sign-in">Sign In</a></li>
             </ng-template>
           </ul>
         </div>

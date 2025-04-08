@@ -4,7 +4,8 @@
   "peerDependencies": {
     "@angular/common": "^19.1.0",
     "@angular/core": "^19.1.0",
-    "@firebase-ui/core": "workspace:*"
+    "@firebase-ui/core": "workspace:*",
+    "@firebase-ui/translations": "workspace:*"
   },
   "dependencies": {
     "@tanstack/angular-form": "^1.1.0",

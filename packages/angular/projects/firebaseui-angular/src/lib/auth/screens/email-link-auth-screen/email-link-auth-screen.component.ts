@@ -1,7 +1,7 @@
 import { Component, inject, Input, AfterContentInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardComponent, CardHeaderComponent, CardTitleComponent, CardSubtitleComponent } from '../../../components/card/card.component';
-import { FirebaseUi } from '../../../provider';
+import { FirebaseUI } from '../../../provider';
 import { EmailLinkFormComponent } from '../../forms/email-link-form/email-link-form.component';
 import { DividerComponent } from '../../../components/divider/divider.component';
 
@@ -37,7 +37,7 @@ import { DividerComponent } from '../../../components/divider/divider.component'
   `
 })
 export class EmailLinkAuthScreenComponent implements AfterContentInit {
-  private ui = inject(FirebaseUi);
+  private ui = inject(FirebaseUI);
 
 
   @ViewChild('contentContainer') contentContainer!: ElementRef;

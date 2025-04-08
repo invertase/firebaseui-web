@@ -24,26 +24,6 @@ const firebaseConfig = {
   measurementId: 'G-B5Y2YD83TJ',
 };
 
-// Create a Firebase UI config that matches the NextJS example
-const firebaseUIConfig = {
-  app: undefined, // This will be set by the provider
-  tosUrl: 'https://www.google.com',
-  privacyPolicyUrl: 'https://www.google.com',
-  translations: {
-    en: {
-      labels: {
-        signIn: 'Sign In',
-      },
-      prompts: {
-        signInToAccount: 'Sign in to your account',
-      },
-      errors: {
-        invalidEmail: 'Please enter a valid email address',
-      },
-    },
-  },
-};
-
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
@@ -55,6 +35,6 @@ export const appConfig: ApplicationConfig = {
       connectAuthEmulator(auth, 'http://localhost:9099');
       return auth;
     }),
-    provideFirebaseUI(() => initializeUI(firebaseUIConfig)),
+    provideFirebaseUI((apps) => initializeUI({ app: apps[0] })),
   ],
 };

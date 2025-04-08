@@ -6,7 +6,7 @@ import { Behavior, type BehaviorHandlers, type BehaviorKey, getBehavior, hasBeha
 import { FirebaseUIState } from './state';
 
 type FirebaseUIConfigurationOptions = {
-  app: FirebaseApp | undefined; // TODO: Should this be optional? Or remove for Angular types?
+  app: FirebaseApp;
   locale?: Locale | undefined;
   translations?: RegisteredTranslations[] | undefined;
   behaviors?: Partial<Behavior<keyof BehaviorHandlers>>[] | undefined;
@@ -14,7 +14,7 @@ type FirebaseUIConfigurationOptions = {
 };
 
 export type FirebaseUIConfiguration = {
-  app: FirebaseApp | undefined;
+  app: FirebaseApp;
   getAuth: () => Auth;
   setLocale: (locale: Locale) => void;
   state: FirebaseUIState;
@@ -42,7 +42,10 @@ export function initializeUI(config: FirebaseUIConfigurationOptions, name: strin
   );
 
   config.translations ??= [];
+
+  // TODO: Is this right?
   config.translations.push(english);
+  
   const translations = config.translations?.reduce((acc, translation) => {
     return {
       ...acc,

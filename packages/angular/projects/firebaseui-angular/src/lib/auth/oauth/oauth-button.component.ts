@@ -1,9 +1,9 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonComponent } from '../../components/button/button.component';
-import { FirebaseUi } from '../../provider';
+import { FirebaseUI } from '../../provider';
 import { Auth, AuthProvider } from '@angular/fire/auth';
-import { FirebaseUIError, fuiSignInWithOAuth } from '@firebase-ui/core';
+import { FirebaseUIError, signInWithOAuth } from '@firebase-ui/core';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -24,8 +24,7 @@ import { firstValueFrom } from 'rxjs';
   `,
 })
 export class OAuthButtonComponent implements OnInit {
-  private ui = inject(FirebaseUi);
-  private auth = inject(Auth);
+  private ui = inject(FirebaseUI);
 
   @Input() provider!: AuthProvider;
 
@@ -40,14 +39,7 @@ export class OAuthButtonComponent implements OnInit {
   async handleOAuthSignIn() {
     this.error = null;
     try {
-      const config = await firstValueFrom(this.ui.config());
-
-      await fuiSignInWithOAuth(this.auth, this.provider, {
-        translations: config?.translations,
-        language: config?.language,
-        enableAutoUpgradeAnonymous: config?.enableAutoUpgradeAnonymous,
-        enableHandleExistingCredential: config?.enableHandleExistingCredential,
-      });
+      await signInWithOAuth(await firstValueFrom(this.ui.config()), this.provider);
     } catch (error) {
       if (error instanceof FirebaseUIError) {
         this.error = error.message;

@@ -9,16 +9,16 @@ import {
 import { Auth, AuthProvider } from '@angular/fire/auth';
 import { FirebaseUIError } from '@firebase-ui/core';
 import { firstValueFrom, of } from 'rxjs';
-import { FirebaseUi } from '../../provider';
+import { FirebaseUI } from '../../provider';
 import { OAuthButtonComponent } from './oauth-button.component';
 
 // Create a spy for fuiSignInWithOAuth
 const mockFuiSignInWithOAuth = jasmine
-  .createSpy('fuiSignInWithOAuth')
+  .createSpy('signInWithOAuth')
   .and.returnValue(Promise.resolve());
 
 // Mock the firebase-ui/core module
-jasmine.createSpyObj('@firebase-ui/core', ['fuiSignInWithOAuth']);
+jasmine.createSpyObj('@firebase-ui/core', ['signInWithOAuth']);
 
 // Mock Button component
 @Component({
@@ -75,12 +75,7 @@ class TestOAuthButtonComponent extends OAuthButtonComponent {
     try {
       const config = await firstValueFrom(this['ui'].config());
 
-      await mockFuiSignInWithOAuth(this['auth'], this.provider, {
-        translations: config?.translations,
-        language: config?.language,
-        enableAutoUpgradeAnonymous: config?.enableAutoUpgradeAnonymous,
-        enableHandleExistingCredential: config?.enableHandleExistingCredential,
-      });
+      await mockFuiSignInWithOAuth(config.getAuth(), this.provider);
     } catch (error) {
       if (error instanceof FirebaseUIError) {
         this.error = error.message;
@@ -126,7 +121,7 @@ describe('OAuthButtonComponent', () => {
     await TestBed.configureTestingModule({
       imports: [CommonModule, TestOAuthButtonComponent, MockButtonComponent],
       providers: [
-        { provide: FirebaseUi, useValue: mockFirebaseUi },
+        { provide: FirebaseUI, useValue: mockFirebaseUi },
         { provide: Auth, useValue: mockAuth },
       ],
     }).compileComponents();
@@ -150,7 +145,7 @@ describe('OAuthButtonComponent', () => {
     );
   });
 
-  it('should call fuiSignInWithOAuth when button is clicked', fakeAsync(() => {
+  it('should call signInWithOAuth when button is clicked', fakeAsync(() => {
     // Spy on handleOAuthSignIn
     spyOn(component, 'handleOAuthSignIn').and.callThrough();
 

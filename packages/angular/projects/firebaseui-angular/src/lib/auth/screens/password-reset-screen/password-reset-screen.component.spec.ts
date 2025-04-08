@@ -3,7 +3,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
-import { FirebaseUi } from '../../../provider';
+import { FirebaseUI } from '../../../provider';
 import { PasswordResetScreenComponent } from './password-reset-screen.component';
 
 // Mock Card components
@@ -81,7 +81,7 @@ describe('PasswordResetScreenComponent', () => {
         MockCardSubtitleComponent,
         MockForgotPasswordFormComponent,
       ],
-      providers: [{ provide: FirebaseUi, useValue: mockFirebaseUi }],
+      providers: [{ provide: FirebaseUI, useValue: mockFirebaseUi }],
     }).compileComponents();
 
     TestBed.overrideComponent(PasswordResetScreenComponent, {

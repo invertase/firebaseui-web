@@ -1,13 +1,13 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { ButtonComponent } from '../../../components/button/button.component';
-import { FirebaseUi } from '../../../provider';
+import { FirebaseUI } from '../../../provider';
 import { CommonModule } from '@angular/common';
 import { injectForm, TanStackField } from '@tanstack/angular-form';
 import {
   createEmailFormSchema,
   EmailFormSchema,
   FirebaseUIError,
-  fuiCreateUserWithEmailAndPassword,
+  createUserWithEmailAndPassword,
 } from '@firebase-ui/core';
 import { Auth } from '@angular/fire/auth';
 import { TermsAndPrivacyComponent } from '../../../components/terms-and-privacy/terms-and-privacy.component';
@@ -96,8 +96,7 @@ import { Router } from '@angular/router';
   standalone: true,
 })
 export class RegisterFormComponent implements OnInit {
-  private ui = inject(FirebaseUi);
-  private auth = inject(Auth);
+  private ui = inject(FirebaseUI);
   private router = inject(Router);
 
   @Input({ required: true }) signInRoute!: string;
@@ -174,11 +173,11 @@ export class RegisterFormComponent implements OnInit {
         return;
       }
 
-      await fuiCreateUserWithEmailAndPassword(this.auth, email, password, {
-        translations: this.config?.translations,
-        language: this.config?.language,
-        enableAutoUpgradeAnonymous: this.config?.enableAutoUpgradeAnonymous,
-      });
+      await createUserWithEmailAndPassword(
+        await firstValueFrom(this.ui.config()),
+        email,
+        password,
+      );
     } catch (error) {
       if (error instanceof FirebaseUIError) {
         this.formError = error.message;
