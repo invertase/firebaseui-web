@@ -75,7 +75,7 @@ class TestOAuthButtonComponent extends OAuthButtonComponent {
     try {
       const config = await firstValueFrom(this['ui'].config());
 
-      await mockFuiSignInWithOAuth(config.getAuth(), this.provider);
+      await mockFuiSignInWithOAuth(config, this.provider);
     } catch (error) {
       if (error instanceof FirebaseUIError) {
         this.error = error.message;
@@ -85,7 +85,7 @@ class TestOAuthButtonComponent extends OAuthButtonComponent {
 
       try {
         const errorMessage = await firstValueFrom(
-          this['ui'].translation('errors', 'unknownError')
+          this['ui'].translation('errors', 'unknownError'),
         );
         this.error = errorMessage ?? 'Unknown error';
       } catch {
@@ -141,7 +141,7 @@ describe('OAuthButtonComponent', () => {
     component.provider = undefined as unknown as AuthProvider;
     component.ngOnInit();
     expect(console.error).toHaveBeenCalledWith(
-      'Provider is required for OAuthButtonComponent'
+      'Provider is required for OAuthButtonComponent',
     );
   });
 
@@ -160,14 +160,13 @@ describe('OAuthButtonComponent', () => {
 
     // Check if the mock function was called with the correct arguments
     expect(mockFuiSignInWithOAuth).toHaveBeenCalledWith(
-      mockAuth,
-      mockProvider,
       jasmine.objectContaining({
         language: 'en',
         translations: {},
         enableAutoUpgradeAnonymous: false,
         enableHandleExistingCredential: false,
-      })
+      }),
+      mockProvider,
     );
   }));
 

@@ -6,7 +6,22 @@ import { of } from 'rxjs';
 
 // Mock for the Auth service
 export const mockAuth = {
-  currentUser: null,
+  appVerificationDisabledForTesting: true,
+  languageCode: 'en',
+  settings: {
+    appVerificationDisabledForTesting: true,
+  },
+  app: {
+    options: {
+      apiKey: 'fake-api-key',
+    },
+    name: 'test',
+    automaticDataCollectionEnabled: false,
+    appVerificationDisabledForTesting: true,
+  },
+  signInWithPopup: jasmine.createSpy('signInWithPopup'),
+  signInWithRedirect: jasmine.createSpy('signInWithRedirect'),
+  signInWithPhoneNumber: jasmine.createSpy('signInWithPhoneNumber'),
 };
 
 // Mock for FirebaseUi provider

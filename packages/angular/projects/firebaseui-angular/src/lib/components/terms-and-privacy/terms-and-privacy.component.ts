@@ -31,7 +31,7 @@ import { map } from 'rxjs/operators';
         <ng-container *ngIf="part.type === 'text'">{{ part.content }}</ng-container>
       </ng-container>
     </div> -->
-  `
+  `,
 })
 export class TermsAndPrivacyComponent {
   private ui = inject(FirebaseUI);
@@ -50,11 +50,11 @@ export class TermsAndPrivacyComponent {
 
   termsText = this.ui.translation('labels', 'termsOfService');
   privacyText = this.ui.translation('labels', 'privacyPolicy');
-  
+
   parts = this.ui.translation('messages', 'termsAndPrivacy').pipe(
-    map(text => {
+    map((text) => {
       const parts = text.split(/({tos}|{privacy})/);
-      return parts.map(part => {
+      return parts.map((part) => {
         if (part === '{tos}') {
           return { type: 'tos' };
         }
@@ -63,6 +63,6 @@ export class TermsAndPrivacyComponent {
         }
         return { type: 'text', content: part };
       });
-    })
+    }),
   );
 }

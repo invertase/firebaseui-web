@@ -20,6 +20,7 @@ import {
   PhoneNumberFormComponent,
   VerificationFormComponent,
 } from './phone-form.component';
+import { mockAuth } from '../../../testing/test-helpers';
 
 // Mock Firebase UI Core functions
 const mockFuiSignInWithPhoneNumber = jasmine
@@ -28,7 +29,7 @@ const mockFuiSignInWithPhoneNumber = jasmine
     Promise.resolve({
       confirm: jasmine.createSpy('confirm').and.returnValue(Promise.resolve()),
       verificationId: 'mock-verification-id',
-    } as ConfirmationResult)
+    } as ConfirmationResult),
   );
 
 const mockFuiConfirmPhoneNumber = jasmine
@@ -104,6 +105,7 @@ class MockCountrySelectorComponent {
 class MockFirebaseUi {
   config() {
     return of({
+      getAuth: () => mockAuth,
       recaptchaMode: 'normal',
       translations: {},
     });
@@ -120,11 +122,11 @@ class TestPhoneFormComponent extends PhoneFormComponent {
   initRecaptcha() {
     const mockRecaptchaVerifier = jasmine.createSpyObj<RecaptchaVerifier>(
       'RecaptchaVerifier',
-      ['render', 'clear', 'verify']
+      ['render', 'clear', 'verify'],
     );
     mockRecaptchaVerifier.render.and.returnValue(Promise.resolve(1));
     mockRecaptchaVerifier.verify.and.returnValue(
-      Promise.resolve('verification-token')
+      Promise.resolve('verification-token'),
     );
 
     this.recaptchaVerifier = mockRecaptchaVerifier;
@@ -163,7 +165,7 @@ class TestPhoneFormComponent extends PhoneFormComponent {
         {
           translations: {},
           language: 'en',
-        }
+        },
       );
 
       this.confirmationResult = result;
@@ -223,7 +225,7 @@ class TestPhoneFormComponent extends PhoneFormComponent {
           {
             translations: {},
             language: 'en',
-          }
+          },
         );
 
         this.confirmationResult = result;
@@ -244,11 +246,11 @@ class TestPhoneNumberFormComponent extends PhoneNumberFormComponent {
   override initRecaptcha() {
     const mockRecaptchaVerifier = jasmine.createSpyObj<RecaptchaVerifier>(
       'RecaptchaVerifier',
-      ['render', 'clear', 'verify']
+      ['render', 'clear', 'verify'],
     );
     mockRecaptchaVerifier.render.and.returnValue(Promise.resolve(1));
     mockRecaptchaVerifier.verify.and.returnValue(
-      Promise.resolve('verification-token')
+      Promise.resolve('verification-token'),
     );
 
     this.recaptchaVerifier = mockRecaptchaVerifier;
@@ -273,11 +275,11 @@ describe('PhoneFormComponent', () => {
 
     mockRecaptchaVerifier = jasmine.createSpyObj<RecaptchaVerifier>(
       'RecaptchaVerifier',
-      ['render', 'clear', 'verify']
+      ['render', 'clear', 'verify'],
     );
     mockRecaptchaVerifier.render.and.returnValue(Promise.resolve(1));
     mockRecaptchaVerifier.verify.and.returnValue(
-      Promise.resolve('verification-token')
+      Promise.resolve('verification-token'),
     );
 
     // Create mock schema for phone validation
@@ -363,7 +365,7 @@ describe('PhoneFormComponent', () => {
             confirm: jasmine
               .createSpy('confirm')
               .and.returnValue(Promise.resolve()),
-          })
+          }),
         ),
       signInWithCredential: jasmine
         .createSpy('signInWithCredential')
@@ -398,7 +400,7 @@ describe('PhoneFormComponent', () => {
 
     // Mock DOM methods
     spyOn(document, 'querySelector').and.returnValue(
-      document.createElement('div')
+      document.createElement('div'),
     );
 
     // Directly replace timer with mock implementation
