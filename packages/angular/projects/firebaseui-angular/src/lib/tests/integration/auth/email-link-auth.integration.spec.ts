@@ -94,7 +94,7 @@ describe('Email Link Authentication Integration', () => {
           enableHandleExistingCredential: false,
           translations: {},
         }),
-      translation: () => of('Translation value'),
+      translation: () => of('Invalid email address'),
     };
 
     // Mock for the NANOSTORES service
@@ -148,7 +148,7 @@ describe('Email Link Authentication Integration', () => {
   it('should successfully initiate email link sign in', fakeAsync(() => {
     // Find email input
     const emailInput = fixture.debugElement.query(
-      By.css('input[type="email"]')
+      By.css('input[type="email"]'),
     ).nativeElement;
 
     // Fill in the form
@@ -160,7 +160,7 @@ describe('Email Link Authentication Integration', () => {
 
     // Find and click the submit button
     const submitButton = fixture.debugElement.query(
-      By.css('fui-button button')
+      By.css('fui-button button'),
     ).nativeElement;
     submitButton.click();
 
@@ -170,7 +170,7 @@ describe('Email Link Authentication Integration', () => {
 
     // Check for success by verifying no critical error message exists
     const errorElements = fixture.debugElement.queryAll(
-      By.css('.fui-form__error')
+      By.css('.fui-form__error'),
     );
 
     let hasCriticalError = false;
@@ -197,7 +197,7 @@ describe('Email Link Authentication Integration', () => {
   it('should handle invalid email format', fakeAsync(() => {
     // Find email input
     const emailInput = fixture.debugElement.query(
-      By.css('input[type="email"]')
+      By.css('input[type="email"]'),
     ).nativeElement;
 
     // Fill in form with invalid email
@@ -209,7 +209,7 @@ describe('Email Link Authentication Integration', () => {
 
     // Find and click the submit button
     const submitButton = fixture.debugElement.query(
-      By.css('fui-button button')
+      By.css('fui-button button'),
     ).nativeElement;
     submitButton.click();
 
@@ -219,7 +219,7 @@ describe('Email Link Authentication Integration', () => {
 
     // Verify error is shown
     const errorElements = fixture.debugElement.queryAll(
-      By.css('.fui-form__error')
+      By.css('.fui-form__error'),
     );
     expect(errorElements.length).toBeGreaterThan(0);
   }));

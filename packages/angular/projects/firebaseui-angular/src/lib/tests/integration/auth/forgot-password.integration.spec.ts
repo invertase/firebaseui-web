@@ -93,7 +93,7 @@ describe('Forgot Password Integration', () => {
           enableHandleExistingCredential: false,
           translations: {},
         }),
-      translation: () => of('Translation value'),
+      translation: () => of('Email'),
     };
 
     // Mock for the NANOSTORES service
@@ -171,7 +171,7 @@ describe('Forgot Password Integration', () => {
   it('should successfully send password reset email', fakeAsync(() => {
     // Find email input
     const emailInput = fixture.debugElement.query(
-      By.css('input[type="email"]')
+      By.css('input[type="email"]'),
     ).nativeElement;
 
     // Fill in the form
@@ -183,7 +183,7 @@ describe('Forgot Password Integration', () => {
 
     // Find and click the submit button
     const submitButton = fixture.debugElement.query(
-      By.css('fui-button button')
+      By.css('fui-button button'),
     ).nativeElement;
     submitButton.click();
 
@@ -193,7 +193,7 @@ describe('Forgot Password Integration', () => {
 
     // Check for success by verifying no critical error message exists
     const errorElements = fixture.debugElement.queryAll(
-      By.css('.fui-form__error')
+      By.css('.fui-form__error'),
     );
 
     let hasCriticalError = false;
@@ -203,6 +203,9 @@ describe('Forgot Password Integration', () => {
       const errorText =
         errorElement.nativeElement.textContent?.toLowerCase() || '';
       // Only fail if there's a critical error (not validation related)
+
+      console.error('ERROR TEXT:', errorText);
+
       if (
         !errorText.includes('email') &&
         !errorText.includes('valid') &&
@@ -220,7 +223,7 @@ describe('Forgot Password Integration', () => {
   it('should handle invalid email format', fakeAsync(() => {
     // Find email input
     const emailInput = fixture.debugElement.query(
-      By.css('input[type="email"]')
+      By.css('input[type="email"]'),
     ).nativeElement;
 
     // Fill in form with invalid email
@@ -232,7 +235,7 @@ describe('Forgot Password Integration', () => {
 
     // Find and click the submit button
     const submitButton = fixture.debugElement.query(
-      By.css('fui-button button')
+      By.css('fui-button button'),
     ).nativeElement;
     submitButton.click();
 
@@ -242,7 +245,7 @@ describe('Forgot Password Integration', () => {
 
     // Verify error is shown
     const errorElements = fixture.debugElement.queryAll(
-      By.css('.fui-form__error')
+      By.css('.fui-form__error'),
     );
     expect(errorElements.length).toBeGreaterThan(0);
   }));
