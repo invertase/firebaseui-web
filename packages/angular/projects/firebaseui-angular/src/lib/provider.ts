@@ -7,13 +7,26 @@ import {
   inject,
 } from '@angular/core';
 import { FirebaseApps } from '@angular/fire/app';
-import { type FirebaseUI as FirebaseUIType, getTranslation } from '@firebase-ui/core';
+import {
+  type FirebaseUI as FirebaseUIType,
+  getTranslation,
+} from '@firebase-ui/core';
 import { distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 import { Observable, ReplaySubject } from 'rxjs';
 import { Store } from 'nanostores';
 import { TranslationCategory, TranslationKey } from '@firebase-ui/translations';
 
-const FIREBASE_UI_STORE = new InjectionToken<FirebaseUIType>('firebaseui.store');
+const FIREBASE_UI_STORE = new InjectionToken<FirebaseUIType>(
+  'firebaseui.store',
+);
+const FIREBASE_UI_POLICIES = new InjectionToken<PolicyConfig>(
+  'firebaseui.policies',
+);
+
+type PolicyConfig = {
+  termsOfServiceUrl: string;
+  privacyPolicyUrl: string;
+};
 
 export function provideFirebaseUI(
   uiFactory: (apps: FirebaseApps) => FirebaseUIType,
@@ -22,6 +35,14 @@ export function provideFirebaseUI(
     // TODO: This should depend on the FirebaseAuth provider via deps,
     // see https://github.com/angular/angularfire/blob/35e0a9859299010488852b1826e4083abe56528f/src/firestore/firestore.module.ts#L76
     { provide: FIREBASE_UI_STORE, useFactory: uiFactory, deps: [FirebaseApps] },
+  ];
+
+  return makeEnvironmentProviders(providers);
+}
+
+export function provideFirebaseUIPolicies(factory: () => PolicyConfig) {
+  const providers: Provider[] = [
+    { provide: FIREBASE_UI_POLICIES, useFactory: factory },
   ];
 
   return makeEnvironmentProviders(providers);
@@ -43,9 +64,7 @@ export class FirebaseUI {
     key: TranslationKey<T>,
   ) {
     return this.config().pipe(
-      map((config) =>
-        getTranslation(config, category, key),
-      ),
+      map((config) => getTranslation(config, category, key)),
     );
   }
 
@@ -59,5 +78,20 @@ export class FirebaseUI {
   ngOnDestroy(): void {
     this.destroyed$.next();
     this.destroyed$.complete();
+  }
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class FirebaseUIPolicies {
+  private policies = inject(FIREBASE_UI_POLICIES);
+
+  get termsOfServiceUrl() {
+    return this.policies.termsOfServiceUrl;
+  }
+
+  get privacyPolicyUrl() {
+    return this.policies.privacyPolicyUrl;
   }
 }
