@@ -13,6 +13,9 @@ import { map } from 'rxjs';
         <a
           *ngIf="part.type === 'tos' && tosUrl"
           (click)="handleUrl(tosUrl)"
+          [attr.href]="tosUrl"
+          target="_blank"
+          rel="noopener noreferrer"
           class="text-text-muted hover:underline font-semibold cursor-pointer"
         >
           {{ termsText | async }}
@@ -20,6 +23,9 @@ import { map } from 'rxjs';
         <a
           *ngIf="part.type === 'privacy' && privacyPolicyUrl"
           (click)="handleUrl(privacyPolicyUrl)"
+          [attr.href]="privacyPolicyUrl"
+          target="_blank"
+          rel="noopener noreferrer"
           class="text-text-muted hover:underline font-semibold cursor-pointer"
         >
           {{ privacyText | async }}
@@ -38,7 +44,9 @@ export class TermsAndPrivacyComponent {
   tosUrl = this.policies.termsOfServiceUrl;
   privacyPolicyUrl = this.policies.privacyPolicyUrl;
 
-  shouldShow = !!(this.tosUrl || this.privacyPolicyUrl);
+  get shouldShow(): boolean {
+    return !!(this.tosUrl || this.privacyPolicyUrl);
+  }
 
   termsText = this.ui.translation('labels', 'termsOfService');
   privacyText = this.ui.translation('labels', 'privacyPolicy');
