@@ -9,7 +9,10 @@ import {
 
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth, getAuth, connectAuthEmulator } from '@angular/fire/auth';
-import { provideFirebaseUI } from '@firebase-ui/angular';
+import {
+  provideFirebaseUI,
+  provideFirebaseUIPolicies,
+} from '@firebase-ui/angular';
 import { initializeUI } from '@firebase-ui/core';
 
 const firebaseConfig = {
@@ -36,5 +39,9 @@ export const appConfig: ApplicationConfig = {
       return auth;
     }),
     provideFirebaseUI((apps) => initializeUI({ app: apps[0] })),
+    provideFirebaseUIPolicies(() => ({
+      termsOfServiceUrl: 'https://www.google.com',
+      privacyPolicyUrl: 'https://www.google.com',
+    })),
   ],
 };
