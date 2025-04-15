@@ -4,16 +4,11 @@ import { GoogleSignInButton } from "~/auth/oauth/google-sign-in-button";
 
 // Mock hooks
 vi.mock("~/hooks", () => ({
-  useConfig: () => ({ language: "en" }),
-  useTranslations: () => ({}),
-}));
-
-// Mock getTranslation
-vi.mock("@firebase-ui/core", () => ({
-  getTranslation: vi.fn((category, key) => {
-    if (category === "labels" && key === "signInWithGoogle")
-      return "Sign in with Google";
-    return key;
+  useUI: () => ({
+    locale: "en-US",
+    translations: {
+      "en-US": { labels: { signInWithGoogle: "foo bar" } },
+    },
   }),
 }));
 
@@ -59,6 +54,6 @@ describe("GoogleSignInButton", () => {
 
   it("renders with the correct text", () => {
     render(<GoogleSignInButton />);
-    expect(screen.getByText("Sign in with Google")).toBeInTheDocument();
+    expect(screen.getByText("foo bar")).toBeInTheDocument();
   });
 });

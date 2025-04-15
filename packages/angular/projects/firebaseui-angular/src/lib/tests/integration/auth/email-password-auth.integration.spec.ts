@@ -23,7 +23,7 @@ import { of } from 'rxjs';
 import { EmailPasswordFormComponent } from '../../../auth/forms/email-password-form/email-password-form.component';
 import { ButtonComponent } from '../../../components/button/button.component';
 import { TermsAndPrivacyComponent } from '../../../components/terms-and-privacy/terms-and-privacy.component';
-import { FirebaseUi } from '../../../provider';
+import { FirebaseUI } from '../../../provider';
 
 // Create token for Firebase UI store
 const FIREBASE_UI_STORE = new InjectionToken<any>('firebaseui.store');
@@ -94,7 +94,7 @@ describe('Email Password Authentication Integration', () => {
           const userCredential = await signInWithEmailAndPassword(
             auth,
             testEmail,
-            testPassword
+            testPassword,
           );
           await deleteUser(userCredential.user);
           console.log(`Signed in and deleted user: ${testEmail}`);
@@ -119,7 +119,7 @@ describe('Email Password Authentication Integration', () => {
           enableHandleExistingCredential: false,
           translations: {},
         }),
-      translation: () => of('Translation value'),
+      translation: (_section: string, _key: string) => of(''),
     };
 
     // Mock for the NANOSTORES service
@@ -143,7 +143,7 @@ describe('Email Password Authentication Integration', () => {
       ],
       providers: [
         provideRouter([]),
-        { provide: FirebaseUi, useValue: mockFirebaseUi },
+        { provide: FirebaseUI, useValue: mockFirebaseUi },
         { provide: Auth, useValue: auth },
         {
           provide: FIREBASE_UI_STORE,
@@ -178,10 +178,10 @@ describe('Email Password Authentication Integration', () => {
   it('should successfully sign in with valid credentials', fakeAsync(() => {
     // Find form inputs
     const emailInput = fixture.debugElement.query(
-      By.css('input[type="email"]')
+      By.css('input[type="email"]'),
     ).nativeElement;
     const passwordInput = fixture.debugElement.query(
-      By.css('input[type="password"]')
+      By.css('input[type="password"]'),
     ).nativeElement;
 
     // Fill in the form
@@ -205,7 +205,7 @@ describe('Email Password Authentication Integration', () => {
 
     // Verify no error is shown
     const errorElements = fixture.debugElement.queryAll(
-      By.css('.fui-form__error')
+      By.css('.fui-form__error'),
     );
     // We should check that there's no form-level error, but there might still be field-level errors
     const formLevelError = errorElements.find((el) => {
@@ -220,10 +220,10 @@ describe('Email Password Authentication Integration', () => {
   it('should show an error message when using invalid credentials', fakeAsync(() => {
     // Find form inputs
     const emailInput = fixture.debugElement.query(
-      By.css('input[type="email"]')
+      By.css('input[type="email"]'),
     ).nativeElement;
     const passwordInput = fixture.debugElement.query(
-      By.css('input[type="password"]')
+      By.css('input[type="password"]'),
     ).nativeElement;
 
     // Fill in the form with incorrect password
@@ -251,7 +251,7 @@ describe('Email Password Authentication Integration', () => {
     fixture.detectChanges();
 
     const errorElements = fixture.debugElement.queryAll(
-      By.css('.fui-form__error')
+      By.css('.fui-form__error'),
     );
     // Find the form-level error, not field-level errors
     const formLevelError = errorElements.find((el) => {
@@ -262,7 +262,7 @@ describe('Email Password Authentication Integration', () => {
 
     expect(formLevelError).toBeTruthy();
     expect(formLevelError?.nativeElement.textContent).toContain(
-      'Invalid email/password'
+      'Invalid email/password',
     );
   }));
 });

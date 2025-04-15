@@ -1,29 +1,22 @@
+import type { PropsWithChildren } from "react";
+import { getTranslation } from "@firebase-ui/core";
+import { Divider } from "~/components/divider";
+import { useUI } from "~/hooks";
 import {
   Card,
   CardHeader,
-  CardTitle,
   CardSubtitle,
+  CardTitle,
 } from "../../components/card";
-import { useConfig, useTranslations } from "~/hooks";
-import { getTranslation } from "@firebase-ui/core";
-import { Divider } from "~/components/divider";
 import { EmailLinkForm } from "../forms/email-link-form";
 
-export interface EmailLinkAuthScreenProps {
-  children?: React.ReactNode | React.ReactNode[];
-}
+export type EmailLinkAuthScreenProps = PropsWithChildren;
 
 export function EmailLinkAuthScreen({ children }: EmailLinkAuthScreenProps) {
-  const { language } = useConfig();
-  const translations = useTranslations();
+  const ui = useUI();
 
-  const titleText = getTranslation("labels", "signIn", translations, language);
-  const subtitleText = getTranslation(
-    "prompts",
-    "signInToAccount",
-    translations,
-    language
-  );
+  const titleText = getTranslation(ui, "labels", "signIn");
+  const subtitleText = getTranslation(ui, "prompts", "signInToAccount");
 
   return (
     <div className="fui-screen">
@@ -35,9 +28,7 @@ export function EmailLinkAuthScreen({ children }: EmailLinkAuthScreenProps) {
         <EmailLinkForm />
         {children ? (
           <>
-            <Divider>
-              {getTranslation("messages", "dividerOr", translations, language)}
-            </Divider>
+            <Divider>{getTranslation(ui, "messages", "dividerOr")}</Divider>
             <div className="space-y-4">{children}</div>
           </>
         ) : null}

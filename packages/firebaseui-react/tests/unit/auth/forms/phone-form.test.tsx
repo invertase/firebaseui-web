@@ -14,63 +14,26 @@ vi.mock("firebase/auth", () => ({
 }));
 
 // Mock the core dependencies
-vi.mock("@firebase-ui/core", () => ({
-  FirebaseUIError: class FirebaseUIError extends Error {
-    code: string;
-    constructor(error: any) {
-      super(error.message || "Unknown error");
-      this.name = "FirebaseUIError";
-      this.code = error.code || "unknown-error";
-    }
-  },
-  fuiSignInWithPhoneNumber: vi.fn().mockResolvedValue({
-    confirm: vi.fn().mockResolvedValue(undefined),
-  }),
-  fuiConfirmPhoneNumber: vi.fn().mockResolvedValue(undefined),
-  createPhoneFormSchema: vi.fn().mockReturnValue({
-    phoneNumber: { required: "Phone number is required" },
-    verificationCode: { required: "Verification code is required" },
-    pick: vi.fn().mockReturnValue({
-      phoneNumber: { required: "Phone number is required" },
+vi.mock("@firebase-ui/core", async (originalImport) => {
+  const mod = await originalImport<typeof import("@firebase-ui/core")>();
+  return {
+    ...mod,
+    signInWithPhoneNumber: vi.fn().mockResolvedValue({
+      confirm: vi.fn().mockResolvedValue(undefined),
     }),
-  }),
-  getTranslation: vi.fn((category: string, key: string) => {
-    const translations: Record<string, Record<string, string>> = {
-      labels: {
-        phoneNumber: "Phone Number",
-        submit: "Submit",
-        sendVerificationCode: "Send Verification Code",
-        verificationCode: "Verification Code",
-        verify: "Verify",
-        resendCode: "Resend Code",
-      },
-      messages: {
-        resendCodeIn: "Resend code in {{seconds}} seconds",
-      },
-      errors: {
-        unknownError: "An unknown error occurred",
-      },
-    };
-    return translations[category]?.[key] || `${category}.${key}`;
-  }),
-  countryData: [
-    {
-      code: "US",
-      name: "United States",
-      dialCode: "+1",
-      emoji: "🇺🇸",
-    },
-    {
-      code: "GB",
-      name: "United Kingdom",
-      dialCode: "+44",
-      emoji: "🇬🇧",
-    },
-  ],
-  formatPhoneNumberWithCountry: vi.fn(
-    (phoneNumber, dialCode) => `${dialCode}${phoneNumber}`
-  ),
-}));
+    confirmPhoneNumber: vi.fn().mockResolvedValue(undefined),
+    createPhoneFormSchema: vi.fn().mockReturnValue({
+      phoneNumber: { required: "Phone number is required" },
+      verificationCode: { required: "Verification code is required" },
+      pick: vi.fn().mockReturnValue({
+        phoneNumber: { required: "Phone number is required" },
+      }),
+    }),
+    formatPhoneNumberWithCountry: vi.fn(
+      (phoneNumber, dialCode) => `${dialCode}${phoneNumber}`
+    ),
+  };
+});
 
 // Mock @tanstack/react-form library
 vi.mock("@tanstack/react-form", () => {
@@ -110,10 +73,25 @@ vi.mock("@tanstack/react-form", () => {
 // Mock hooks
 vi.mock("../../../../src/hooks", () => ({
   useAuth: vi.fn().mockReturnValue({}),
-  useConfig: vi.fn().mockReturnValue({
-    language: "en",
+  useUI: vi.fn().mockReturnValue({
+    locale: "en-US",
+    translations: {
+      "en-US": {
+        labels: {
+          phoneNumber: "Phone Number",
+          verificationCode: "Verification Code",
+          sendVerificationCode: "Send Verification Code",
+          resendVerificationCode: "Resend Verification Code",
+          enterVerificationCode: "Enter Verification Code",
+          continue: "Continue",
+          backToSignIn: "Back to Sign In",
+        },
+        errors: {
+          unknownError: "Unknown error",
+        },
+      },
+    },
   }),
-  useTranslations: vi.fn().mockReturnValue({}),
 }));
 
 // Mock the components
@@ -129,12 +107,8 @@ vi.mock("../../../../src/components/field-info", () => ({
     )),
 }));
 
-vi.mock("../../../../src/components/terms-and-privacy", () => ({
-  TermsAndPrivacy: vi
-    .fn()
-    .mockReturnValue(
-      <div data-testid="terms-and-privacy">Terms & Privacy</div>
-    ),
+vi.mock("../../../../src/components/policies", () => ({
+  Policies: vi.fn().mockReturnValue(<div data-testid="policies" />),
 }));
 
 vi.mock("../../../../src/components/button", () => ({
@@ -168,7 +142,7 @@ vi.mock("../../../../src/components/country-selector", () => ({
 }));
 
 // Import the actual functions after mocking
-import { fuiSignInWithPhoneNumber } from "@firebase-ui/core";
+import { signInWithPhoneNumber } from "@firebase-ui/core";
 
 describe("PhoneForm", () => {
   beforeEach(() => {
@@ -185,7 +159,7 @@ describe("PhoneForm", () => {
       screen.getByRole("textbox", { name: /phone number/i })
     ).toBeInTheDocument();
     expect(screen.getByTestId("country-selector")).toBeInTheDocument();
-    expect(screen.getByTestId("terms-and-privacy")).toBeInTheDocument();
+    expect(screen.getByTestId("policies")).toBeInTheDocument();
     expect(screen.getByTestId("submit-button")).toBeInTheDocument();
   });
 
@@ -210,12 +184,11 @@ describe("PhoneForm", () => {
     });
 
     // Check that the phone verification function was called with any parameters
-    expect(fuiSignInWithPhoneNumber).toHaveBeenCalled();
+    expect(signInWithPhoneNumber).toHaveBeenCalled();
     // Verify the phone number is in the second parameter
-    expect(fuiSignInWithPhoneNumber).toHaveBeenCalledWith(
+    expect(signInWithPhoneNumber).toHaveBeenCalledWith(
       expect.anything(),
       expect.stringMatching(/1234567890/),
-      expect.anything(),
       expect.anything()
     );
   });
@@ -224,7 +197,7 @@ describe("PhoneForm", () => {
     const mockError = new Error("Invalid phone number");
     (mockError as any).code = "auth/invalid-phone-number";
     (
-      fuiSignInWithPhoneNumber as unknown as ReturnType<typeof vi.fn>
+      signInWithPhoneNumber as unknown as ReturnType<typeof vi.fn>
     ).mockRejectedValueOnce(mockError);
 
     render(<PhoneForm />);
@@ -251,7 +224,7 @@ describe("PhoneForm", () => {
     });
 
     // The UI should show the error message in the form__error div
-    expect(screen.getByText("An unknown error occurred")).toBeInTheDocument();
+    expect(screen.getByText("Unknown error")).toBeInTheDocument();
   });
 
   it("validates on blur for the first time", async () => {

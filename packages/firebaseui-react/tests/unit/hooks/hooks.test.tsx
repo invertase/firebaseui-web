@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { useConfig, useAuth, useTranslations } from "../../../src/hooks";
+import { useUI, useAuth } from "../../../src/hooks";
 import { getAuth } from "firebase/auth";
-import { ConfigContext } from "../../../src/context/config-context";
+import { FirebaseUIContext } from "../../../src/context";
 
 // Mock Firebase
 vi.mock("firebase/auth", () => ({
@@ -25,16 +25,20 @@ describe("Hooks", () => {
 
   const mockConfig = {
     app: mockApp,
-    language: "en",
+    getAuth: vi.fn(),
+    setLocale: vi.fn(),
+    state: 'idle',
+    setState: vi.fn(),
+    locale: 'en',
     translations: mockTranslations,
-    tosUrl: "https://example.com/terms",
-    privacyPolicyUrl: "https://example.com/privacy",
+    behaviors: {},
+    recaptchaMode: 'normal',
   };
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <ConfigContext.Provider value={mockConfig}>
+    <FirebaseUIContext.Provider value={mockConfig as any}>
       {children}
-    </ConfigContext.Provider>
+    </FirebaseUIContext.Provider>
   );
 
   beforeEach(() => {
@@ -43,7 +47,7 @@ describe("Hooks", () => {
 
   describe("useConfig", () => {
     it("returns the config from context", () => {
-      const { result } = renderHook(() => useConfig(), { wrapper });
+      const { result } = renderHook(() => useUI(), { wrapper });
 
       expect(result.current).toEqual(mockConfig);
     });
@@ -55,14 +59,6 @@ describe("Hooks", () => {
 
       expect(getAuth).toHaveBeenCalledWith(mockApp);
       expect(result.current).toBeDefined();
-    });
-  });
-
-  describe("useTranslations", () => {
-    it("returns the translations from the config", () => {
-      const { result } = renderHook(() => useTranslations(), { wrapper });
-
-      expect(result.current).toEqual(mockTranslations);
     });
   });
 });

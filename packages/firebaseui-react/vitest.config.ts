@@ -27,15 +27,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "~": resolve(__dirname, "./src"),
-      // Only apply mocks for unit tests, not for integration tests
-      ...(process.env.TEST_TYPE === "unit" || !process.env.TEST_TYPE
-        ? {
-            "@firebase-ui/core": resolve(
-              __dirname,
-              "./tests/__mocks__/@firebase-ui/core.ts"
-            ),
-          }
-        : {}),
     },
   },
 });

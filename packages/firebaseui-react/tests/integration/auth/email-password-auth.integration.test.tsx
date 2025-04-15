@@ -1,5 +1,11 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { screen, fireEvent, waitFor, act } from "@testing-library/react";
+import {
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+  render,
+} from "@testing-library/react";
 import { EmailPasswordForm } from "../../../src/auth/forms/email-password-form";
 import { initializeApp } from "firebase/app";
 import {
@@ -9,7 +15,8 @@ import {
   createUserWithEmailAndPassword,
   deleteUser,
 } from "firebase/auth";
-import { renderWithProviders } from "../../utils/mocks";
+import { FirebaseUIProvider } from "~/context";
+import { initializeUI } from "@firebase-ui/core";
 
 // Prepare the test environment
 const firebaseConfig = {
@@ -21,6 +28,10 @@ const firebaseConfig = {
 // Initialize app once for all tests
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+
+const ui = initializeUI({
+  app,
+});
 
 // Connect to the auth emulator
 connectAuthEmulator(auth, "http://localhost:9099", { disableWarnings: true });
@@ -35,7 +46,9 @@ describe("Email Password Authentication Integration", () => {
     try {
       await createUserWithEmailAndPassword(auth, testEmail, testPassword);
     } catch (error) {
-      throw new Error(`Failed to set up test user: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(
+        `Failed to set up test user: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
   });
 
@@ -47,28 +60,24 @@ describe("Email Password Authentication Integration", () => {
         await deleteUser(auth.currentUser);
       } else {
         // Try to sign in first
-        try {
-          const userCredential = await signInWithEmailAndPassword(
-            auth,
-            testEmail,
-            testPassword
-          );
-          await deleteUser(userCredential.user);
-        } catch (error) {
-          // If user not found, that's fine - it means it's already been deleted or never created
-          const firebaseError = error as { code?: string };
-          if (firebaseError.code !== 'auth/user-not-found') {
-            throw new Error(`Error signing in during cleanup: ${error instanceof Error ? error.message : String(error)}`)
-          }
-        }
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          testEmail,
+          testPassword
+        );
+        await deleteUser(userCredential.user);
       }
     } catch (error) {
-      throw new Error(`Error in cleanup process: ${error instanceof Error ? error.message : String(error)}`);
+      console.warn("Error in test cleanup process. Resuming, but this may indicate a problem.", error);
     }
   });
 
   it("should successfully sign in with email and password using actual Firebase Auth", async () => {
-    const { container } = renderWithProviders(<EmailPasswordForm />);
+    const { container } = render(
+      <FirebaseUIProvider ui={ui}>
+        <EmailPasswordForm />
+      </FirebaseUIProvider>
+    );
 
     const emailInput = container.querySelector('input[type="email"]');
     const passwordInput = container.querySelector('input[type="password"]');
@@ -102,7 +111,11 @@ describe("Email Password Authentication Integration", () => {
   });
 
   it("should fail when using invalid credentials", async () => {
-    const { container } = renderWithProviders(<EmailPasswordForm />);
+    const { container } = render(
+      <FirebaseUIProvider ui={ui}>
+        <EmailPasswordForm />
+      </FirebaseUIProvider>
+    );
 
     const emailInput = container.querySelector('input[type="email"]');
     const passwordInput = container.querySelector('input[type="password"]');
@@ -136,7 +149,11 @@ describe("Email Password Authentication Integration", () => {
   });
 
   it("should show an error message for invalid credentials", async () => {
-    const { container } = renderWithProviders(<EmailPasswordForm />);
+    const { container } = render(
+      <FirebaseUIProvider ui={ui}>
+        <EmailPasswordForm />
+      </FirebaseUIProvider>
+    );
 
     const emailInput = container.querySelector('input[type="email"]');
     const passwordInput = container.querySelector('input[type="password"]');

@@ -12,6 +12,7 @@
     "@firebase-ui/core": "workspace:*",
     "@firebase-ui/react": "workspace:*",
     "@firebase-ui/styles": "workspace:*",
+    "@firebase-ui/translations": "workspace:*",
     "firebase": "^11.3.1",
     "next": "15.1.7",
     "react": "^19.0.0",

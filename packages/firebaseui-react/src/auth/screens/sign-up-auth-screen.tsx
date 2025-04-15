@@ -1,38 +1,27 @@
+import { PropsWithChildren } from "react";
+import { Divider } from "~/components/divider";
+import { useUI } from "~/hooks";
 import {
   Card,
   CardHeader,
-  CardTitle,
   CardSubtitle,
+  CardTitle,
 } from "../../components/card";
 import { RegisterForm } from "../forms/register-form";
-import { useConfig, useTranslations } from "~/hooks";
 import { getTranslation } from "@firebase-ui/core";
-import { Divider } from "~/components/divider";
 
-export interface SignUpAuthScreenProps {
+export type SignUpAuthScreenProps = PropsWithChildren<{
   onBackToSignInClick?: () => void;
-  children?: React.ReactNode | React.ReactNode[];
-}
+}>;
 
 export function SignUpAuthScreen({
   onBackToSignInClick,
   children,
 }: SignUpAuthScreenProps) {
-  const { language } = useConfig();
-  const translations = useTranslations();
+  const ui = useUI();
 
-  const titleText = getTranslation(
-    "labels",
-    "register",
-    translations,
-    language
-  );
-  const subtitleText = getTranslation(
-    "prompts",
-    "enterDetailsToCreate",
-    translations,
-    language
-  );
+  const titleText = getTranslation(ui, "labels", "register");
+  const subtitleText = getTranslation(ui, "prompts", "enterDetailsToCreate");
 
   return (
     <div className="fui-screen">
@@ -44,9 +33,7 @@ export function SignUpAuthScreen({
         <RegisterForm onBackToSignInClick={onBackToSignInClick} />
         {children ? (
           <>
-            <Divider>
-              {getTranslation("messages", "dividerOr", translations, language)}
-            </Divider>
+            <Divider>{getTranslation(ui, "messages", "dividerOr")}</Divider>
             <div className="space-y-4">{children}</div>
           </>
         ) : null}

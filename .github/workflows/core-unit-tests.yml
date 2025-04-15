@@ -29,5 +29,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Build dependencies
+        run: pnpm --filter @firebase-ui/translations build
+
       - name: Run unit tests
         run: pnpm --filter @firebase-ui/core test:unit

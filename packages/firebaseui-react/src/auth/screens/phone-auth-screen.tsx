@@ -1,33 +1,27 @@
+import type { PropsWithChildren } from "react";
+import { getTranslation } from "@firebase-ui/core";
+import { Divider } from "~/components/divider";
+import { useUI } from "~/hooks";
 import {
   Card,
   CardHeader,
-  CardTitle,
   CardSubtitle,
+  CardTitle,
 } from "../../components/card";
-import { useConfig, useTranslations } from "~/hooks";
-import { getTranslation } from "@firebase-ui/core";
-import { Divider } from "~/components/divider";
 import { PhoneForm } from "../forms/phone-form";
 
-export interface PhoneAuthScreenProps {
-  children?: React.ReactNode | React.ReactNode[];
+export type PhoneAuthScreenProps = PropsWithChildren<{
   resendDelay?: number;
-}
+}>;
 
 export function PhoneAuthScreen({
   children,
   resendDelay,
 }: PhoneAuthScreenProps) {
-  const { language } = useConfig();
-  const translations = useTranslations();
+  const ui = useUI();
 
-  const titleText = getTranslation("labels", "signIn", translations, language);
-  const subtitleText = getTranslation(
-    "prompts",
-    "signInToAccount",
-    translations,
-    language
-  );
+  const titleText = getTranslation(ui, "labels", "signIn");
+  const subtitleText = getTranslation(ui, "prompts", "signInToAccount");
 
   return (
     <div className="fui-screen">
@@ -39,9 +33,7 @@ export function PhoneAuthScreen({
         <PhoneForm resendDelay={resendDelay} />
         {children ? (
           <>
-            <Divider>
-              {getTranslation("messages", "dividerOr", translations, language)}
-            </Divider>
+            <Divider>{getTranslation(ui, "messages", "dividerOr")}</Divider>
             <div className="space-y-4">{children}</div>
           </>
         ) : null}

@@ -1,5 +1,5 @@
 import { describe, it, expect, afterAll, beforeEach } from "vitest";
-import { screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { screen, fireEvent, waitFor, act, render } from "@testing-library/react";
 import { RegisterForm } from "../../../src/auth/forms/register-form";
 import { initializeApp } from "firebase/app";
 import {
@@ -9,8 +9,8 @@ import {
   signOut,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { renderWithProviders } from "../../utils/mocks";
-import { getTranslation } from "@firebase-ui/core";
+import { initializeUI } from "@firebase-ui/core";
+import { FirebaseUIProvider } from "~/context";
 
 // Prepare the test environment
 const firebaseConfig = {
@@ -25,6 +25,10 @@ const auth = getAuth(app);
 
 // Connect to the auth emulator
 connectAuthEmulator(auth, "http://localhost:9099", { disableWarnings: true });
+
+const ui = initializeUI({
+  app,
+});
 
 describe("Register Integration", () => {
   // Ensure password is at least 8 characters to pass validation
@@ -83,7 +87,11 @@ describe("Register Integration", () => {
   });
 
   it("should successfully register a new user", async () => {
-    const { container } = renderWithProviders(<RegisterForm />);
+    const { container } = render(
+      <FirebaseUIProvider ui={ui}>
+        <RegisterForm />
+      </FirebaseUIProvider>
+    );
 
     // Wait for form to be rendered
     await waitFor(() => {
@@ -126,13 +134,12 @@ describe("Register Integration", () => {
     });
 
     // Submit form
-    const submitButton = screen.getByRole("button", {
-      name: getTranslation("labels", "createAccount", { en: {} }, "en"),
-    });
+    const submitButton = container.querySelector('button[type="submit"]')!;
+    expect(submitButton).not.toBeNull();
 
     await act(async () => {
       // Use native click for more reliable behavior
-      submitButton.click();
+      fireEvent.click(submitButton);
     });
 
     // Wait for the form submission to complete
@@ -190,7 +197,11 @@ describe("Register Integration", () => {
 
   it("should handle invalid email format", async () => {
     // This test verifies that the form validation prevents submission with an invalid email
-    const { container } = renderWithProviders(<RegisterForm />);
+      const { container } = render(
+        <FirebaseUIProvider ui={ui}>
+        <RegisterForm />
+      </FirebaseUIProvider>
+    );
 
     // Wait for form to be rendered
     await waitFor(() => {
@@ -233,13 +244,12 @@ describe("Register Integration", () => {
     });
 
     // Submit form
-    const submitButton = screen.getByRole("button", {
-      name: getTranslation("labels", "createAccount", { en: {} }, "en"),
-    });
+    const submitButton = container.querySelector('button[type="submit"]')!;
+    expect(submitButton).not.toBeNull();
 
     await act(async () => {
       // Use native click for more reliable behavior
-      submitButton.click();
+      fireEvent.click(submitButton);
     });
 
     // Instead of checking for a specific error message, we'll verify that:
@@ -263,7 +273,11 @@ describe("Register Integration", () => {
 
   it("should handle duplicate email", async () => {
     // First register a user
-    const { container } = renderWithProviders(<RegisterForm />);
+    const { container } = render(
+      <FirebaseUIProvider ui={ui}>
+        <RegisterForm />
+      </FirebaseUIProvider>
+    );
 
     // Wait for form to be rendered
     await waitFor(() => {
@@ -273,9 +287,8 @@ describe("Register Integration", () => {
     // Fill in email
     const emailInput = container.querySelector('input[type="email"]');
     const passwordInput = container.querySelector('input[type="password"]');
-    const submitButton = screen.getByRole("button", {
-      name: getTranslation("labels", "createAccount", { en: {} }, "en"),
-    });
+    const submitButton = container.querySelector('button[type="submit"]')!;
+    expect(submitButton).not.toBeNull();
 
     // Use direct DOM manipulation to ensure values are set correctly
     await act(async () => {
@@ -305,8 +318,7 @@ describe("Register Integration", () => {
         // Wait a moment to ensure validation has completed
         await new Promise((resolve) => setTimeout(resolve, 300));
 
-        // Use native click instead of fireEvent for more reliable behavior
-        submitButton.click();
+        fireEvent.click(submitButton);
       }
     });
 
@@ -462,7 +474,11 @@ describe("Register Integration", () => {
     await signOut(auth);
 
     // Try to register with same email
-    const newContainer = renderWithProviders(<RegisterForm />);
+    const newContainer = render(
+      <FirebaseUIProvider ui={ui}>
+        <RegisterForm />
+      </FirebaseUIProvider>
+    );
 
     // Wait for form to be rendered
     await waitFor(() => {
@@ -478,10 +494,8 @@ describe("Register Integration", () => {
     const newPasswordInput = newContainer.container.querySelector(
       'input[type="password"]'
     );
-    const buttons = screen.getAllByRole("button", {
-      name: getTranslation("labels", "createAccount", { en: {} }, "en"),
-    });
-    const newSubmitButton = buttons[buttons.length - 1]; // Get the most recently added button
+    const submitButtons = newContainer.container.querySelectorAll('button[type="submit"]')!;
+    const newSubmitButton = submitButtons[submitButtons.length - 1]; // Get the most recently added button
 
     await act(async () => {
       if (newEmailInput && newPasswordInput) {

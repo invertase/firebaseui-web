@@ -6,26 +6,22 @@ import {
   Injectable,
   inject,
 } from '@angular/core';
-import {
-  getTranslation,
-  initializeUI,
-  TranslationStrings,
-} from '@firebase-ui/core';
+import { FirebaseApps } from '@angular/fire/app';
+import { type FirebaseUI as FirebaseUIType, getTranslation } from '@firebase-ui/core';
 import { distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 import { Observable, ReplaySubject } from 'rxjs';
 import { Store } from 'nanostores';
+import { TranslationCategory, TranslationKey } from '@firebase-ui/translations';
 
-type FUIStore = ReturnType<typeof initializeUI>;
-
-const FIREBASE_UI_STORE = new InjectionToken<FUIStore>('firebaseui.store');
+const FIREBASE_UI_STORE = new InjectionToken<FirebaseUIType>('firebaseui.store');
 
 export function provideFirebaseUI(
-  uiFactory: () => FUIStore
+  uiFactory: (apps: FirebaseApps) => FirebaseUIType,
 ): EnvironmentProviders {
   const providers: Provider[] = [
     // TODO: This should depend on the FirebaseAuth provider via deps,
     // see https://github.com/angular/angularfire/blob/35e0a9859299010488852b1826e4083abe56528f/src/firestore/firestore.module.ts#L76
-    { provide: FIREBASE_UI_STORE, useFactory: uiFactory },
+    { provide: FIREBASE_UI_STORE, useFactory: uiFactory, deps: [FirebaseApps] },
   ];
 
   return makeEnvironmentProviders(providers);
@@ -34,7 +30,7 @@ export function provideFirebaseUI(
 @Injectable({
   providedIn: 'root',
 })
-export class FirebaseUi {
+export class FirebaseUI {
   private store = inject(FIREBASE_UI_STORE);
   private destroyed$: ReplaySubject<void> = new ReplaySubject(1);
 
@@ -42,12 +38,14 @@ export class FirebaseUi {
     return this.useStore(this.store);
   }
 
-  translation<T extends keyof Required<TranslationStrings>>(
+  translation<T extends TranslationCategory>(
     category: T,
-    key: keyof Required<TranslationStrings>[T]
+    key: TranslationKey<T>,
   ) {
     return this.config().pipe(
-      map((config) => getTranslation(category, key, config.translations))
+      map((config) =>
+        getTranslation(config, category, key),
+      ),
     );
   }
 

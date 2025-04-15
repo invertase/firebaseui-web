@@ -4,18 +4,19 @@ import { PhoneAuthScreen } from "~/auth/screens/phone-auth-screen";
 
 // Mock the hooks
 vi.mock("~/hooks", () => ({
-  useConfig: () => ({ language: "en" }),
-  useTranslations: () => ({}),
-}));
-
-// Mock the translation function
-vi.mock("@firebase-ui/core", () => ({
-  getTranslation: vi.fn((category, key) => {
-    if (category === "labels" && key === "signIn") return "Sign in";
-    if (category === "prompts" && key === "signInToAccount")
-      return "Sign in to your account";
-    if (category === "messages" && key === "dividerOr") return "OR";
-    return key;
+  useUI: () => ({
+    locale: "en-US",
+    translations: {
+      "en-US": {
+        labels: {
+          signIn: "Sign in",
+          dividerOr: "or",
+        },
+        prompts: {
+          signInToAccount: "Sign in to your account",
+        },
+      },
+    },
   }),
 }));
 
@@ -58,12 +59,12 @@ describe("PhoneAuthScreen", () => {
     );
 
     expect(getByTestId("test-button")).toBeInTheDocument();
-    expect(getByText("OR")).toBeInTheDocument();
+    expect(getByText("or")).toBeInTheDocument();
   });
 
   it("does not render children or divider when not provided", () => {
     const { queryByText } = render(<PhoneAuthScreen />);
 
-    expect(queryByText("OR")).not.toBeInTheDocument();
+    expect(queryByText("or")).not.toBeInTheDocument();
   });
 });

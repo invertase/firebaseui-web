@@ -1,15 +1,14 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { injectForm, TanStackField } from '@tanstack/angular-form';
-import { FirebaseUi } from '../../../provider';
-import { Auth } from '@angular/fire/auth';
+import { FirebaseUI } from '../../../provider';
 import { ButtonComponent } from '../../../components/button/button.component';
 import { TermsAndPrivacyComponent } from '../../../components/terms-and-privacy/terms-and-privacy.component';
 import {
   createEmailFormSchema,
   EmailFormSchema,
   FirebaseUIError,
-  fuiSignInWithEmailAndPassword,
+  signInWithEmailAndPassword,
 } from '@firebase-ui/core';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
@@ -105,8 +104,7 @@ import { Router } from '@angular/router';
   `,
 })
 export class EmailPasswordFormComponent implements OnInit {
-  private ui = inject(FirebaseUi);
-  private auth = inject(Auth);
+  private ui = inject(FirebaseUI);
   private router = inject(Router);
 
   @Input({ required: true }) forgotPasswordRoute!: string;
@@ -186,13 +184,7 @@ export class EmailPasswordFormComponent implements OnInit {
       }
 
       this.formError = null;
-      await fuiSignInWithEmailAndPassword(this.auth, email, password, {
-        translations: this.config?.translations,
-        language: this.config?.language,
-        enableAutoUpgradeAnonymous: this.config?.enableAutoUpgradeAnonymous,
-        enableHandleExistingCredential:
-          this.config?.enableHandleExistingCredential,
-      });
+      await signInWithEmailAndPassword(await firstValueFrom(this.ui.config()), email, password);
     } catch (error) {
       if (error instanceof FirebaseUIError) {
         this.formError = error.message;

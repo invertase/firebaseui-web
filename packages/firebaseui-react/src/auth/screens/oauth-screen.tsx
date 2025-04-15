@@ -1,29 +1,22 @@
+import { getTranslation } from "@firebase-ui/core";
+import { useUI } from "~/hooks";
 import {
   Card,
   CardHeader,
-  CardTitle,
   CardSubtitle,
+  CardTitle,
 } from "../../components/card";
-import { useConfig, useTranslations } from "~/hooks";
-import { getTranslation } from "@firebase-ui/core";
-import { TermsAndPrivacy } from "../../components/terms-and-privacy";
+import { PropsWithChildren } from "react";
+import { Policies } from "~/components/policies";
 
-export interface OAuthAuthScreenProps {
-  children: React.ReactNode | React.ReactNode[];
-}
+export type OAuthScreenProps = PropsWithChildren;
 
-export function OAuthScreen({ children }: OAuthAuthScreenProps) {
-  const { language } = useConfig();
-  const translations = useTranslations();
+export function OAuthScreen({ children }: OAuthScreenProps) {
+  const ui = useUI();
 
   // TODO: Translations for oauth providers
-  const titleText = getTranslation("labels", "signIn", translations, language);
-  const subtitleText = getTranslation(
-    "prompts",
-    "signInToAccount",
-    translations,
-    language
-  );
+  const titleText = getTranslation(ui, "labels", "signIn");
+  const subtitleText = getTranslation(ui, "prompts", "signInToAccount");
 
   return (
     <div className="fui-screen">
@@ -33,7 +26,7 @@ export function OAuthScreen({ children }: OAuthAuthScreenProps) {
           <CardSubtitle>{subtitleText}</CardSubtitle>
         </CardHeader>
         {children}
-        <TermsAndPrivacy />
+        <Policies />
       </Card>
     </div>
   );

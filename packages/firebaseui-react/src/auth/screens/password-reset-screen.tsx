@@ -1,35 +1,24 @@
+import { getTranslation } from "@firebase-ui/core";
+import { useUI } from "~/hooks";
 import {
   Card,
   CardHeader,
-  CardTitle,
   CardSubtitle,
+  CardTitle,
 } from "../../components/card";
-import { useConfig, useTranslations } from "~/hooks";
-import { getTranslation } from "@firebase-ui/core";
 import { ForgotPasswordForm } from "../forms/forgot-password-form";
 
-export interface PasswordResetScreenProps {
+export type PasswordResetScreenProps = {
   onBackToSignInClick?: () => void;
-}
+};
 
 export function PasswordResetScreen({
   onBackToSignInClick,
 }: PasswordResetScreenProps) {
-  const { language } = useConfig();
-  const translations = useTranslations();
+  const ui = useUI();
 
-  const titleText = getTranslation(
-    "labels",
-    "resetPassword",
-    translations,
-    language
-  );
-  const subtitleText = getTranslation(
-    "prompts",
-    "enterEmailToReset",
-    translations,
-    language
-  );
+  const titleText = getTranslation(ui, "labels", "resetPassword");
+  const subtitleText = getTranslation(ui, "prompts", "enterEmailToReset");
 
   return (
     <div className="fui-screen">

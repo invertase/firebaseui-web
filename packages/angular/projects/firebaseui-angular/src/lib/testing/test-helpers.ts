@@ -1,12 +1,27 @@
 import { Provider } from '@angular/core';
-import { FirebaseUi } from '../provider';
+import { FirebaseUI } from '../provider';
 import { Auth } from '@angular/fire/auth';
 import { InjectionToken } from '@angular/core';
 import { of } from 'rxjs';
 
 // Mock for the Auth service
 export const mockAuth = {
-  currentUser: null,
+  appVerificationDisabledForTesting: true,
+  languageCode: 'en',
+  settings: {
+    appVerificationDisabledForTesting: true,
+  },
+  app: {
+    options: {
+      apiKey: 'fake-api-key',
+    },
+    name: 'test',
+    automaticDataCollectionEnabled: false,
+    appVerificationDisabledForTesting: true,
+  },
+  signInWithPopup: jasmine.createSpy('signInWithPopup'),
+  signInWithRedirect: jasmine.createSpy('signInWithRedirect'),
+  signInWithPhoneNumber: jasmine.createSpy('signInWithPhoneNumber'),
 };
 
 // Mock for FirebaseUi provider
@@ -67,7 +82,7 @@ export const FIREBASE_UI_STORE = new InjectionToken<any>('firebaseui.store');
 export function getFirebaseUITestProviders(): Provider[] {
   return [
     { provide: Auth, useValue: mockAuth },
-    { provide: FirebaseUi, useValue: mockFirebaseUi },
+    { provide: FirebaseUI, useValue: mockFirebaseUi },
     {
       provide: FIREBASE_UI_STORE,
       useValue: {

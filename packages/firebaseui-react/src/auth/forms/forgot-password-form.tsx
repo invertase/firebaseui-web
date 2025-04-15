@@ -1,18 +1,18 @@
 "use client";
 
-import { useForm } from "@tanstack/react-form";
 import {
-  FirebaseUIError,
-  fuiSendPasswordResetEmail,
-  type ForgotPasswordFormSchema,
-  getTranslation,
   createForgotPasswordFormSchema,
+  FirebaseUIError,
+  getTranslation,
+  sendPasswordResetEmail,
+  type ForgotPasswordFormSchema,
 } from "@firebase-ui/core";
-import { useAuth, useConfig, useTranslations } from "~/hooks";
+import { useForm } from "@tanstack/react-form";
 import { useMemo, useState } from "react";
+import { useUI } from "~/hooks";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
-import { TermsAndPrivacy } from "../../components/terms-and-privacy";
+import { Policies } from "../../components/policies";
 
 interface ForgotPasswordFormProps {
   onBackToSignInClick?: () => void;
@@ -21,15 +21,14 @@ interface ForgotPasswordFormProps {
 export function ForgotPasswordForm({
   onBackToSignInClick,
 }: ForgotPasswordFormProps) {
-  const auth = useAuth();
-  const translations = useTranslations();
-  const { language } = useConfig();
+  const ui = useUI();
+
   const [formError, setFormError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
   const [firstValidationOccured, setFirstValidationOccured] = useState(false);
   const forgotPasswordFormSchema = useMemo(
-    () => createForgotPasswordFormSchema(translations),
-    [translations]
+    () => createForgotPasswordFormSchema(ui.translations),
+    [ui.translations]
   );
 
   const form = useForm<ForgotPasswordFormSchema>({
@@ -43,10 +42,7 @@ export function ForgotPasswordForm({
     onSubmit: async ({ value }) => {
       setFormError(null);
       try {
-        await fuiSendPasswordResetEmail(auth, value.email, {
-          translations,
-          language,
-        });
+        await sendPasswordResetEmail(ui, value.email);
         setEmailSent(true);
       } catch (error) {
         if (error instanceof FirebaseUIError) {
@@ -55,22 +51,15 @@ export function ForgotPasswordForm({
         }
 
         console.error(error);
-        setFormError(
-          getTranslation("errors", "unknownError", translations, language)
-        );
+        setFormError(getTranslation(ui, "errors", "unknownError"));
       }
     },
   });
 
   if (emailSent) {
     return (
-      <div className="fui-form__success">
-        {getTranslation(
-          "messages",
-          "checkEmailForReset",
-          translations,
-          language
-        )}
+      <div className="fui-success">
+        {getTranslation(ui, "messages", "checkEmailForReset")}
       </div>
     );
   }
@@ -90,14 +79,7 @@ export function ForgotPasswordForm({
           children={(field) => (
             <>
               <label htmlFor={field.name}>
-                <span>
-                  {getTranslation(
-                    "labels",
-                    "emailAddress",
-                    translations,
-                    language
-                  )}
-                </span>
+                <span>{getTranslation(ui, "labels", "emailAddress")}</span>
                 <input
                   aria-invalid={
                     field.state.meta.isTouched &&
@@ -126,11 +108,11 @@ export function ForgotPasswordForm({
         />
       </fieldset>
 
-      <TermsAndPrivacy />
+      <Policies />
 
       <fieldset>
-        <Button type="submit">
-          {getTranslation("labels", "resetPassword", translations, language)}
+        <Button type="submit" disabled={ui.state !== "idle"}>
+          {getTranslation(ui, "labels", "resetPassword")}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
       </fieldset>
@@ -139,11 +121,11 @@ export function ForgotPasswordForm({
         <div className="flex justify-center items-center">
           <button
             type="button"
+            disabled={ui.state !== "idle"}
             onClick={onBackToSignInClick}
             className="fui-form__action"
           >
-            {getTranslation("labels", "backToSignIn", translations, language)}{" "}
-            &rarr;
+            {getTranslation(ui, "labels", "backToSignIn")} &rarr;
           </button>
         </div>
       )}

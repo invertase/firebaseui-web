@@ -1,18 +1,18 @@
 "use client";
 
-import { useForm } from "@tanstack/react-form";
 import {
-  FirebaseUIError,
-  fuiSignInWithEmailAndPassword,
-  type EmailFormSchema,
-  getTranslation,
   createEmailFormSchema,
+  FirebaseUIError,
+  getTranslation,
+  signInWithEmailAndPassword,
+  type EmailFormSchema,
 } from "@firebase-ui/core";
-import { useAuth, useConfig, useTranslations } from "~/hooks";
+import { useForm } from "@tanstack/react-form";
 import { useMemo, useState } from "react";
+import { useUI } from "~/hooks";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
-import { TermsAndPrivacy } from "../../components/terms-and-privacy";
+import { Policies } from "../../components/policies";
 
 interface EmailPasswordFormProps {
   onForgotPasswordClick?: () => void;
@@ -23,20 +23,15 @@ export function EmailPasswordForm({
   onForgotPasswordClick,
   onRegisterClick,
 }: EmailPasswordFormProps) {
-  const auth = useAuth();
-  const translations = useTranslations();
-  const {
-    language,
-    enableAutoUpgradeAnonymous,
-    enableHandleExistingCredential,
-  } = useConfig();
+  const ui = useUI();
+
   const [formError, setFormError] = useState<string | null>(null);
   const [firstValidationOccured, setFirstValidationOccured] = useState(false);
 
   // TODO: Do we need to memoize this?
   const emailFormSchema = useMemo(
-    () => createEmailFormSchema(translations),
-    [translations]
+    () => createEmailFormSchema(ui.translations),
+    [ui.translations]
   );
 
   const form = useForm<EmailFormSchema>({
@@ -51,12 +46,7 @@ export function EmailPasswordForm({
     onSubmit: async ({ value }) => {
       setFormError(null);
       try {
-        await fuiSignInWithEmailAndPassword(auth, value.email, value.password, {
-          translations,
-          language,
-          enableAutoUpgradeAnonymous,
-          enableHandleExistingCredential,
-        });
+        await signInWithEmailAndPassword(ui, value.email, value.password);
       } catch (error) {
         if (error instanceof FirebaseUIError) {
           setFormError(error.message);
@@ -64,9 +54,7 @@ export function EmailPasswordForm({
         }
 
         console.error(error);
-        setFormError(
-          getTranslation("errors", "unknownError", translations, language)
-        );
+        setFormError(getTranslation(ui, "errors", "unknownError"));
       }
     },
   });
@@ -86,14 +74,7 @@ export function EmailPasswordForm({
           children={(field) => (
             <>
               <label htmlFor={field.name}>
-                <span>
-                  {getTranslation(
-                    "labels",
-                    "emailAddress",
-                    translations,
-                    language
-                  )}
-                </span>
+                <span>{getTranslation(ui, "labels", "emailAddress")}</span>
                 <input
                   aria-invalid={
                     field.state.meta.isTouched &&
@@ -130,24 +111,15 @@ export function EmailPasswordForm({
               <label htmlFor={field.name}>
                 <span className="flex">
                   <span className="flex-grow">
-                    {getTranslation(
-                      "labels",
-                      "password",
-                      translations,
-                      language
-                    )}
+                    {getTranslation(ui, "labels", "password")}
                   </span>
                   <button
                     type="button"
+                    disabled={ui.state !== "idle" ? true : false}
                     onClick={onForgotPasswordClick}
                     className="fui-form__action"
                   >
-                    {getTranslation(
-                      "labels",
-                      "forgotPassword",
-                      translations,
-                      language
-                    )}
+                    {getTranslation(ui, "labels", "forgotPassword")}
                   </button>
                 </span>
                 <input
@@ -178,11 +150,11 @@ export function EmailPasswordForm({
         />
       </fieldset>
 
-      <TermsAndPrivacy />
+      <Policies />
 
       <fieldset>
-        <Button type="submit">
-          {getTranslation("labels", "signIn", translations, language)}
+        <Button type="submit" disabled={ui.state !== "idle" ? true : false}>
+          {getTranslation(ui, "labels", "signIn")}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
       </fieldset>
@@ -191,11 +163,12 @@ export function EmailPasswordForm({
         <div className="flex justify-center items-center">
           <button
             type="button"
+            disabled={ui.state !== "idle" ? true : false}
             onClick={onRegisterClick}
             className="fui-form__action"
           >
-            {getTranslation("prompts", "noAccount", translations, language)}{" "}
-            {getTranslation("labels", "register", translations, language)}
+            {getTranslation(ui, "prompts", "noAccount")}{" "}
+            {getTranslation(ui, "labels", "register")}
           </button>
         </div>
       )}

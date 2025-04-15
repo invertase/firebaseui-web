@@ -15,7 +15,7 @@ import { EmailPasswordFormComponent } from './email-password-form.component';
 // Define window properties for testing
 declare global {
   interface Window {
-    fuiSignInWithEmailAndPassword: any;
+    signInWithEmailAndPassword: any;
     createEmailFormSchema: any;
   }
 }
@@ -90,11 +90,11 @@ describe('EmailPasswordFormComponent', () => {
 
     // Create spies for the global functions
     signInSpy = jasmine
-      .createSpy('fuiSignInWithEmailAndPassword')
+      .createSpy('signInWithEmailAndPassword')
       .and.returnValue(Promise.resolve());
 
     // Define the function on the window object
-    Object.defineProperty(window, 'fuiSignInWithEmailAndPassword', {
+    Object.defineProperty(window, 'signInWithEmailAndPassword', {
       value: signInSpy,
       writable: true,
       configurable: true,

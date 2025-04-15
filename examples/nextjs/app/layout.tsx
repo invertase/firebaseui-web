@@ -1,11 +1,10 @@
-import type { Metadata } from "next";
-import Link from 'next/link'
-import { Geist, Geist_Mono } from "next/font/google";
-import { FirebaseUIProvider } from "@/lib/firebase/ui";
 import { getCurrentUser } from "@/lib/firebase/serverApp";
+import { FirebaseUIProvider } from "@/lib/firebase/ui";
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 
-import "./globals.css";
 import { Header } from "@/lib/components/header";
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,7 +27,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const { currentUser } = await getCurrentUser();
-  console.log("currentUser", currentUser);
 
   return (
     <html lang="en">

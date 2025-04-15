@@ -1,6 +1,6 @@
 "use client";
 
-import { PhoneAuthScreen, GoogleSignInButton } from "@firebase-ui/react";
+import { GoogleSignInButton, PhoneAuthScreen } from "@firebase-ui/react";
 
 export default function PhoneAuthScreenWithOAuthPage() {
   return (

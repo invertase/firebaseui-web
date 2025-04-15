@@ -1,16 +1,14 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { injectForm, TanStackField } from '@tanstack/angular-form';
-import { FirebaseUi } from '../../../provider';
-import { Auth } from '@angular/fire/auth';
-import { Router } from '@angular/router';
+import { FirebaseUI } from '../../../provider';
 import { ButtonComponent } from '../../../components/button/button.component';
 import { TermsAndPrivacyComponent } from '../../../components/terms-and-privacy/terms-and-privacy.component';
 import {
   createEmailLinkFormSchema,
   FirebaseUIError,
-  fuiCompleteEmailLinkSignIn,
-  fuiSendSignInLinkToEmail,
+  completeEmailLinkSignIn,
+  sendSignInLinkToEmail,
 } from '@firebase-ui/core';
 import { firstValueFrom } from 'rxjs';
 
@@ -65,8 +63,7 @@ import { firstValueFrom } from 'rxjs';
   `,
 })
 export class EmailLinkFormComponent implements OnInit {
-  private ui = inject(FirebaseUi);
-  private auth = inject(Auth);
+  private ui = inject(FirebaseUI);
 
   formError: string | null = null;
   emailSent = false;
@@ -102,13 +99,7 @@ export class EmailLinkFormComponent implements OnInit {
 
   private async completeSignIn() {
     try {
-      await fuiCompleteEmailLinkSignIn(this.auth, window.location.href, {
-        translations: this.config?.translations,
-        language: this.config?.language,
-        enableAutoUpgradeAnonymous: this.config?.enableAutoUpgradeAnonymous,
-        enableHandleExistingCredential:
-          this.config?.enableHandleExistingCredential,
-      });
+      await completeEmailLinkSignIn(await firstValueFrom(this.ui.config()), window.location.href);
     } catch (error) {
       if (error instanceof FirebaseUIError) {
         this.formError = error.message;
@@ -151,11 +142,7 @@ export class EmailLinkFormComponent implements OnInit {
         return;
       }
 
-      await fuiSendSignInLinkToEmail(this.auth, email, {
-        translations: this.config?.translations,
-        language: this.config?.language,
-        enableAutoUpgradeAnonymous: this.config?.enableAutoUpgradeAnonymous,
-      });
+      await sendSignInLinkToEmail(await firstValueFrom(this.ui.config()), email);
 
       this.emailSent = true;
     } catch (error) {

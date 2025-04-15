@@ -13,22 +13,23 @@ import {
 } from '@angular/fire/auth';
 import { FirebaseUIError } from '@firebase-ui/core';
 import { TanStackField } from '@tanstack/angular-form';
-import { of } from 'rxjs';
-import { FirebaseUi } from '../../../provider';
+import { firstValueFrom, of } from 'rxjs';
+import { FirebaseUI } from '../../../provider';
 import {
   PhoneFormComponent,
   PhoneNumberFormComponent,
   VerificationFormComponent,
 } from './phone-form.component';
+import { mockAuth } from '../../../testing/test-helpers';
 
 // Mock Firebase UI Core functions
 const mockFuiSignInWithPhoneNumber = jasmine
-  .createSpy('fuiSignInWithPhoneNumber')
+  .createSpy('signInWithPhoneNumber')
   .and.returnValue(
     Promise.resolve({
       confirm: jasmine.createSpy('confirm').and.returnValue(Promise.resolve()),
       verificationId: 'mock-verification-id',
-    } as ConfirmationResult)
+    } as ConfirmationResult),
   );
 
 const mockFuiConfirmPhoneNumber = jasmine
@@ -104,6 +105,7 @@ class MockCountrySelectorComponent {
 class MockFirebaseUi {
   config() {
     return of({
+      getAuth: () => mockAuth,
       recaptchaMode: 'normal',
       translations: {},
     });
@@ -120,11 +122,11 @@ class TestPhoneFormComponent extends PhoneFormComponent {
   initRecaptcha() {
     const mockRecaptchaVerifier = jasmine.createSpyObj<RecaptchaVerifier>(
       'RecaptchaVerifier',
-      ['render', 'clear', 'verify']
+      ['render', 'clear', 'verify'],
     );
     mockRecaptchaVerifier.render.and.returnValue(Promise.resolve(1));
     mockRecaptchaVerifier.verify.and.returnValue(
-      Promise.resolve('verification-token')
+      Promise.resolve('verification-token'),
     );
 
     this.recaptchaVerifier = mockRecaptchaVerifier;
@@ -132,8 +134,8 @@ class TestPhoneFormComponent extends PhoneFormComponent {
   }
 
   // Make protected methods directly accessible for testing
-  testGetAuth() {
-    return this['auth']; // Access private property with indexing
+  async testGetAuth() {
+    return (await firstValueFrom(this['ui'].config())).getAuth();
   }
 
   testGetUi() {
@@ -157,13 +159,13 @@ class TestPhoneFormComponent extends PhoneFormComponent {
       this.phoneNumber = phoneNumber;
       // Call our mock function directly
       const result = await mockFuiSignInWithPhoneNumber(
-        this.testGetAuth(),
+        await this.testGetAuth(),
         phoneNumber,
         this.recaptchaVerifier,
         {
           translations: {},
           language: 'en',
-        }
+        },
       );
 
       this.confirmationResult = result;
@@ -223,7 +225,7 @@ class TestPhoneFormComponent extends PhoneFormComponent {
           {
             translations: {},
             language: 'en',
-          }
+          },
         );
 
         this.confirmationResult = result;
@@ -244,11 +246,11 @@ class TestPhoneNumberFormComponent extends PhoneNumberFormComponent {
   override initRecaptcha() {
     const mockRecaptchaVerifier = jasmine.createSpyObj<RecaptchaVerifier>(
       'RecaptchaVerifier',
-      ['render', 'clear', 'verify']
+      ['render', 'clear', 'verify'],
     );
     mockRecaptchaVerifier.render.and.returnValue(Promise.resolve(1));
     mockRecaptchaVerifier.verify.and.returnValue(
-      Promise.resolve('verification-token')
+      Promise.resolve('verification-token'),
     );
 
     this.recaptchaVerifier = mockRecaptchaVerifier;
@@ -273,11 +275,11 @@ describe('PhoneFormComponent', () => {
 
     mockRecaptchaVerifier = jasmine.createSpyObj<RecaptchaVerifier>(
       'RecaptchaVerifier',
-      ['render', 'clear', 'verify']
+      ['render', 'clear', 'verify'],
     );
     mockRecaptchaVerifier.render.and.returnValue(Promise.resolve(1));
     mockRecaptchaVerifier.verify.and.returnValue(
-      Promise.resolve('verification-token')
+      Promise.resolve('verification-token'),
     );
 
     // Create mock schema for phone validation
@@ -363,7 +365,7 @@ describe('PhoneFormComponent', () => {
             confirm: jasmine
               .createSpy('confirm')
               .and.returnValue(Promise.resolve()),
-          })
+          }),
         ),
       signInWithCredential: jasmine
         .createSpy('signInWithCredential')
@@ -382,7 +384,7 @@ describe('PhoneFormComponent', () => {
         MockCountrySelectorComponent,
       ],
       providers: [
-        { provide: FirebaseUi, useValue: mockFirebaseUi },
+        { provide: FirebaseUI, useValue: mockFirebaseUi },
         { provide: Auth, useValue: mockAuthService },
       ],
     }).compileComponents();
@@ -398,7 +400,7 @@ describe('PhoneFormComponent', () => {
 
     // Mock DOM methods
     spyOn(document, 'querySelector').and.returnValue(
-      document.createElement('div')
+      document.createElement('div'),
     );
 
     // Directly replace timer with mock implementation
@@ -423,7 +425,7 @@ describe('PhoneFormComponent', () => {
     expect(component.confirmationResult).toBeNull();
   });
 
-  it('should call fuiSignInWithPhoneNumber when handling phone submission', fakeAsync(() => {
+  it('should call signInWithPhoneNumber when handling phone submission', fakeAsync(() => {
     component.handlePhoneSubmit('1234567890');
     tick();
 
@@ -459,7 +461,7 @@ describe('PhoneFormComponent', () => {
     expect(mockFuiConfirmPhoneNumber).toHaveBeenCalled();
   }));
 
-  it('should call fuiSignInWithPhoneNumber when handling resend code', fakeAsync(() => {
+  it('should call signInWithPhoneNumber when handling resend code', fakeAsync(() => {
     component.confirmationResult = {} as ConfirmationResult;
     component.canResend = true;
     component.phoneNumber = '1234567890';

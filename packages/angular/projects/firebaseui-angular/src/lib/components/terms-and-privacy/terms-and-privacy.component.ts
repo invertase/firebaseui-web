@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FirebaseUi } from '../../provider';
+import { FirebaseUI } from '../../provider';
 import { map } from 'rxjs/operators';
 
 @Component({
@@ -8,7 +8,7 @@ import { map } from 'rxjs/operators';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="text-text-muted text-xs text-start my-6" *ngIf="shouldShow | async">
+    <!-- <div class="text-text-muted text-xs text-start my-6" *ngIf="shouldShow | async">
       <ng-container *ngFor="let part of parts | async; let i = index">
         <a 
           *ngIf="part.type === 'tos' && (tosUrl | async)"
@@ -30,31 +30,31 @@ import { map } from 'rxjs/operators';
         </a>
         <ng-container *ngIf="part.type === 'text'">{{ part.content }}</ng-container>
       </ng-container>
-    </div>
-  `
+    </div> -->
+  `,
 })
 export class TermsAndPrivacyComponent {
-  private ui = inject(FirebaseUi);
+  private ui = inject(FirebaseUI);
 
-  tosUrl = this.ui.config().pipe(
-    map(config => config?.tosUrl)
-  );
+  // tosUrl = this.ui.config().pipe(
+  //   map(config => config?.tosUrl)
+  // );
 
-  privacyPolicyUrl = this.ui.config().pipe(
-    map(config => config?.privacyPolicyUrl)
-  );
+  // privacyPolicyUrl = this.ui.config().pipe(
+  //   map(config => config?.privacyPolicyUrl)
+  // );
 
-  shouldShow = this.ui.config().pipe(
-    map(config => !!(config?.tosUrl || config?.privacyPolicyUrl))
-  );
+  // shouldShow = this.ui.config().pipe(
+  //   map(config => !!(config?.tosUrl || config?.privacyPolicyUrl))
+  // );
 
   termsText = this.ui.translation('labels', 'termsOfService');
   privacyText = this.ui.translation('labels', 'privacyPolicy');
-  
+
   parts = this.ui.translation('messages', 'termsAndPrivacy').pipe(
-    map(text => {
+    map((text) => {
       const parts = text.split(/({tos}|{privacy})/);
-      return parts.map(part => {
+      return parts.map((part) => {
         if (part === '{tos}') {
           return { type: 'tos' };
         }
@@ -63,6 +63,6 @@ export class TermsAndPrivacyComponent {
         }
         return { type: 'text', content: part };
       });
-    })
+    }),
   );
 }

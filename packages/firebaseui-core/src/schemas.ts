@@ -1,7 +1,6 @@
 import { z } from 'zod';
-import { getTranslation } from './translations';
-import type { TranslationsConfig } from './translations';
 import { RecaptchaVerifier } from 'firebase/auth';
+import { type TranslationsConfig, getTranslation } from '@firebase-ui/translations';
 
 export const LoginTypes = ['email', 'phone', 'anonymous', 'emailLink', 'google'] as const;
 export type LoginType = (typeof LoginTypes)[number];

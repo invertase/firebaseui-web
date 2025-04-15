@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
 import { initializeApp, getApps } from "firebase/app";
 import { firebaseConfig } from "./config";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
-import { initializeUI } from "@firebase-ui/core";
+import { autoAnonymousLogin, initializeUI } from "@firebase-ui/core";
+import { customLanguage, english } from "@firebase-ui/translations";
 
 export const firebaseApp =
   getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
@@ -12,12 +13,9 @@ export const auth = getAuth(firebaseApp);
 
 export const ui = initializeUI({
   app: firebaseApp,
-  // enableAutoAnonymousLogin: true,
-  // enableAutoUpgradeAnonymous: true,
-  tosUrl: "https://www.google.com",
-  privacyPolicyUrl: "https://www.google.com",
-  translations: {
-    en: {
+  behaviors: [autoAnonymousLogin()],
+  translations: [
+    customLanguage(english.locale, {
       labels: {
         signIn: "Sign In",
       },
@@ -27,8 +25,8 @@ export const ui = initializeUI({
       errors: {
         invalidEmail: "Please enter a valid email address",
       },
-    },
-  },
+    }),
+  ],
 });
 
 connectAuthEmulator(auth, "http://localhost:9099");

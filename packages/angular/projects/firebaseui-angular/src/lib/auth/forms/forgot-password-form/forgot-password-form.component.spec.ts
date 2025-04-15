@@ -15,7 +15,7 @@ import { ForgotPasswordFormComponent } from './forgot-password-form.component';
 // Define window properties for testing
 declare global {
   interface Window {
-    fuiSendPasswordResetEmail: any;
+    sendPasswordResetEmail: any;
     createForgotPasswordFormSchema: any;
   }
 }
@@ -78,11 +78,11 @@ describe('ForgotPasswordFormComponent', () => {
 
     // Create spies for the global functions
     sendResetEmailSpy = jasmine
-      .createSpy('fuiSendPasswordResetEmail')
+      .createSpy('sendPasswordResetEmail')
       .and.returnValue(Promise.resolve());
 
     // Define the function on the window object
-    Object.defineProperty(window, 'fuiSendPasswordResetEmail', {
+    Object.defineProperty(window, 'sendPasswordResetEmail', {
       value: sendResetEmailSpy,
       writable: true,
       configurable: true,

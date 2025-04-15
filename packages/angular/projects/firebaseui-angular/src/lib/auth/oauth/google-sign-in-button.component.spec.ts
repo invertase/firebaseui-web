@@ -4,7 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Auth, GoogleAuthProvider } from '@angular/fire/auth';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
-import { FirebaseUi } from '../../provider';
+import { FirebaseUI } from '../../provider';
 import { GoogleSignInButtonComponent } from './google-sign-in-button.component';
 
 // Mock OAuthButton component
@@ -61,7 +61,7 @@ describe('GoogleSignInButtonComponent', () => {
         MockOAuthButtonComponent,
       ],
       providers: [
-        { provide: FirebaseUi, useValue: mockFirebaseUi },
+        { provide: FirebaseUI, useValue: mockFirebaseUi },
         { provide: Auth, useValue: mockAuth },
       ],
     }).compileComponents();

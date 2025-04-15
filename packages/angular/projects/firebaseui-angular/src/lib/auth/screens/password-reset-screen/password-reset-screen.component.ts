@@ -1,7 +1,7 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardComponent, CardHeaderComponent, CardTitleComponent, CardSubtitleComponent } from '../../../components/card/card.component';
-import { FirebaseUi } from '../../../provider';
+import { FirebaseUI } from '../../../provider';
 import { ForgotPasswordFormComponent } from '../../forms/forgot-password-form/forgot-password-form.component';
 
 @Component({
@@ -30,7 +30,7 @@ import { ForgotPasswordFormComponent } from '../../forms/forgot-password-form/fo
   `
 })
 export class PasswordResetScreenComponent {
-  private ui = inject(FirebaseUi);
+  private ui = inject(FirebaseUI);
   
   @Input() signInRoute: string = '';
 

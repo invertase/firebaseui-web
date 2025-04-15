@@ -1,23 +1,23 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, fireEvent } from "@testing-library/react";
 import { PasswordResetScreen } from "~/auth/screens/password-reset-screen";
 import * as hooks from "~/hooks";
 
 // Mock the hooks
 vi.mock("~/hooks", () => ({
-  useConfig: vi.fn(),
-  useTranslations: vi.fn(),
-}));
-
-// Mock dependencies
-vi.mock("@firebase-ui/core", () => ({
-  getTranslation: vi.fn((category, key) => {
-    if (category === "labels" && key === "resetPassword")
-      return "Reset Password";
-    if (category === "prompts" && key === "enterEmailToReset")
-      return "Enter your email to reset your password";
-    return key;
-  }),
+  useUI: vi.fn(() => ({
+    locale: "en-US",
+    translations: {
+      "en-US": {
+        labels: {
+          resetPassword: "Reset Password",
+        },
+        prompts: {
+          enterEmailToReset: "Enter your email to reset your password",
+        },
+      },
+    },
+  })),
 }));
 
 // Mock the ForgotPasswordForm component
@@ -38,15 +38,6 @@ vi.mock("~/auth/forms/forgot-password-form", () => ({
 describe("PasswordResetScreen", () => {
   const mockOnBackToSignInClick = vi.fn();
 
-  beforeEach(() => {
-    // Setup default mock values
-    vi.mocked(hooks.useConfig).mockReturnValue({
-      language: "en",
-    } as any);
-
-    vi.mocked(hooks.useTranslations).mockReturnValue({} as any);
-  });
-
   afterEach(() => {
     vi.clearAllMocks();
   });
@@ -60,10 +51,10 @@ describe("PasswordResetScreen", () => {
     ).toBeInTheDocument();
   });
 
-  it("calls useConfig to get the language", () => {
+  it("calls useUI to get the locale", () => {
     render(<PasswordResetScreen />);
 
-    expect(hooks.useConfig).toHaveBeenCalled();
+    expect(hooks.useUI).toHaveBeenCalled();
   });
 
   it("includes the ForgotPasswordForm component", () => {

@@ -1,32 +1,31 @@
 "use client";
 
-import { useForm } from "@tanstack/react-form";
 import {
   FirebaseUIError,
-  fuiCreateUserWithEmailAndPassword,
-  type EmailFormSchema,
-  getTranslation,
   createEmailFormSchema,
+  createUserWithEmailAndPassword,
+  getTranslation,
+  type EmailFormSchema,
 } from "@firebase-ui/core";
-import { useAuth, useConfig, useTranslations } from "~/hooks";
+import { useForm } from "@tanstack/react-form";
 import { useMemo, useState } from "react";
+import { useUI } from "~/hooks";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
-import { TermsAndPrivacy } from "../../components/terms-and-privacy";
+import { Policies } from "../../components/policies";
 
-export function RegisterForm({
-  onBackToSignInClick,
-}: {
+interface RegisterFormProps {
   onBackToSignInClick?: () => void;
-}) {
-  const auth = useAuth();
-  const { language, enableAutoUpgradeAnonymous } = useConfig();
-  const translations = useTranslations();
+}
+
+export function RegisterForm({ onBackToSignInClick }: RegisterFormProps) {
+  const ui = useUI();
+
   const [formError, setFormError] = useState<string | null>(null);
   const [firstValidationOccured, setFirstValidationOccured] = useState(false);
   const emailFormSchema = useMemo(
-    () => createEmailFormSchema(translations),
-    [translations]
+    () => createEmailFormSchema(ui.translations),
+    [ui.translations]
   );
 
   const form = useForm<EmailFormSchema>({
@@ -41,16 +40,7 @@ export function RegisterForm({
     onSubmit: async ({ value }) => {
       setFormError(null);
       try {
-        await fuiCreateUserWithEmailAndPassword(
-          auth,
-          value.email,
-          value.password,
-          {
-            translations,
-            language,
-            enableAutoUpgradeAnonymous,
-          }
-        );
+        await createUserWithEmailAndPassword(ui, value.email, value.password);
       } catch (error) {
         if (error instanceof FirebaseUIError) {
           setFormError(error.message);
@@ -58,9 +48,7 @@ export function RegisterForm({
         }
 
         console.error(error);
-        setFormError(
-          getTranslation("errors", "unknownError", translations, language)
-        );
+        setFormError(getTranslation(ui, "errors", "unknownError"));
       }
     },
   });
@@ -80,14 +68,7 @@ export function RegisterForm({
           children={(field) => (
             <>
               <label htmlFor={field.name}>
-                <span>
-                  {getTranslation(
-                    "labels",
-                    "emailAddress",
-                    translations,
-                    language
-                  )}
-                </span>
+                <span>{getTranslation(ui, "labels", "emailAddress")}</span>
                 <input
                   aria-invalid={
                     field.state.meta.isTouched &&
@@ -122,9 +103,7 @@ export function RegisterForm({
           children={(field) => (
             <>
               <label htmlFor={field.name}>
-                <span>
-                  {getTranslation("labels", "password", translations, language)}
-                </span>
+                <span>{getTranslation(ui, "labels", "password")}</span>
                 <input
                   aria-invalid={
                     field.state.meta.isTouched &&
@@ -153,11 +132,11 @@ export function RegisterForm({
         />
       </fieldset>
 
-      <TermsAndPrivacy />
+      <Policies />
 
       <fieldset>
-        <Button type="submit">
-          {getTranslation("labels", "createAccount", translations, language)}
+        <Button type="submit" disabled={ui.state !== "idle"}>
+          {getTranslation(ui, "labels", "createAccount")}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
       </fieldset>
@@ -166,11 +145,12 @@ export function RegisterForm({
         <div className="flex justify-center items-center">
           <button
             type="button"
+            disabled={ui.state !== "idle"}
             onClick={onBackToSignInClick}
             className="fui-form__action"
           >
-            {getTranslation("prompts", "haveAccount", translations, language)}{" "}
-            {getTranslation("labels", "signIn", translations, language)} &rarr;
+            {getTranslation(ui, "prompts", "haveAccount")}{" "}
+            {getTranslation(ui, "labels", "signIn")} &rarr;
           </button>
         </div>
       )}

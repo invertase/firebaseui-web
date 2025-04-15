@@ -17,16 +17,17 @@
     "dist"
   ],
   "scripts": {
+    "postinstall": "pnpm run build",
     "build": "tsup",
     "build:local": "pnpm run build && pnpm pack",
     "dev": "tsup --watch",
     "lint": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.ts\"",
     "clean": "rimraf dist",
-    "test:unit": "TEST_TYPE=unit vitest run tests/unit",
-    "test:unit:watch": "TEST_TYPE=unit vitest tests/unit",
-    "test:integration": "TEST_TYPE=integration vitest run tests/integration",
-    "test:integration:watch": "TEST_TYPE=integration vitest tests/integration"
+    "test:unit": "vitest run tests/unit",
+    "test:unit:watch": "vitest tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:integration:watch": "vitest tests/integration"
   },
   "peerDependencies": {
     "@firebase-ui/core": "workspace:*",

@@ -3,7 +3,7 @@ import { Component, Input } from '@angular/core';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
-import { FirebaseUi } from '../../../provider';
+import { FirebaseUI } from '../../../provider';
 import { SignInAuthScreenComponent } from './sign-in-auth-screen.component';
 
 // Mock Card components
@@ -115,7 +115,7 @@ describe('SignInAuthScreenComponent', () => {
         MockEmailPasswordFormComponent,
         MockDividerComponent,
       ],
-      providers: [{ provide: FirebaseUi, useValue: mockFirebaseUi }],
+      providers: [{ provide: FirebaseUI, useValue: mockFirebaseUi }],
     }).compileComponents();
 
     TestBed.overrideComponent(SignInAuthScreenComponent, {

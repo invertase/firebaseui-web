@@ -1,34 +1,32 @@
 "use client";
 
-import { useForm } from "@tanstack/react-form";
-import { useAuth, useConfig, useTranslations } from "~/hooks";
 import {
   FirebaseUIError,
-  getTranslation,
+  completeEmailLinkSignIn,
   createEmailLinkFormSchema,
-  fuiSendSignInLinkToEmail,
-  fuiCompleteEmailLinkSignIn,
+  getTranslation,
+  sendSignInLinkToEmail,
 } from "@firebase-ui/core";
+import { useForm } from "@tanstack/react-form";
+import { useEffect, useMemo, useState } from "react";
+import { useAuth, useUI } from "~/hooks";
 import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
-import { useEffect, useState, useMemo } from "react";
-import { TermsAndPrivacy } from "../../components/terms-and-privacy";
+import { Policies } from "../../components/policies";
 
-export function EmailLinkForm() {
-  const auth = useAuth();
-  const {
-    language,
-    enableAutoUpgradeAnonymous,
-    enableHandleExistingCredential,
-  } = useConfig();
-  const translations = useTranslations();
+interface EmailLinkFormProps {}
+
+export function EmailLinkForm(_: EmailLinkFormProps) {
+  const ui = useUI();
+  const auth = useAuth(ui);
+
   const [formError, setFormError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
   const [firstValidationOccured, setFirstValidationOccured] = useState(false);
 
   const emailLinkFormSchema = useMemo(
-    () => createEmailLinkFormSchema(translations),
-    [translations]
+    () => createEmailLinkFormSchema(ui.translations),
+    [ui.translations]
   );
 
   const form = useForm({
@@ -42,11 +40,7 @@ export function EmailLinkForm() {
     onSubmit: async ({ value }) => {
       setFormError(null);
       try {
-        await fuiSendSignInLinkToEmail(auth, value.email, {
-          translations,
-          language,
-          enableAutoUpgradeAnonymous,
-        });
+        await sendSignInLinkToEmail(ui, value.email);
         setEmailSent(true);
       } catch (error) {
         if (error instanceof FirebaseUIError) {
@@ -55,9 +49,7 @@ export function EmailLinkForm() {
         }
 
         console.error(error);
-        setFormError(
-          getTranslation("errors", "unknownError", translations, language)
-        );
+        setFormError(getTranslation(ui, "errors", "unknownError"));
       }
     },
   });
@@ -66,12 +58,7 @@ export function EmailLinkForm() {
   useEffect(() => {
     const completeSignIn = async () => {
       try {
-        await fuiCompleteEmailLinkSignIn(auth, window.location.href, {
-          translations,
-          language,
-          enableAutoUpgradeAnonymous,
-          enableHandleExistingCredential,
-        });
+        await completeEmailLinkSignIn(ui, window.location.href);
       } catch (error) {
         if (error instanceof FirebaseUIError) {
           setFormError(error.message);
@@ -80,21 +67,10 @@ export function EmailLinkForm() {
     };
 
     void completeSignIn();
-  }, [
-    auth,
-    translations,
-    language,
-    enableAutoUpgradeAnonymous,
-    enableHandleExistingCredential,
-  ]);
+  }, [auth, ui.translations]);
 
   if (emailSent) {
-    // TODO: Improve this UI
-    return (
-      <div>
-        {getTranslation("messages", "signInLinkSent", translations, language)}
-      </div>
-    );
+    return <div className="fui-success">{getTranslation(ui, "messages", "signInLinkSent")}</div>;
   }
 
   return (
@@ -112,14 +88,7 @@ export function EmailLinkForm() {
           children={(field) => (
             <>
               <label htmlFor={field.name}>
-                <span>
-                  {getTranslation(
-                    "labels",
-                    "emailAddress",
-                    translations,
-                    language
-                  )}
-                </span>
+                <span>{getTranslation(ui, "labels", "emailAddress")}</span>
                 <input
                   aria-invalid={
                     field.state.meta.isTouched &&
@@ -148,11 +117,11 @@ export function EmailLinkForm() {
         />
       </fieldset>
 
-      <TermsAndPrivacy />
+      <Policies />
 
       <fieldset>
-        <Button type="submit">
-          {getTranslation("labels", "sendSignInLink", translations, language)}
+        <Button type="submit" disabled={ui.state !== "idle"}>
+          {getTranslation(ui, "labels", "sendSignInLink")}
         </Button>
         {formError && <div className="fui-form__error">{formError}</div>}
       </fieldset>

@@ -4,37 +4,19 @@ import { EmailPasswordForm } from "../../../../src/auth/forms/email-password-for
 import { act } from "react";
 
 // Mock the dependencies
-vi.mock("@firebase-ui/core", () => ({
-  fuiSignInWithEmailAndPassword: vi.fn().mockResolvedValue(undefined),
-  FirebaseUIError: class FirebaseUIError extends Error {
-    constructor(error: any) {
-      super(error.message || "Unknown error");
-      this.name = "FirebaseUIError";
-    }
-  },
-  createEmailFormSchema: vi.fn().mockReturnValue({
-    email: { required: "Email is required" },
-    password: { required: "Password is required" },
-  }),
-  getTranslation: vi.fn((category: string, key: string) => {
-    const translations: Record<string, Record<string, string>> = {
-      labels: {
-        emailAddress: "Email Address",
-        password: "Password",
-        forgotPassword: "Forgot Password",
-        signIn: "Sign In",
-        register: "Register",
-      },
-      prompts: {
-        noAccount: "Don't have an account?",
-      },
-      errors: {
-        unknownError: "An unknown error occurred",
-      },
-    };
-    return translations[category]?.[key] || `${category}.${key}`;
-  }),
-}));
+vi.mock("@firebase-ui/core", async (importOriginal) => {
+  const mod = await importOriginal<typeof import("@firebase-ui/core")>();
+  return {
+    ...mod,
+    signInWithEmailAndPassword: vi.fn().mockResolvedValue(undefined),
+    FirebaseUIError: class FirebaseUIError extends Error {
+      constructor(error: any) {
+        super(error.message || "Unknown error");
+        this.name = "FirebaseUIError";
+      }
+    },
+  };
+});
 
 // Mock @tanstack/react-form library
 vi.mock("@tanstack/react-form", () => {
@@ -73,12 +55,15 @@ vi.mock("@tanstack/react-form", () => {
 
 vi.mock("../../../../src/hooks", () => ({
   useAuth: vi.fn().mockReturnValue({}),
-  useConfig: vi.fn().mockReturnValue({
-    language: "en",
-    enableAutoUpgradeAnonymous: false,
-    enableHandleExistingCredential: false,
+  useUI: vi.fn().mockReturnValue({
+    translations: {
+      "en-US": {
+        labels: {
+          emailAddress: "Email Address",
+        },
+      },
+    },
   }),
-  useTranslations: vi.fn().mockReturnValue({}),
 }));
 
 // Mock the components
@@ -94,10 +79,10 @@ vi.mock("../../../../src/components/field-info", () => ({
     )),
 }));
 
-vi.mock("../../../../src/components/terms-and-privacy", () => ({
-  TermsAndPrivacy: vi
+vi.mock("../../../../src/components/policies", () => ({
+  Policies: vi
     .fn()
-    .mockReturnValue(<div data-testid="terms-and-privacy" />),
+    .mockReturnValue(<div data-testid="policies" />),
 }));
 
 vi.mock("../../../../src/components/button", () => ({
@@ -109,7 +94,7 @@ vi.mock("../../../../src/components/button", () => ({
 }));
 
 // Import the actual functions after mocking
-import { fuiSignInWithEmailAndPassword } from "@firebase-ui/core";
+import { signInWithEmailAndPassword } from "@firebase-ui/core";
 
 describe("EmailPasswordForm", () => {
   beforeEach(() => {
@@ -122,7 +107,7 @@ describe("EmailPasswordForm", () => {
     expect(
       screen.getByRole("textbox", { name: /email address/i })
     ).toBeInTheDocument();
-    expect(screen.getByTestId("terms-and-privacy")).toBeInTheDocument();
+    expect(screen.getByTestId("policies")).toBeInTheDocument();
     expect(screen.getByTestId("submit-button")).toBeInTheDocument();
   });
 
@@ -148,22 +133,17 @@ describe("EmailPasswordForm", () => {
     });
 
     // Check that the authentication function was called
-    expect(fuiSignInWithEmailAndPassword).toHaveBeenCalledWith(
+    expect(signInWithEmailAndPassword).toHaveBeenCalledWith(
       expect.anything(),
       "test@example.com",
-      "password123",
-      expect.objectContaining({
-        language: "en",
-        enableAutoUpgradeAnonymous: false,
-        enableHandleExistingCredential: false,
-      })
+      "password123"
     );
   });
 
   it("displays error message when sign in fails", async () => {
     // Mock the sign in function to reject with an error
     const mockError = new Error("Invalid credentials");
-    (fuiSignInWithEmailAndPassword as Mock).mockRejectedValueOnce(mockError);
+    (signInWithEmailAndPassword as Mock).mockRejectedValueOnce(mockError);
 
     render(<EmailPasswordForm />);
 
@@ -176,18 +156,17 @@ describe("EmailPasswordForm", () => {
 
       // Directly call the onSubmit function with form values
       if ((global as any).formOnSubmit) {
-        await (global as any)
-          .formOnSubmit({
-            value: {
-              email: "test@example.com",
-              password: "password123",
-            },
-          })
+        await (global as any).formOnSubmit({
+          value: {
+            email: "test@example.com",
+            password: "password123",
+          },
+        });
       }
     });
 
     // Check that the authentication function was called
-    expect(fuiSignInWithEmailAndPassword).toHaveBeenCalled();
+    expect(signInWithEmailAndPassword).toHaveBeenCalled();
   });
 
   it("validates on blur for the first time", async () => {

@@ -1,7 +1,7 @@
 import { Component, inject, Input, AfterContentInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardComponent, CardHeaderComponent, CardTitleComponent, CardSubtitleComponent } from '../../../components/card/card.component';
-import { FirebaseUi } from '../../../provider';
+import { FirebaseUI } from '../../../provider';
 import { PhoneFormComponent } from '../../forms/phone-form/phone-form.component';
 import { DividerComponent } from '../../../components/divider/divider.component';
 
@@ -39,7 +39,7 @@ import { DividerComponent } from '../../../components/divider/divider.component'
   `
 })
 export class PhoneAuthScreenComponent implements AfterContentInit {
-  private ui = inject(FirebaseUi);
+  private ui = inject(FirebaseUI);
   
   @Input() resendDelay = 30;
 

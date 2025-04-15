@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { injectForm, TanStackField } from '@tanstack/angular-form';
-import { FirebaseUi } from '../../../provider';
+import { FirebaseUI } from '../../../provider';
 import {
   Auth,
   ConfirmationResult,
@@ -25,8 +25,8 @@ import {
   createPhoneFormSchema,
   FirebaseUIError,
   formatPhoneNumberWithCountry,
-  fuiConfirmPhoneNumber,
-  fuiSignInWithPhoneNumber,
+  confirmPhoneNumber,
+  signInWithPhoneNumber,
 } from '@firebase-ui/core';
 import { interval, Subscription, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
@@ -100,8 +100,7 @@ import { z } from 'zod';
   `,
 })
 export class PhoneNumberFormComponent implements OnInit, OnDestroy {
-  private ui = inject(FirebaseUi);
-  private auth = inject(Auth);
+  private ui = inject(FirebaseUI);
 
   @Input() onSubmit!: (phoneNumber: string) => Promise<void>;
   @Input() formError: string | null = null;
@@ -150,11 +149,11 @@ export class PhoneNumberFormComponent implements OnInit, OnDestroy {
 
   async initRecaptcha() {
     const verifier = new RecaptchaVerifier(
-      this.auth,
+      (await firstValueFrom(this.ui.config())).getAuth(),
       this.recaptchaContainer.nativeElement,
       {
         size: this.config?.recaptchaMode ?? 'normal',
-      }
+      },
     );
     this.recaptchaVerifier = verifier;
   }
@@ -185,7 +184,7 @@ export class PhoneNumberFormComponent implements OnInit, OnDestroy {
         if (validationErrors.phoneNumber?._errors?.length) {
           // We can't set formError directly since it's an input, so we need to call the parent
           await this.onSubmit(
-            'VALIDATION_ERROR:' + validationErrors.phoneNumber._errors[0]
+            'VALIDATION_ERROR:' + validationErrors.phoneNumber._errors[0],
           );
           return;
         }
@@ -197,7 +196,7 @@ export class PhoneNumberFormComponent implements OnInit, OnDestroy {
       // Format number and submit
       const formattedNumber = formatPhoneNumberWithCountry(
         phoneNumber,
-        this.selectedCountry.dialCode
+        this.selectedCountry.dialCode,
       );
       await this.onSubmit(formattedNumber);
     } catch (error) {
@@ -298,8 +297,7 @@ export class PhoneNumberFormComponent implements OnInit, OnDestroy {
   `,
 })
 export class VerificationFormComponent implements OnInit, OnDestroy {
-  private ui = inject(FirebaseUi);
-  private router = inject(Router);
+  private ui = inject(FirebaseUI);
 
   @Input() onSubmit!: (code: string) => Promise<void>;
   @Input() onResend!: () => Promise<void>;
@@ -366,7 +364,7 @@ export class VerificationFormComponent implements OnInit, OnDestroy {
 
         if (validationErrors.verificationCode?._errors?.length) {
           await this.onSubmit(
-            'VALIDATION_ERROR:' + validationErrors.verificationCode._errors[0]
+            'VALIDATION_ERROR:' + validationErrors.verificationCode._errors[0],
           );
           return;
         }
@@ -426,8 +424,7 @@ export class VerificationFormComponent implements OnInit, OnDestroy {
   `,
 })
 export class PhoneFormComponent implements OnInit, OnDestroy {
-  private ui = inject(FirebaseUi);
-  private auth = inject(Auth);
+  private ui = inject(FirebaseUI);
   private config: any;
 
   @Input() resendDelay = 30;
@@ -468,14 +465,10 @@ export class PhoneFormComponent implements OnInit, OnDestroy {
         throw new Error('ReCAPTCHA not initialized');
       }
 
-      const result = await fuiSignInWithPhoneNumber(
-        this.auth,
+      const result = await signInWithPhoneNumber(
+        await firstValueFrom(this.ui.config()),
         number,
         this.recaptchaVerifier,
-        {
-          translations: this.config?.translations,
-          language: this.config?.language,
-        }
       );
 
       this.phoneNumber = number;
@@ -488,7 +481,7 @@ export class PhoneFormComponent implements OnInit, OnDestroy {
       }
       console.error(error);
       this.formError = await firstValueFrom(
-        this.ui.translation('errors', 'unknownError')
+        this.ui.translation('errors', 'unknownError'),
       );
     }
   }
@@ -509,25 +502,25 @@ export class PhoneFormComponent implements OnInit, OnDestroy {
       // We need to get the recaptcha container from the verification form
       // This is a bit hacky, but it works for now
       const recaptchaContainer = document.querySelector(
-        '.fui-recaptcha-container'
+        '.fui-recaptcha-container',
       ) as HTMLDivElement;
       if (!recaptchaContainer) {
         throw new Error('ReCAPTCHA container not found');
       }
 
-      const verifier = new RecaptchaVerifier(this.auth, recaptchaContainer, {
-        size: this.config?.recaptchaMode ?? 'normal',
-      });
+      const verifier = new RecaptchaVerifier(
+        (await firstValueFrom(this.ui.config())).getAuth(),
+        recaptchaContainer,
+        {
+          size: this.config?.recaptchaMode ?? 'normal',
+        },
+      );
       this.recaptchaVerifier = verifier;
 
-      const result = await fuiSignInWithPhoneNumber(
-        this.auth,
+      const result = await signInWithPhoneNumber(
+        await firstValueFrom(this.ui.config()),
         this.phoneNumber,
         verifier,
-        {
-          translations: this.config?.translations,
-          language: this.config?.language,
-        }
       );
 
       this.confirmationResult = result;
@@ -559,13 +552,11 @@ export class PhoneFormComponent implements OnInit, OnDestroy {
     this.formError = null;
 
     try {
-      await fuiConfirmPhoneNumber(this.confirmationResult, code, {
-        translations: this.config?.translations,
-        language: this.config?.language,
-        enableAutoUpgradeAnonymous: this.config?.enableAutoUpgradeAnonymous,
-        enableHandleExistingCredential:
-          this.config?.enableHandleExistingCredential,
-      });
+      await confirmPhoneNumber(
+        await firstValueFrom(this.ui.config()),
+        this.confirmationResult,
+        code,
+      );
     } catch (error) {
       if (error instanceof FirebaseUIError) {
         this.formError = error.message;
@@ -573,7 +564,7 @@ export class PhoneFormComponent implements OnInit, OnDestroy {
       }
       console.error(error);
       this.formError = await firstValueFrom(
-        this.ui.translation('errors', 'unknownError')
+        this.ui.translation('errors', 'unknownError'),
       );
     }
   }
