@@ -14,13 +14,14 @@ import {
 import { FirebaseUIError } from '@firebase-ui/core';
 import { TanStackField } from '@tanstack/angular-form';
 import { firstValueFrom, of } from 'rxjs';
-import { FirebaseUI } from '../../../provider';
+import { FirebaseUI, FirebaseUIPolicies } from '../../../provider';
 import {
   PhoneFormComponent,
   PhoneNumberFormComponent,
   VerificationFormComponent,
 } from './phone-form.component';
 import { mockAuth } from '../../../testing/test-helpers';
+import { providePolicies } from 'src/app/policies/providePolicies';
 
 // Mock Firebase UI Core functions
 const mockFuiSignInWithPhoneNumber = jasmine
@@ -386,6 +387,13 @@ describe('PhoneFormComponent', () => {
       providers: [
         { provide: FirebaseUI, useValue: mockFirebaseUi },
         { provide: Auth, useValue: mockAuthService },
+        {
+          provide: FirebaseUIPolicies,
+          useValue: {
+            termsOfServiceUrl: '/terms',
+            privacyPolicyUrl: '/privacy',
+          },
+        },
       ],
     }).compileComponents();
 

@@ -1,5 +1,5 @@
 import { Provider } from '@angular/core';
-import { FirebaseUI } from '../provider';
+import { FirebaseUI, FirebaseUIPolicies } from '../provider';
 import { Auth } from '@angular/fire/auth';
 import { InjectionToken } from '@angular/core';
 import { of } from 'rxjs';
@@ -92,6 +92,13 @@ export function getFirebaseUITestProviders(): Provider[] {
           enableHandleExistingCredential: false,
           translations: {},
         },
+      },
+    },
+    {
+      provide: FirebaseUIPolicies,
+      useValue: {
+        termsOfServiceUrl: '/terms',
+        privacyPolicyUrl: '/privacy',
       },
     },
   ];
