@@ -45,7 +45,7 @@ export function initializeUI(config: FirebaseUIConfigurationOptions, name: strin
 
   // TODO: Is this right?
   config.translations.push(english);
-  
+
   const translations = config.translations?.reduce((acc, translation) => {
     return {
       ...acc,
@@ -63,7 +63,7 @@ export function initializeUI(config: FirebaseUIConfigurationOptions, name: strin
         const current = $config.get()[name]!;
         current.setKey(`locale`, locale);
       },
-      state: 'loading',
+      state: behaviors?.autoAnonymousLogin ? 'signing-in' : 'loading',
       setState: (state: FirebaseUIState) => {
         const current = $config.get()[name]!;
         current.setKey(`state`, state);
