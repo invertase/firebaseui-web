@@ -14,7 +14,7 @@ import { Button } from "../../components/button";
 import { FieldInfo } from "../../components/field-info";
 import { Policies } from "../../components/policies";
 
-interface RegisterFormProps {
+export interface RegisterFormProps {
   onBackToSignInClick?: () => void;
 }
 

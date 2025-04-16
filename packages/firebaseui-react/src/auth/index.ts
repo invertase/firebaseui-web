@@ -1,3 +1,4 @@
+/** Export screens */
 export {
   EmailLinkAuthScreen,
   type EmailLinkAuthScreenProps,
@@ -24,4 +25,13 @@ export {
   type PasswordResetScreenProps,
 } from "./screens/password-reset-screen";
 
+/** Export forms */
+export {
+  EmailPasswordForm,
+  type EmailPasswordFormProps,
+} from "./forms/email-password-form";
+
+export { RegisterForm, type RegisterFormProps } from "./forms/register-form";
+
+/** Export Buttons */
 export { GoogleSignInButton } from "./oauth/google-sign-in-button";
