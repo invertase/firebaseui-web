@@ -4,7 +4,6 @@ import { useState } from "react";
 import {
   EmailPasswordForm,
   RegisterForm,
-  CustomSignInScreen,
   Card,
   CardHeader,
   CardTitle,
@@ -52,7 +51,7 @@ export default function Example2() {
               style={{ animationDelay: "1s" }}
             ></div>
 
-            <CustomSignInScreen className="!min-h-0 !bg-transparent !p-0">
+            <div className="!min-h-0 !bg-transparent !p-0">
               <Card className="relative rounded-xl border border-white/10 bg-black/40 shadow-2xl backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle>
@@ -84,7 +83,7 @@ export default function Example2() {
                   </>
                 )}
               </Card>
-            </CustomSignInScreen>
+            </div>
           </div>
         </main>
 

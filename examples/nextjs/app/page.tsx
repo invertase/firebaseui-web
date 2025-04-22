@@ -7,7 +7,7 @@ export default function Home() {
   const user = useUser();
 
   return (
-    <div className="p-8">
+    <div className="p-8 ">
       <h1 className="text-3xl font-bold mb-6">Firebase UI Demo</h1>
       <div className="mb-6">
         {user && <div>Welcome: {user.email || user.phoneNumber}</div>}
