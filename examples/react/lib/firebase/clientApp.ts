@@ -29,4 +29,6 @@ export const ui = initializeUI({
   ],
 });
 
-connectAuthEmulator(auth, "http://localhost:9099");
+if (import.meta.env.MODE === "development") {
+  connectAuthEmulator(auth, "http://localhost:9099");
+}
