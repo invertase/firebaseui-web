@@ -1,6 +1,9 @@
 {
   "name": "@firebase-ui/angular",
   "version": "0.0.1",
+  "scripts": {
+    "release": "pnpm pack --pack-destination ../../../../releases/"
+  },
   "peerDependencies": {
     "@angular/common": "^19.1.0",
     "@angular/core": "^19.1.0",
@@ -13,5 +16,6 @@
     "tslib": "^2.3.0",
     "zod": "^3.24.1"
   },
+
   "sideEffects": false
 }

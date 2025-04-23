@@ -24,7 +24,8 @@
     "dev": "tsup --watch",
     "lint": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.ts\"",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "release": "pnpm pack --pack-destination ../../releases/"
   },
   "devDependencies": {
     "prettier": "^3.1.1",
