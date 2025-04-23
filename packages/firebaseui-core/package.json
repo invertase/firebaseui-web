@@ -30,6 +30,7 @@
     "test:integration": "vitest run tests/integration",
     "test:integration:watch": "vitest tests/integration",
     "test": "vitest run",
+    "publish:tags": "sh -c 'TAG=\"${npm_package_name}@${npm_package_version}\"; git tag --list \"$TAG\" | grep . || git tag \"$TAG\"; git push origin \"$TAG\"'",
     "release": "pnpm pack --pack-destination ../../releases/"
   },
   "keywords": [

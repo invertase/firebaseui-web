@@ -28,7 +28,8 @@
     "test:unit:watch": "vitest tests/unit",
     "test:integration": "vitest run tests/integration",
     "test:integration:watch": "vitest tests/integration",
-     "release": "pnpm pack --pack-destination ../../releases/"
+    "publish:tags": "sh -c 'TAG=\"${npm_package_name}@${npm_package_version}\"; git tag --list \"$TAG\" | grep . || git tag \"$TAG\"; git push origin \"$TAG\"'",
+    "release": "pnpm pack --pack-destination ../../releases/"
   },
   "peerDependencies": {
     "@firebase-ui/core": "workspace:*",
