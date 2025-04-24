@@ -13,7 +13,7 @@
     "publish:tags:react": "pnpm --filter=@firebase-ui/react run publish:tags",
     "publish:tags:angular": "pnpm --filter=@firebase-ui/angular run publish:tags",
     "publish:tags:styles": "pnpm --filter=@firebase-ui/styles run publish:tags",
-    "publish:tags:all": "pnpm i && pnpm run publish:tags:core && pnpm run publish:tags:translations && pnpm run publish:tags:react && pnpm run publish:tags:styles && pnpm run release:angular",
+    "publish:tags:all": "pnpm i && pnpm run publish:tags:core && pnpm run publish:tags:translations && pnpm run publish:tags:react && pnpm run publish:tags:styles && pnpm run publish:tags:angular",
 
     "release:core": "pnpm --filter=@firebase-ui/core run release",
     "release:translations": "pnpm --filter=@firebase-ui/translations run release",
