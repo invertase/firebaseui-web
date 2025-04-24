@@ -13,7 +13,6 @@
     "test:integration": "ng test --include=\"**/tests/integration/**/*.spec.ts\" --no-watch --no-progress --browsers=ChromeHeadless",
     "serve:ssr:angular-ssr": "node dist/angular-ssr/server/server.mjs"
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "^19.1.0",
     "@angular/common": "^19.1.0",

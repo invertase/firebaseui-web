@@ -2,7 +2,6 @@
   "name": "@firebase-ui/translations",
   "version": "0.0.1",
   "description": "Translations for Firebase UI",
-  "private": true,
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
