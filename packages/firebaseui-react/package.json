@@ -16,6 +16,7 @@
     "dist"
   ],
   "scripts": {
+    "prepare": "tsup",
     "build": "tsup",
     "build:local": "pnpm run build && pnpm pack",
     "dev": "tsup --watch",
