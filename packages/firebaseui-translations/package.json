@@ -25,7 +25,7 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "clean": "rimraf dist",
     "publish:tags": "sh -c 'TAG=\"${npm_package_name}@${npm_package_version}\"; git tag --list \"$TAG\" | grep . || git tag \"$TAG\"; git push origin \"$TAG\"'",
-    "release": "pnpm pack --pack-destination ../../releases/"
+    "release": "npm run build && pnpm pack --pack-destination ../../releases/"
   },
   "devDependencies": {
     "prettier": "^3.1.1",
