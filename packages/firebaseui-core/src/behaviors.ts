@@ -40,12 +40,24 @@ export function getBehavior<T extends BehaviorKey>(ui: FirebaseUIConfiguration, 
 }
 
 export function autoAnonymousLogin(): Behavior<'autoAnonymousLogin'> {
+  /** No-op on Server render */
+  if (typeof window === 'undefined') {
+    console.log('[autoAnonymousLogin] SSR mode — returning noop behavior');
+    return {
+      autoAnonymousLogin: async (_ui) => {
+        /** Return a placeholder user object */
+        return { uid: 'server-placeholder' } as unknown as User;
+      },
+    };
+  }
+
   return {
     autoAnonymousLogin: async (ui) => {
       const auth = ui.getAuth();
-      ui.setState('signing-in');
+
       const user = await new Promise<User>((resolve) => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
+          ui.setState('signing-in');
           if (!user) {
             signInAnonymously(auth);
             return;
