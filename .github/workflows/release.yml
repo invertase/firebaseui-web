@@ -25,9 +25,14 @@ jobs:
       - id: get-package-source
         run: |
           tag="${GITHUB_REF#refs/tags/}"
-          name_with_scope=$(echo "$tag" | cut -d'@' -f2-)
-          scope=$(echo "$name_with_scope" | cut -d'/' -f1)
-          name=$(echo "$name_with_scope" | cut -d'/' -f2 | cut -d'@' -f1)
+          echo "Full tag: $tag"
+
+          # Strip both leading @ and version suffix
+          pkg_path=$(echo "$tag" | sed -E 's/^@([^@]*)@([0-9]+\.[0-9]+\.[0-9]+)$/\1/')
+          # pkg_path = firebase-ui/translations
+
+          scope=$(echo "$pkg_path" | cut -d'/' -f1)
+          name=$(echo "$pkg_path" | cut -d'/' -f2)
           version=$(echo "$tag" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
 
           echo "SCOPE=$scope" >> "$GITHUB_ENV"
@@ -35,6 +40,12 @@ jobs:
           echo "VERSION=$version" >> "$GITHUB_ENV"
           echo "TAG=$tag" >> "$GITHUB_ENV"
           echo "file=releases/${scope}-${name}-${version}.tgz" >> "$GITHUB_OUTPUT"
+
+          echo "Parsed:"
+          echo "  Scope: $scope"
+          echo "  Package: $name"
+          echo "  Version: $version"
+          echo "  File path: releases/${scope}-${name}-${version}.tgz"
 
       - run: pnpm --filter "@${{ env.SCOPE }}/${{ env.PACKAGE }}" run release
 
