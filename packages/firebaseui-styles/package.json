@@ -7,7 +7,6 @@
     "src"
   ],
   "scripts": {
-    "postinstall": "pnpm run build",
     "build": "npx -y @tailwindcss/cli -i ./src.css -o ./dist.css --minify",
     "build:local": "pnpm run build && pnpm pack",
     "publish:tags": "sh -c 'TAG=\"${npm_package_name}@${npm_package_version}\"; git tag --list \"$TAG\" | grep . || git tag \"$TAG\"; git push origin \"$TAG\"'",

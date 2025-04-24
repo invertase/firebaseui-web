@@ -17,7 +17,6 @@
     "dist"
   ],
   "scripts": {
-    "postinstall": "pnpm run build",
     "emulators:start": "firebase emulators:start -P demo-firebaseui",
     "build": "tsup",
     "build:local": "pnpm run build && pnpm pack",
