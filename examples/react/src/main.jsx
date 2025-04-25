@@ -21,8 +21,8 @@ import PhoneAuthScreenPage from "./screens/phone-auth-screen";
 import PhoneAuthScreenWithOAuthPage from "./screens/phone-auth-screen-w-oauth";
 
 /** Sign up */
-import SignUpAuthScreenPage from "./screens/sign-in-auth-screen-w-oauth";
-import SignUpAuthScreenWithOAuthPage from "./screens/sign-in-auth-screen";
+import SignUpAuthScreenPage from "./screens/sign-up-auth-screen";
+import SignUpAuthScreenWithOAuthPage from "./screens/sign-up-auth-screen";
 
 /** oAuth */
 import OAuthScreenPage from "./screens/oauth-screen";
