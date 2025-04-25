@@ -1,0 +1,55 @@
+name: Package Release
+
+on:
+  push:
+    tags:
+      - '@firebase-ui/*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - run: pnpm install
+
+      - id: get-package-source
+        run: |
+          tag="${GITHUB_REF#refs/tags/}"
+          echo "Full tag: $tag"
+
+          # Strip both leading @ and version suffix
+          pkg_path=$(echo "$tag" | sed -E 's/^@([^@]*)@([0-9]+\.[0-9]+\.[0-9]+)$/\1/')
+          # pkg_path = firebase-ui/translations
+
+          scope=$(echo "$pkg_path" | cut -d'/' -f1)
+          name=$(echo "$pkg_path" | cut -d'/' -f2)
+          version=$(echo "$tag" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+
+          echo "SCOPE=$scope" >> "$GITHUB_ENV"
+          echo "PACKAGE=$name" >> "$GITHUB_ENV"
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          echo "TAG=$tag" >> "$GITHUB_ENV"
+          echo "file=releases/${scope}-${name}-${version}.tgz" >> "$GITHUB_OUTPUT"
+
+          echo "Parsed:"
+          echo "  Scope: $scope"
+          echo "  Package: $name"
+          echo "  Version: $version"
+          echo "  File path: releases/${scope}-${name}-${version}.tgz"
+
+      - run: pnpm --filter "@${{ env.SCOPE }}/${{ env.PACKAGE }}" run release
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          files: ${{ steps.get-package-source.outputs.file }}
