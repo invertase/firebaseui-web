@@ -192,6 +192,7 @@ Allows users to sign in with an email and password:
   })
   export class AppComponent { }
   ```
+
 </details>
 
 ## Configuration
