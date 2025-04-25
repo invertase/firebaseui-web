@@ -10,9 +10,11 @@ FirebaseUI requires the `firebase` package to be installed:
 npm install firebase
 ```
 
-(Since the packages are not published, the peer dependencies are not installed automatically from source (core & styles). This will not be required once published.)
+**Note**: Since the packages are not yet published to npm, you must manually install them from GitHub releases. Once published, these steps will be simplified.
 
-Next, follow the installation flow for your framework:
+###  Framework-specific Installation
+
+Packages have created for both `React` and `Angular`.
 
 <details>
   <summary>React</summary>
@@ -20,9 +22,10 @@ Next, follow the installation flow for your framework:
   ```json
   {
     "dependencies": {
-      "@firebase-ui/core": "path-to-repo/releases/firebase-ui-core-0.0.1.tgz",
-      "@firebase-ui/styles": "path-to-repo/releases/firebase-ui-styles-0.0.1.tgz",
-      "@firebase-ui/react": "path-to-repo/releases/firebase-ui-react-0.0.1.tgz"
+    "@firebase-ui/react": "https://github.com/invertase/firebaseui-web/releases/download/%40firebase-ui%2Freact%400.0.1/firebase-ui-react-0.0.1.tgz",  
+    "@firebase-ui/core": "https://github.com/invertase/firebaseui-web/releases/download/%40firebase-ui%2Fcore%400.0.1/firebase-ui-core-0.0.1.tgz",
+    "@firebase-ui/styles": "https://github.com/invertase/firebaseui-web/releases/download/%40firebase-ui%2Fstyles%400.0.1/firebase-ui-styles-0.0.1.tgz",
+    "@firebase-ui/translations": "https://github.com/invertase/firebaseui-web/releases/download/%40firebase-ui%2Ftranslations%400.0.1/firebase-ui-translations-0.0.1.tgz",
     }
   }
   ```
@@ -39,10 +42,12 @@ Next, follow the installation flow for your framework:
   ```json
   {
     "dependencies": {
-      "@firebase-ui/core": "path-to-repo/releases/firebase-ui-core-0.0.1.tgz",
-      "@firebase-ui/styles": "path-to-repo/releases/firebase-ui-styles-0.0.1.tgz",
-      "@firebase-ui/amgular": "path-to-repo/releases/firebase-ui-angular-0.0.1.tgz",
+      "@firebase-ui/angular": "[path-to-repo/releases/firebase-ui-angular-0.0.1.tgz](https://github.com/invertase/firebaseui-web/releases/download/%40firebase-ui%2Fcore%400.0.1/firebase-ui-angular-0.0.1.tgz)",
       "@angular/fire": "^19.0.0"
+      "@firebase-ui/core": "https://github.com/invertase/firebaseui-web/releases/download/%40firebase-ui%2Fcore%400.0.1/firebase-ui-core-0.0.1.tgz",
+      "@firebase-ui/styles": "https://github.com/invertase/firebaseui-web/releases/download/%40firebase-ui%2Fstyles%400.0.1/firebase-ui-styles-0.0.1.tgz",
+      "@firebase-ui/translations": "https://github.com/invertase/firebaseui-web/releases/download/%40firebase-ui%2Ftranslations%400.0.1/firebase-ui-translations-0.0.1.tgz",
+
     }
   }
   ```
@@ -51,7 +56,7 @@ Next, follow the installation flow for your framework:
 
 </details>
 
-## Setup
+## Getting Started
 
 FirebaseUI requires that your Firebase app is setup following the [Getting Started with Firebase](https://firebase.google.com/docs/web/setup) flow for Web:
 
@@ -73,7 +78,7 @@ const ui = initializeUI();
 
 > To learn more about configuring FirebaseUI, view the [configuration](#configuration) section.
 
-Next, follow the flow for your framework to setup FirebaseUI:
+### Framework Setup
 
 <details>
   <summary>React</summary>
@@ -118,7 +123,7 @@ Next, follow the flow for your framework to setup FirebaseUI:
       ...
     ],
     ...
-  })
+  }
   ```
 
 </details>
@@ -142,7 +147,7 @@ If you are not using Tailwind, import the distributable CSS in your project:
 
 To learn more about theming, view the [theming](#theming) section.
 
-## Authentication Components
+### Authentication Components
 
 FirebaseUI provides a number of opinionated components designed to drop into your application which handle common user flows, such as signing in or registration.
 
@@ -197,7 +202,29 @@ Allows users to sign in with an email and password:
 
 ## Configuration
 
-TODO: Update once configuration is finalized.
+The initializeUI function accepts an options object that allows you to customize FirebaseUI’s behavior.
+
+### Type Definition
+
+```js
+type FirebaseUIConfigurationOptions = {
+  app: FirebaseApp;
+  locale?: Locale | undefined;
+  translations?: RegisteredTranslations[] | undefined;
+  behaviors?: Partial<Behavior<keyof BehaviorHandlers>>[] | undefined;
+  recaptchaMode?: 'normal' | 'invisible' | undefined;
+};
+```
+
+**App**: The initialized Firebase app instance. This is required.
+
+**Locale**: Optional locale string to override the default language (e.g., 'en', 'fr', 'es').
+
+**Translations**: Add or override translation strings for labels, prompts, and errors.
+
+**Behaviors**: Customize UI behavior such as automatic sign-in or error handling.
+
+**RecaptchaMode**:Set the reCAPTCHA mode for phone auth (default is 'normal').
 
 ## Theming
 
