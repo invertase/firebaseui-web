@@ -17,10 +17,6 @@ export type BehaviorHandlers = {
     credential: AuthCredential
   ) => Promise<UserCredential | undefined>;
   autoUpgradeAnonymousProvider: (ui: FirebaseUIConfiguration, provider: AuthProvider) => Promise<undefined | never>;
-  autoUpgradeAnonymousLink: (ui: FirebaseUIConfiguration) => {
-    setStorageItem: (key: string, value: string) => void;
-    removeStorageItem: (key: string) => void;
-  };
 };
 
 export type Behavior<T extends keyof BehaviorHandlers = keyof BehaviorHandlers> = Pick<BehaviorHandlers, T>;
@@ -74,7 +70,7 @@ export function autoAnonymousLogin(): Behavior<'autoAnonymousLogin'> {
 }
 
 export function autoUpgradeAnonymousUsers(): Behavior<
-  'autoUpgradeAnonymousCredential' | 'autoUpgradeAnonymousProvider' | 'autoUpgradeAnonymousLink'
+  'autoUpgradeAnonymousCredential' | 'autoUpgradeAnonymousProvider'
 > {
   return {
     autoUpgradeAnonymousCredential: async (ui, credential) => {
@@ -103,10 +99,6 @@ export function autoUpgradeAnonymousUsers(): Behavior<
       await linkWithRedirect(currentUser, provider);
       // We don't modify state here since the user is redirected.
       // If we support popups, we'd need to modify state here.
-    },
-    // @ts-ignore
-    autoUpgradeAnonymousLink: async (ui) => {
-      throw new Error('Not implemented');
     },
   };
 }
