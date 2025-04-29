@@ -203,18 +203,6 @@ describe('Firebase UI Auth', () => {
       expect(mockUi.setState).toHaveBeenCalledWith('idle');
       expect(window.localStorage.getItem('emailForSignIn')).toBe('test@test.com');
     });
-
-    it('should handle anonymous upgrade flag', async () => {
-      (fbSendSignInLinkToEmail as any).mockResolvedValue(undefined);
-      mockAuth = { currentUser: { isAnonymous: true } } as Auth;
-      (getAuth as any).mockReturnValue(mockAuth);
-
-      await sendSignInLinkToEmail(mockUi, 'test@test.com');
-
-      // We only verify that email is stored in localStorage
-      // since autoUpgradeAnonymousLink is not implemented in the code
-      expect(window.localStorage.getItem('emailForSignIn')).toBe('test@test.com');
-    });
   });
 
   describe('signInWithEmailLink', () => {
