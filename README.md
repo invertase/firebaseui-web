@@ -22,10 +22,10 @@ Packages have created for both `React` and `Angular`.
   ```json
   {
     "dependencies": {
-    "@firebase-ui/react": "https://github.com/invertase/firebaseui-web/releases/download/%40firebase-ui%2Freact%400.0.1/firebase-ui-react-0.0.1.tgz",  
-    "@firebase-ui/core": "https://github.com/invertase/firebaseui-web/releases/download/%40firebase-ui%2Fcore%400.0.1/firebase-ui-core-0.0.1.tgz",
-    "@firebase-ui/styles": "https://github.com/invertase/firebaseui-web/releases/download/%40firebase-ui%2Fstyles%400.0.1/firebase-ui-styles-0.0.1.tgz",
-    "@firebase-ui/translations": "https://github.com/invertase/firebaseui-web/releases/download/%40firebase-ui%2Ftranslations%400.0.1/firebase-ui-translations-0.0.1.tgz",
+    "@firebase-ui/react": "https://github.com/firebase/firebaseui-web/releases/download/%40firebase-ui%2Freact%400.0.1/firebase-ui-react-0.0.1.tgz",  
+    "@firebase-ui/core": "https://github.com/firebase/firebaseui-web/releases/download/%40firebase-ui%2Fcore%400.0.1/firebase-ui-core-0.0.1.tgz",
+    "@firebase-ui/styles": "https://github.com/firebase/firebaseui-web/releases/download/%40firebase-ui%2Fstyles%400.0.1/firebase-ui-styles-0.0.1.tgz",
+    "@firebase-ui/translations": "https://github.com/firebase/firebaseui-web/releases/download/%40firebase-ui%2Ftranslations%400.0.1/firebase-ui-translations-0.0.1.tgz",
     }
   }
   ```
@@ -42,11 +42,11 @@ Packages have created for both `React` and `Angular`.
   ```json
   {
     "dependencies": {
-      "@firebase-ui/angular": "[path-to-repo/releases/firebase-ui-angular-0.0.1.tgz](https://github.com/invertase/firebaseui-web/releases/download/%40firebase-ui%2Fcore%400.0.1/firebase-ui-angular-0.0.1.tgz)",
+      "@firebase-ui/angular": "[path-to-repo/releases/firebase-ui-angular-0.0.1.tgz](https://github.com/firebase/firebaseui-web/releases/download/%40firebase-ui%2Fcore%400.0.1/firebase-ui-angular-0.0.1.tgz)",
       "@angular/fire": "^19.0.0"
-      "@firebase-ui/core": "https://github.com/invertase/firebaseui-web/releases/download/%40firebase-ui%2Fcore%400.0.1/firebase-ui-core-0.0.1.tgz",
-      "@firebase-ui/styles": "https://github.com/invertase/firebaseui-web/releases/download/%40firebase-ui%2Fstyles%400.0.1/firebase-ui-styles-0.0.1.tgz",
-      "@firebase-ui/translations": "https://github.com/invertase/firebaseui-web/releases/download/%40firebase-ui%2Ftranslations%400.0.1/firebase-ui-translations-0.0.1.tgz",
+      "@firebase-ui/core": "https://github.com/firebase/firebaseui-web/releases/download/%40firebase-ui%2Fcore%400.0.1/firebase-ui-core-0.0.1.tgz",
+      "@firebase-ui/styles": "https://github.com/firebase/firebaseui-web/releases/download/%40firebase-ui%2Fstyles%400.0.1/firebase-ui-styles-0.0.1.tgz",
+      "@firebase-ui/translations": "https://github.com/firebase/firebaseui-web/releases/download/%40firebase-ui%2Ftranslations%400.0.1/firebase-ui-translations-0.0.1.tgz",
 
     }
   }
